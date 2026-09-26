@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#173b34">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=yes">
+<title>KYUSHU 2026</title>
+<style>
+:root{--green:#173b34;--green2:#245247;--cream:#f7f2e7;--paper:#fffdf8;--ink:#1f241f;--muted:#77766f;--terra:#a84f39;--line:#e8dfce;--gold:#c49c52;--shadow:0 10px 30px rgba(45,48,41,.08)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--cream)}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Pretendard","Apple SD Gothic Neo","Noto Sans KR",sans-serif;background:var(--cream);color:var(--ink);padding-bottom:calc(86px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}
+button,a{-webkit-tap-highlight-color:transparent}
+.app{max-width:760px;margin:auto;min-height:100vh}
+.hero{background:linear-gradient(155deg,#163a33 0%,#28564a 100%);color:#fff;padding:calc(22px + env(safe-area-inset-top)) 20px 22px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;width:220px;height:220px;border:1px solid rgba(255,255,255,.10);border-radius:50%;right:-90px;top:-85px}
+.kicker{font-size:11px;letter-spacing:.18em;color:#ead6a8;font-weight:800}
+h1{margin:10px 0 8px;font-size:28px;line-height:1.12;letter-spacing:-.04em}
+.hero p{margin:0;color:#d9e4df;font-size:13px}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:18px}
+.hero-card{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px}
+.hero-card small{display:block;color:#cfe0da;font-size:10px;margin-bottom:4px}
+.hero-card b{font-size:14px}
+.sync{display:flex;align-items:center;gap:7px;margin-top:13px;font-size:11px;color:#cfe0da}
+.dot{width:7px;height:7px;border-radius:50%;background:#7ee0ad;box-shadow:0 0 0 4px rgba(126,224,173,.12)}
+.tabs{position:sticky;top:0;z-index:20;display:flex;gap:7px;overflow:auto;background:rgba(247,242,231,.94);backdrop-filter:blur(12px);padding:10px 12px;border-bottom:1px solid var(--line);scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{border:0;background:#eee7da;color:#5d5b54;padding:9px 13px;border-radius:999px;font-size:12px;font-weight:800;white-space:nowrap}
+.tab.active{background:var(--green);color:#fff}
+main{padding:14px 12px 30px}
+.section{display:none} .section.active{display:block}
+.section-title{display:flex;justify-content:space-between;align-items:end;margin:7px 3px 11px}
+.section-title h2{font-size:20px;margin:0;letter-spacing:-.03em}
+.section-title span{font-size:11px;color:var(--muted)}
+.day-card{background:var(--paper);border:1px solid var(--line);border-radius:22px;margin:0 0 14px;overflow:hidden;box-shadow:var(--shadow)}
+.day-head{padding:15px 16px 12px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px}
+.day-badge{display:inline-flex;align-items:center;background:#efe6d3;color:#6a5531;border-radius:999px;padding:6px 9px;font-size:10px;font-weight:900}
+.day-head h3{font-size:17px;margin:7px 0 0}
+.route{font-size:11px;color:var(--muted);text-align:right;align-self:center;max-width:45%}
+.timeline{padding:6px 15px 12px}
+.event{display:grid;grid-template-columns:72px 15px 1fr;gap:8px;padding:12px 0;position:relative}
+.event:not(:last-child){border-bottom:1px dashed #e7dfd2}
+.time{font-size:11px;font-weight:900;color:#795b3b;padding-top:2px}
+.pin{width:9px;height:9px;border-radius:50%;background:var(--terra);margin-top:4px;position:relative}
+.pin:after{content:"";position:absolute;width:1px;height:calc(100% + 24px);background:#dfd5c7;left:4px;top:10px}
+.event:last-child .pin:after{display:none}
+.ev-title{font-size:14px;font-weight:900;line-height:1.25}
+.ev-sub{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5}
+.actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.action{font-size:11px;font-weight:800;border:1px solid #ddd2bf;background:#fff;border-radius:10px;padding:7px 9px;color:#3f4c47;text-decoration:none}
+.action.primary{background:#ecf3ef;border-color:#d2e2da;color:#1b5547}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat,.info-card{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:var(--shadow)}
+.stat small,.eyebrow{font-size:10px;color:var(--muted);font-weight:800}
+.stat strong{display:block;font-size:18px;margin-top:5px}
+.stat em{display:block;font-size:10px;color:var(--terra);font-style:normal;margin-top:4px}
+.info-card{margin-bottom:10px}
+.info-card h3{font-size:15px;margin:4px 0 8px}
+.info-row{font-size:12px;color:#5d5b54;line-height:1.55;margin-top:4px;word-break:break-word}
+.amount{font-weight:900;color:var(--green)}
+.pill{display:inline-block;padding:5px 8px;border-radius:999px;background:#f0e9dc;font-size:10px;font-weight:800;color:#6e5b39}
+.shop{display:flex;gap:12px;align-items:center}
+.shop-icon{width:42px;height:42px;border-radius:14px;background:#f1e8d7;display:grid;place-items:center;font-size:20px;flex:0 0 auto}
+.shop-main{flex:1}
+.shop-main b{font-size:14px}
+.shop-main div{font-size:11px;color:var(--muted);margin-top:4px}
+.check{display:flex;gap:11px;align-items:flex-start;padding:12px 2px;border-bottom:1px solid var(--line)}
+.check input{width:21px;height:21px;accent-color:var(--green);margin-top:1px}
+.check b{display:block;font-size:13px}
+.check span{display:block;font-size:11px;color:var(--muted);margin-top:3px}
+.budget-bar{height:9px;border-radius:999px;background:#e8dfcf;overflow:hidden;margin-top:8px}
+.budget-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green2),var(--terra));border-radius:999px;transition:.4s}
+.expense-form{display:grid;grid-template-columns:1fr 95px 70px;gap:7px;margin:10px 0}
+input,select{font-size:16px;border:1px solid var(--line);background:#fffdf9;border-radius:12px;padding:10px;min-width:0}
+.addbtn{border:0;background:var(--green);color:#fff;border-radius:12px;font-weight:900}
+.expenses{margin-top:8px}
+.expense{display:grid;grid-template-columns:1fr auto 28px;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:12px}
+.del{border:0;background:transparent;color:#aaa;font-size:17px}
+.bottom{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(8px + env(safe-area-inset-bottom));width:min(calc(100% - 18px),740px);height:66px;background:rgba(24,43,37,.96);border-radius:20px;display:grid;grid-template-columns:repeat(5,1fr);padding:7px;z-index:30;box-shadow:0 12px 35px rgba(0,0,0,.2);backdrop-filter:blur(16px)}
+.navbtn{border:0;background:transparent;color:#b9c8c3;border-radius:14px;font-size:10px;font-weight:800;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.navbtn i{font-style:normal;font-size:19px}
+.navbtn.active{background:rgba(255,255,255,.11);color:#fff}
+.toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:#173b34;color:#fff;padding:10px 14px;border-radius:12px;font-size:11px;opacity:0;pointer-events:none;transition:.25s;z-index:60}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.empty{text-align:center;padding:40px 10px;color:var(--muted);font-size:13px}
+@media(min-width:650px){main{padding:20px} .hero{border-radius:0 0 28px 28px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="hero">
+  <div class="kicker">KYUSHU · AUTUMN 2026</div>
+  <h1>유후인 · 벳푸 · 후쿠오카<br>3박 4일</h1>
+  <p>10.31 토 — 11.3 화 · 성인 2 + 아동 1</p>
+  <div class="hero-grid">
+    <div class="hero-card"><small>OUTBOUND</small><b>ICN 07:45 → FUK 09:15</b></div>
+    <div class="hero-card"><small>RETURN</small><b>FUK 13:50 → ICN 15:30</b></div>
+  </div>
+  <div class="sync"><span class="dot"></span><span id="syncText">Google Sheets 연결 확인 중…</span></div>
+</header>
+
+<nav class="tabs" id="dayTabs"></nav>
+
+<main>
+<section id="itinerary" class="section active">
+  <div class="section-title"><h2>여행 일정</h2><span>일정이 메인</span></div>
+  <div id="itineraryRoot"></div>
+</section>
+
+<section id="booking" class="section">
+  <div class="section-title"><h2>예약</h2><span>숙소 · 렌터카 · 항공</span></div>
+  <div id="bookingRoot"></div>
+</section>
+
+<section id="budget" class="section">
+  <div class="section-title"><h2>여행비</h2><span>확정비 + 현지 지출</span></div>
+  <div id="budgetRoot"></div>
+</section>
+
+<section id="shopping" class="section">
+  <div class="section-title"><h2>쇼핑</h2><span>아기옷 포함</span></div>
+  <div id="shoppingRoot"></div>
+</section>
+
+<section id="checklist" class="section">
+  <div class="section-title"><h2>체크리스트</h2><span>기기별 저장</span></div>
+  <div id="checkRoot"></div>
+</section>
+</main>
+
+<nav class="bottom">
+ <button class="navbtn active" data-section="itinerary"><i>🗓️</i>일정</button>
+ <button class="navbtn" data-section="booking"><i>🎫</i>예약</button>
+ <button class="navbtn" data-section="budget"><i>💴</i>비용</button>
+ <button class="navbtn" data-section="shopping"><i>🛍️</i>쇼핑</button>
+ <button class="navbtn" data-section="checklist"><i>✅</i>체크</button>
+</nav>
+<div class="toast" id="toast"></div>
+</div>
+
+<script>
+const SHEET_ID="11guqFq5PdUM2qJGRVRcpecr_F0Y60pCtshlAPg7hNNk";
+const SEED={"일정": [["일자", "시간", "지역", "일정", "세부내용", "이동/메모"], ["10/31(토)", "07:45", "인천", "출국", "인천 → 후쿠오카 09:15", ""], ["10/31(토)", "10:00", "후쿠오카공항", "렌터카 픽업", "Budget 후쿠오카공항점", "공항 셔틀 미팅장소 → 영업소"], ["10/31(토)", "오전~점심", "이동", "유후인 이동", "약 1.5~2시간", "중간 휴식 권장"], ["10/31(토)", "오후", "유후인", "긴린코 · 플로랄빌리지", "가볍게 산책/사진", "아기띠 병행"], ["10/31(토)", "저녁", "벳푸", "노가미혼칸 체크인", "2박", "온천 짧게"], ["11/1(일)", "오전", "벳푸/우사", "아프리칸 사파리", "마이카 사파리 중심", "현금 대비"], ["11/1(일)", "오후", "벳푸", "지고쿠메구리 1~2곳", "우미지고쿠/치노이케 중심", "무리해서 7곳 전부 X"], ["11/1(일)", "오후", "벳푸", "니시마츠야", "아기옷 1차 쇼핑", ""], ["11/1(일)", "저녁", "벳푸", "노가미혼칸 2박째", "휴식 중심", ""], ["11/2(월)", "오전", "벳푸→후쿠오카", "이동", "약 2시간", ""], ["11/2(월)", "14:00", "하카타", "렌터카 반납", "Budget 하카타역 치쿠시구치점", ""], ["11/2(월)", "14:00 이후", "하카타", "호텔 포르자Ⅱ 체크인", "FORZA Double Room", "성인2+아동1"], ["11/2(월)", "오후", "후쿠오카", "오호리공원", "산책/휴식", ""], ["11/2(월)", "오후~저녁", "텐진/다이묘", "몽벨 · nanamica 쇼핑", "아웃도어 쇼핑", ""], ["11/2(월)", "저녁", "하카타", "캐널시티", "쇼핑/식사", "야타이 제외"], ["11/3(화)", "오전", "하카타역", "하카타한큐", "7F BREEZE/산리오 등 아기쇼핑", "이온몰 제외"], ["11/3(화)", "오전", "하카타역", "아뮤플라자", "7F MARKEY'S 확인", "한큐와 연결"], ["11/3(화)", "11:00 전후", "하카타→공항", "공항 이동", "지하철 공항선", ""], ["11/3(화)", "13:50", "후쿠오카공항", "귀국", "후쿠오카 → 인천 15:30", ""]], "예약정보": [["구분", "업체/숙소", "일시", "주소/연락처", "상세", "금액"], ["렌터카 픽업", "Budget 후쿠오카공항점", "10/31 10:00", "福岡市博多区月隈1丁目7-5 / 092-612-0543", "소형 에코카·AT·금연·내비·ETC·베이비시트", "¥21,930"], ["렌터카 반납", "Budget 하카타역 치쿠시구치점", "11/2 14:00", "福岡市博多区博多駅東1丁目18-10 / 092-461-8255", "하카타역 치쿠시구치 인근", ""], ["숙소", "노가미혼칸", "10/31~11/2", "大分県別府市北浜1-12-1 / 0977-22-1334", "2박", "337,317원 + 온천세 별도"], ["숙소", "호텔 포르자 하카타에키 치쿠시구치 II", "11/2 14:00 ~ 11/3 11:00", "福岡市博多区博多駅東1-13-3 / 092-473-7114", "FORZA Double Room, Non Smoking / 성인2+아동1 / 여기어때 예약번호 26092621016D74ES1", "147,662원"], ["항공", "인천↔후쿠오카", "10/31~11/3", "", "3인", "543,000원"], ["eSIM", "2인", "", "", "여행용", "800원"], ["여행자보험", "2인", "", "", "", "0원"]], "비용": [["항목", "통화", "금액", "비고"], ["항공권", "KRW", "543000", "3인"], ["료칸", "KRW", "337317", "노가미혼칸"], ["포르자Ⅱ", "KRW", "147662", "11/2 1박"], ["eSIM", "KRW", "800", "2인"], ["여행자보험", "KRW", "0", "2인"], ["렌터카", "JPY", "21930", "현지결제 여부 확인"], ["환전", "JPY", "110000", "환전단가 100엔=865.05원 기준"], ["환전 원화환산", "KRW", "951555", "11만엔 환전"], ["아기쇼핑 예산", "KRW", "500000", "50만원 미만 목표"], ["현지 생활비 예상", "JPY", "50000", "식사·교통·관광·잡비 대략"]], "쇼핑": [["지역/시설", "매장", "카테고리", "예정일", "메모"], ["벳푸", "니시마츠야 벳푸 야마나미점", "아기옷/용품", "11/1", "1차 쇼핑"], ["하카타한큐 7F", "BREEZE terrace", "아기옷", "11/3", "BREEZE / après les cours 등"], ["JR 하카타시티 아뮤플라자 7F", "MARKEY'S", "아기옷", "11/3", "한큐와 연결해서 이동"], ["하카타한큐 7F", "산리오", "캐릭터/기념품", "11/3", ""], ["텐진", "몽벨", "아웃도어", "11/2", ""], ["다이묘", "nanamica", "아웃도어/퍼플라벨", "11/2", ""], ["캐널시티", "산리오/쇼핑", "기념품", "11/2", ""]], "체크리스트": [["체크", "분류", "항목"], ["FALSE", "서류", "여권·항공권·숙소 예약확인"], ["FALSE", "임산부", "산모수첩·필요 서류·편한 신발·수분"], ["FALSE", "아기", "유모차·아기띠·기저귀·물티슈"], ["FALSE", "아기", "분유/이유식·보온병·체온계·해열제"], ["FALSE", "날씨", "가디건·경량패딩·담요·우산"], ["FALSE", "결제", "해외결제카드·현금 ¥110,000"], ["FALSE", "렌터카", "ETC·카시트·반납시간 확인"], ["FALSE", "귀국", "11/3 하카타한큐 쇼핑 후 공항 이동시간 확인"]]};
+const SHEETS=["일정","예약정보","비용","쇼핑","체크리스트"];
+let DATA=structuredClone(SEED);
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+const toast=t=>{const e=$("#toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),1800)};
+const maps=q=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q);
+const phone=s=>{const m=String(s||"").match(/0\d{1,3}-\d{3,4}-\d{4}/);return m?m[0]:null}
+
+function parseGviz(txt){
+  const a=txt.indexOf("{"), b=txt.lastIndexOf("}");
+  const obj=JSON.parse(txt.slice(a,b+1));
+  const cols=obj.table.cols.map(c=>c.label||"");
+  const rows=obj.table.rows.map(r=>r.c.map(c=>c?c.v:""));
+  return [cols,...rows];
+}
+async function pullSheet(name){
+  const u=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(name)}`;
+  const r=await fetch(u,{cache:"no-store"});
+  if(!r.ok) throw new Error(name);
+  return parseGviz(await r.text());
+}
+async function sync(){
+  try{
+    const vals=await Promise.all(SHEETS.map(pullSheet));
+    SHEETS.forEach((n,i)=>DATA[n]=vals[i]);
+    localStorage.setItem("fukuokaData",JSON.stringify(DATA));
+    localStorage.setItem("fukuokaSyncAt",new Date().toISOString());
+    $("#syncText").textContent="Google Sheets 실시간 연동 · 방금 업데이트";
+  }catch(e){
+    const c=localStorage.getItem("fukuokaData");
+    if(c) DATA=JSON.parse(c);
+    $("#syncText").textContent=c?"오프라인 · 마지막 동기화 데이터":"내장 일정으로 표시 중";
+  }
+  renderAll();
+}
+
+function groupedItinerary(){
+  const rows=DATA["일정"].slice(1).filter(r=>r[0]);
+  const g={};
+  rows.forEach(r=>(g[r[0]]??=[]).push(r));
+  return g;
+}
+function routeFor(rows){
+  const places=[...new Set(rows.map(r=>r[2]).filter(Boolean))];
+  return places.join(" → ");
+}
+function eventActions(r){
+  const q=[r[2],r[3]].filter(Boolean).join(" ");
+  let html=`<a class="action primary" href="${maps(q)}" target="_blank">지도</a>`;
+  if(/Budget|호텔|노가미|한큐|아뮤|니시마츠야|몽벨|nanamica|캐널|사파리|긴린코|지고쿠|오호리/.test(r.join(" ")))
+    html+=`<a class="action" href="${maps(q)}" target="_blank">길찾기</a>`;
+  return html;
+}
+function renderDayTabs(){
+ const g=groupedItinerary(), root=$("#dayTabs");
+ root.innerHTML=Object.keys(g).map((d,i)=>`<button class="tab ${i===0?"active":""}" data-day="${esc(d)}">${esc(d)}</button>`).join("");
+ root.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
+   root.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===b));
+   document.getElementById("day-"+b.dataset.day.replace(/[^0-9]/g,"")).scrollIntoView({behavior:"smooth",block:"start"});
+ });
+}
+function renderItinerary(){
+ const g=groupedItinerary();
+ $("#itineraryRoot").innerHTML=Object.entries(g).map(([d,rows],i)=>`
+ <article class="day-card" id="day-${d.replace(/[^0-9]/g,"")}">
+   <div class="day-head">
+    <div><span class="day-badge">DAY ${i+1} · ${esc(d)}</span><h3>${esc(rows[0]?.[2]||"")}</h3></div>
+    <div class="route">${esc(routeFor(rows))}</div>
+   </div>
+   <div class="timeline">${rows.map(r=>`
+    <div class="event">
+      <div class="time">${esc(r[1])}</div><div class="pin"></div>
+      <div><div class="ev-title">${esc(r[3])}</div>
+      <div class="ev-sub">${esc(r[4])}${r[5]?` · ${esc(r[5])}`:""}</div>
+      <div class="actions">${eventActions(r)}</div></div>
+    </div>`).join("")}</div>
+ </article>`).join("");
+}
+function renderBooking(){
+ const rows=DATA["예약정보"].slice(1).filter(r=>r[0]);
+ $("#bookingRoot").innerHTML=rows.map(r=>{
+  const ph=phone(r[3]);
+  const addr=String(r[3]||"").split("/")[0].trim();
+  return `<div class="info-card">
+    <span class="pill">${esc(r[0])}</span>
+    <h3>${esc(r[1])}</h3>
+    <div class="info-row">${esc(r[2])}</div>
+    <div class="info-row">${esc(r[4])}</div>
+    ${r[5]?`<div class="info-row amount">${esc(r[5])}</div>`:""}
+    <div class="actions">
+      ${addr?`<a class="action primary" href="${maps(addr)}" target="_blank">지도</a>`:""}
+      ${ph?`<a class="action" href="tel:${ph}">전화</a>`:""}
+    </div>
+  </div>`}).join("");
+}
+function moneyKRW(n){return Number(n||0).toLocaleString("ko-KR")+"원"}
+function moneyJPY(n){return "¥"+Number(n||0).toLocaleString("ja-JP")}
+function renderBudget(){
+ const rows=DATA["비용"].slice(1).filter(r=>r[0]);
+ const krw=rows.filter(r=>r[1]==="KRW"&&!["환전 원화환산","아기쇼핑 예산"].includes(r[0])).reduce((s,r)=>s+(+r[2]||0),0);
+ const jpyFixed=rows.filter(r=>r[1]==="JPY"&&r[0]==="렌터카").reduce((s,r)=>s+(+r[2]||0),0);
+ const cash=+(rows.find(r=>r[0]==="환전")?.[2]||0);
+ const shopBudget=+(rows.find(r=>r[0]==="아기쇼핑 예산")?.[2]||0);
+ const expenses=JSON.parse(localStorage.getItem("fukuokaExpenses")||"[]");
+ const spentJPY=expenses.filter(x=>x.currency==="JPY").reduce((s,x)=>s+x.amount,0);
+ const remain=Math.max(0,cash-spentJPY);
+ const pct=cash?Math.min(100,spentJPY/cash*100):0;
+ $("#budgetRoot").innerHTML=`
+  <div class="grid">
+   <div class="stat"><small>확정 원화</small><strong>${moneyKRW(krw)}</strong><em>환전금 제외</em></div>
+   <div class="stat"><small>렌터카</small><strong>${moneyJPY(jpyFixed)}</strong><em>현지결제 확인</em></div>
+   <div class="stat"><small>환전 보유</small><strong>${moneyJPY(cash)}</strong><em>100엔=865.05원</em></div>
+   <div class="stat"><small>아기쇼핑 한도</small><strong>${moneyKRW(shopBudget)}</strong><em>50만원 미만</em></div>
+  </div>
+  <div class="info-card" style="margin-top:10px">
+   <div class="eyebrow">현지 현금 사용</div><h3>${moneyJPY(spentJPY)} 사용 · ${moneyJPY(remain)} 남음</h3>
+   <div class="budget-bar"><i style="width:${pct}%"></i></div>
+   <div class="expense-form"><input id="expName" placeholder="예: 점심"><input id="expAmt" inputmode="decimal" placeholder="금액"><select id="expCur"><option>JPY</option><option>KRW</option></select></div>
+   <button class="addbtn" style="width:100%;padding:11px" onclick="addExpense()">지출 추가</button>
+   <div class="expenses">${expenses.map((x,i)=>`<div class="expense"><span>${esc(x.name)}</span><b>${x.currency==="JPY"?moneyJPY(x.amount):moneyKRW(x.amount)}</b><button class="del" onclick="delExpense(${i})">×</button></div>`).join("")}</div>
+  </div>`;
+}
+function addExpense(){
+ const name=$("#expName").value.trim(), amount=+$("#expAmt").value, currency=$("#expCur").value;
+ if(!name||!amount)return toast("항목과 금액을 입력해줘");
+ const a=JSON.parse(localStorage.getItem("fukuokaExpenses")||"[]");a.unshift({name,amount,currency,date:new Date().toISOString()});
+ localStorage.setItem("fukuokaExpenses",JSON.stringify(a));renderBudget();toast("지출 저장됨");
+}
+function delExpense(i){const a=JSON.parse(localStorage.getItem("fukuokaExpenses")||"[]");a.splice(i,1);localStorage.setItem("fukuokaExpenses",JSON.stringify(a));renderBudget()}
+function renderShopping(){
+ const rows=DATA["쇼핑"].slice(1).filter(r=>r[1]);
+ const icons={"아기옷":"👶","아기옷/용품":"🧸","캐릭터/기념품":"🎀","아웃도어":"🥾","아웃도어/퍼플라벨":"🧥","기념품":"🎁"};
+ $("#shoppingRoot").innerHTML=rows.map(r=>`<div class="info-card shop">
+  <div class="shop-icon">${icons[r[2]]||"🛍️"}</div><div class="shop-main"><b>${esc(r[1])}</b><div>${esc(r[0])} · ${esc(r[3])} · ${esc(r[2])}</div><div>${esc(r[4]||"")}</div></div>
+  <a class="action primary" href="${maps(r[1]+" "+r[0])}" target="_blank">지도</a>
+ </div>`).join("");
+}
+function renderChecklist(){
+ const rows=DATA["체크리스트"].slice(1).filter(r=>r[2]), saved=JSON.parse(localStorage.getItem("fukuokaChecks")||"{}");
+ $("#checkRoot").innerHTML=rows.map((r,i)=>`<label class="check"><input type="checkbox" data-ci="${i}" ${saved[i]?"checked":""}><div><b>${esc(r[2])}</b><span>${esc(r[1])}</span></div></label>`).join("");
+ $("#checkRoot").querySelectorAll("input").forEach(c=>c.onchange=()=>{saved[c.dataset.ci]=c.checked;localStorage.setItem("fukuokaChecks",JSON.stringify(saved))});
+}
+function renderAll(){renderDayTabs();renderItinerary();renderBooking();renderBudget();renderShopping();renderChecklist()}
+document.querySelectorAll(".navbtn").forEach(b=>b.onclick=()=>{
+ document.querySelectorAll(".navbtn").forEach(x=>x.classList.toggle("active",x===b));
+ document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active",s.id===b.dataset.section));
+ window.scrollTo({top:0,behavior:"smooth"});
+});
+renderAll();sync();
+</script>
+</body>
+</html>
