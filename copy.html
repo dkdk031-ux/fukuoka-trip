@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Code.gs 복사</title>
+<style>
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;background:#f5efe4;color:#1f2633;padding:24px 18px 40px;line-height:1.6}
+h1{font-size:22px;margin:0 0 6px}p{margin:6px 0;color:#4a505c;font-size:15px}
+button{display:block;width:100%;height:56px;border:0;border-radius:14px;background:#1f2633;color:#fff;font-size:18px;font-weight:700;margin:18px 0 8px}
+button:disabled{opacity:.5}
+#st{font-size:14px;color:#b5532a;min-height:22px;text-align:center}
+ol{padding-left:20px;font-size:15px}li{margin:8px 0}
+textarea{width:100%;height:120px;margin-top:14px;border:1px solid #e3d7c3;border-radius:10px;padding:10px;font-size:12px;font-family:monospace;background:#fffdf8}
+</style>
+</head>
+<body>
+<h1>Code.gs 복사하기</h1>
+<p>버튼을 누르면 최신 서버 코드 전체가 복사돼요.</p>
+<button id="b" disabled>불러오는 중…</button>
+<div id="st"></div>
+<ol>
+  <li>Apps Script 편집기 왼쪽 파일 목록에서 <b>Code.gs 옆 ⋮ → 삭제</b></li>
+  <li><b>파일 옆 ＋ → 스크립트</b> → 이름을 <b>Code</b>로 만들기</li>
+  <li>새 파일의 빈 화면을 길게 눌러 <b>붙여넣기</b> → 저장(💾)</li>
+  <li><b>setupCheck</b> 실행 → <b>배포 → 배포 관리 → 연필 → 새 버전 → 배포</b></li>
+</ol>
+<p style="font-size:13px">편집기가 휴대폰용으로 불편하면 브라우저 메뉴에서 <b>“데스크톱 사이트”</b>를 켜고 하세요.</p>
+<textarea id="t" readonly></textarea>
+<script>
+const URL_="https://raw.githubusercontent.com/dkdk031-ux/fukuoka-trip/main/apps-script/Code.gs?"+Date.now();
+const b=document.getElementById("b"),t=document.getElementById("t"),st=document.getElementById("st");
+fetch(URL_,{cache:"no-store"}).then(r=>r.text()).then(code=>{t.value=code;b.disabled=false;b.textContent="Code.gs 전체 복사";st.textContent=code.split("\n").length+"줄"})
+ .catch(()=>{b.textContent="불러오지 못했어요";st.textContent="인터넷 연결을 확인하고 새로고침해 주세요"});
+b.onclick=async()=>{
+ try{await navigator.clipboard.writeText(t.value);st.textContent="복사됐어요! Apps Script 새 파일에 붙여넣기 하세요"}
+ catch(e){t.focus();t.select();t.setSelectionRange(0,t.value.length);document.execCommand("copy");st.textContent="복사됐어요! (안 되면 아래 칸을 길게 눌러 전체 선택 → 복사)"}
+};
+</script>
+</body>
+</html>
