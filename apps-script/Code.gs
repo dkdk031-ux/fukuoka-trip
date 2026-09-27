@@ -1,49 +1,103 @@
 /**
- * 후쿠오카 여행앱 (Apps Script 웹 앱)
+ * 후쿠오카 여행앱 API (Apps Script 웹 앱)
+ * 화면은 GitHub Pages 앱이 그리고, 이 스크립트는 로그인 확인과 시트 데이터 전달만 한다.
  *
- * 배포: 배포 → 새 배포 → 웹 앱
- *   - 다음 사용자 인증 정보로 실행: "웹 앱에 액세스하는 사용자"
- *   - 액세스 권한이 있는 사용자: "Google 계정이 있는 모든 사용자"
- * 접속 권한은 ☆후쿠오카 폴더(또는 이 시트) 공유로 관리한다. 공유받지 않은 계정은 데이터를 읽을 수 없다.
+ * 배포: 배포 → 배포 관리 → 편집(연필) → 버전: 새 버전
+ *   - 다음 사용자 인증 정보로 실행: 나
+ *   - 액세스 권한이 있는 사용자: 모든 사용자
  *
- * 스크립트 속성(선택): ROUTINE_FIRE_URL, ROUTINE_TOKEN, ROUTINE_HEADERS(JSON) → 요청이 들어오면 Claude 루틴을 깨운다.
+ * 접속 허용: ☆후쿠오카 폴더(또는 시트)를 공유받은 계정 + 소유자. 공유에서 빼면 10분 안에 차단된다.
+ *
+ * 스크립트 속성
+ *   GOOGLE_CLIENT_ID  Google Cloud에서 만든 OAuth 클라이언트 ID (필수)
+ *   ROUTINE_FIRE_URL, ROUTINE_TOKEN, ROUTINE_HEADERS(JSON)  요청이 들어오면 Claude 루틴을 깨운다 (선택)
+ *   SESSION_SECRET    로그인 유지용 서명 키. 비워두면 처음 실행 때 자동 생성
  */
 const SHEET_ID = '1la5_IUEKxlXuIySWkCRexx_n-4QUPi80eRuLv0BW27Y';
-const ATTACH_FOLDER_ID = '1u2wL6asQIthUxrB_H34sQgSGiSMBHyRI';
+const FOLDER_ID = '1mIYQG3k0QQxruvwEk0dHv-1LMhM0gtRx';        // ☆후쿠오카
+const ATTACH_FOLDER_ID = '1u2wL6asQIthUxrB_H34sQgSGiSMBHyRI'; // ☆후쿠오카/요청 첨부
 const TABS = ['일정', '예약정보', '비용', '쇼핑', '체크리스트', '일자정보', '앱설정', '요청'];
+const SESSION_DAYS = 30;
 const MAX_LEN = 500;
 const MAX_FILES = 3;
 const MAX_FILE_BYTES = 8 * 1024 * 1024;
 const ALLOWED_TYPES = /^(image\/(jpeg|png|webp|heic|heif|gif)|application\/pdf)$/;
 
-// 화면 코드(데이터 없음)는 GitHub에서 받아온다 → 저장소에 푸시하면 재배포 없이 몇 분 안에 반영.
-// 받아오지 못하면 이 프로젝트의 'index' 파일로 대신 연다.
-const UI_URL = 'https://raw.githubusercontent.com/dkdk031-ux/fukuoka-trip/main/apps-script/index.html';
-const UI_CACHE_SEC = 300;
-
 function doGet() {
-  return HtmlService.createHtmlOutput(loadUi())
-    .setTitle('후쿠오카 3박 4일')
-    .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover');
+  return json({ ok: true, service: 'fukuoka-trip-api' });
 }
 
-function loadUi() {
-  const cache = CacheService.getScriptCache();
-  const hit = cache.get('ui');
-  if (hit) return hit;
+function doPost(e) {
+  let body;
+  try { body = JSON.parse(e.postData.contents); } catch (err) { return json({ ok: false, error: '잘못된 요청 형식' }); }
   try {
-    const res = UrlFetchApp.fetch(UI_URL, { muteHttpExceptions: true });
-    const html = res.getContentText('UTF-8');
-    if (res.getResponseCode() === 200 && html.indexOf('google.script.run') > -1) {
-      if (html.length < 95000) cache.put('ui', html, UI_CACHE_SEC);
-      return html;
-    }
-  } catch (err) {}
-  return HtmlService.createHtmlOutputFromFile('index').getContent();
+    if (body.action === 'login') return json(login(body.idToken));
+    const email = checkSession(body.session);
+    if (!email) return json({ ok: false, auth: false, error: '다시 로그인해 주세요' });
+    if (!isAllowed(email)) return json({ ok: false, auth: false, denied: true, error: '초대받지 않은 계정이에요: ' + email });
+    if (body.action === 'data') return json(getData(email));
+    if (body.action === 'request') return json(submitRequest(email, body));
+    return json({ ok: false, error: '알 수 없는 요청' });
+  } catch (err) {
+    return json({ ok: false, error: String(err && err.message || err) });
+  }
 }
 
-/** 앱이 읽는 모든 탭을 표시값 그대로 돌려준다. 공유받지 않은 사용자는 여기서 권한 오류가 난다. */
-function getData() {
+/* ───────── 로그인 ───────── */
+function login(idToken) {
+  const clientId = PropertiesService.getScriptProperties().getProperty('GOOGLE_CLIENT_ID');
+  if (!clientId) return { ok: false, error: '관리자 설정 필요: GOOGLE_CLIENT_ID' };
+  const res = UrlFetchApp.fetch('https://oauth2.googleapis.com/tokeninfo?id_token=' + encodeURIComponent(idToken || ''), { muteHttpExceptions: true });
+  if (res.getResponseCode() !== 200) return { ok: false, auth: false, error: '구글 로그인 확인에 실패했어요' };
+  const info = JSON.parse(res.getContentText());
+  if (info.aud !== clientId || String(info.email_verified) !== 'true' || Number(info.exp) * 1000 < Date.now()) {
+    return { ok: false, auth: false, error: '구글 로그인 정보가 올바르지 않아요' };
+  }
+  const email = String(info.email).toLowerCase();
+  if (!isAllowed(email)) return { ok: false, auth: false, denied: true, error: '초대받지 않은 계정이에요: ' + email };
+  return { ok: true, email: email, name: info.name || '', session: makeSession(email) };
+}
+
+function secret() {
+  const props = PropertiesService.getScriptProperties();
+  let s = props.getProperty('SESSION_SECRET');
+  if (!s) { s = Utilities.getUuid() + Utilities.getUuid(); props.setProperty('SESSION_SECRET', s); }
+  return s;
+}
+function sign(payload) {
+  return Utilities.base64EncodeWebSafe(Utilities.computeHmacSha256Signature(payload, secret()));
+}
+function makeSession(email) {
+  const payload = Utilities.base64EncodeWebSafe(JSON.stringify({ e: email, x: Date.now() + SESSION_DAYS * 864e5 }));
+  return payload + '.' + sign(payload);
+}
+function checkSession(session) {
+  const parts = String(session || '').split('.');
+  if (parts.length !== 2 || sign(parts[0]) !== parts[1]) return '';
+  try {
+    const p = JSON.parse(Utilities.newBlob(Utilities.base64DecodeWebSafe(parts[0])).getDataAsString());
+    return p.x > Date.now() ? p.e : '';
+  } catch (err) { return ''; }
+}
+
+/** 폴더·시트를 공유받은 계정과 소유자만 허용 (10분 캐시) */
+function isAllowed(email) {
+  const cache = CacheService.getScriptCache();
+  let list = cache.get('allowed');
+  if (!list) {
+    const set = {};
+    const add = function (users) { users.forEach(function (u) { const m = u.getEmail(); if (m) set[m.toLowerCase()] = 1; }); };
+    const folder = DriveApp.getFolderById(FOLDER_ID);
+    const file = DriveApp.getFileById(SHEET_ID);
+    [folder, file].forEach(function (x) { add(x.getEditors()); add(x.getViewers()); set[x.getOwner().getEmail().toLowerCase()] = 1; });
+    list = Object.keys(set).join(',');
+    cache.put('allowed', list, 600);
+  }
+  return list.split(',').indexOf(String(email).toLowerCase()) > -1;
+}
+
+/* ───────── 데이터 ───────── */
+function getData(email) {
   const ss = SpreadsheetApp.openById(SHEET_ID);
   const tabs = {};
   TABS.forEach(function (name) {
@@ -53,43 +107,39 @@ function getData() {
     while (rows.length > 1 && rows[rows.length - 1].every(function (v) { return v === ''; })) rows.pop();
     tabs[name] = rows;
   });
-  return { tabs: tabs, user: Session.getActiveUser().getEmail() };
+  return { ok: true, tabs: tabs, user: email };
 }
 
-/** 앱의 "Claude에게 요청" → '요청' 탭에 한 줄 추가하고 루틴을 깨운다. 보낸 사람은 로그인한 구글 계정. */
-function submitRequest(req) {
-  const user = Session.getActiveUser().getEmail() || '알 수 없음';
-  const text = String((req && req.text) || '').trim().slice(0, MAX_LEN);
-  if (!text) throw new Error('요청 내용이 비어 있어요');
-
-  const ss = SpreadsheetApp.openById(SHEET_ID);
+/* ───────── Claude에게 요청 ───────── */
+function submitRequest(email, req) {
+  const text = String(req.text || '').trim().slice(0, MAX_LEN);
+  if (!text) return { ok: false, error: '요청 내용이 비어 있어요' };
   const files = Array.isArray(req.files) ? req.files.slice(0, MAX_FILES) : [];
   const saved = [];
   if (files.length) {
     const folder = DriveApp.getFolderById(ATTACH_FOLDER_ID);
     const stamp = Utilities.formatDate(new Date(), 'Asia/Seoul', 'MMdd-HHmm');
-    files.forEach(function (f) {
-      const type = String(f.type || '');
-      if (!ALLOWED_TYPES.test(type)) throw new Error('사진이나 PDF만 올릴 수 있어요');
+    for (let i = 0; i < files.length; i++) {
+      const f = files[i], type = String(f.type || '');
+      if (!ALLOWED_TYPES.test(type)) return { ok: false, error: '사진이나 PDF만 올릴 수 있어요' };
       const bytes = Utilities.base64Decode(String(f.data || ''));
-      if (!bytes.length || bytes.length > MAX_FILE_BYTES) throw new Error('파일은 8MB까지 올릴 수 있어요');
-      const safeName = (stamp + ' ' + user.split('@')[0] + ' ' + String(f.name || 'file')).replace(/[\\/:*?"<>|]/g, '_').slice(0, 120);
+      if (!bytes.length || bytes.length > MAX_FILE_BYTES) return { ok: false, error: '파일은 8MB까지 올릴 수 있어요' };
+      const safeName = (stamp + ' ' + email.split('@')[0] + ' ' + String(f.name || 'file')).replace(/[\\/:*?"<>|]/g, '_').slice(0, 120);
       saved.push(safeName + ' | ' + folder.createFile(Utilities.newBlob(bytes, type, safeName)).getUrl());
-    });
+    }
   }
-
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
   let row;
   try {
-    const sh = ss.getSheetByName('요청');
+    const sh = SpreadsheetApp.openById(SHEET_ID).getSheetByName('요청');
     const now = Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyyy-MM-dd HH:mm');
-    sh.appendRow(["'" + now, user, text, '대기', '', '', saved.join('\n')]);
+    sh.appendRow(["'" + now, email, text, '대기', '', '', saved.join('\n')]);
     row = sh.getLastRow();
   } finally {
     lock.releaseLock();
   }
-  return { ok: true, row: row, fired: fireRoutine("시트 '요청' 탭 " + row + "행에 새 요청이 들어왔어요 (" + user + ")."), files: saved.length };
+  return { ok: true, row: row, fired: fireRoutine("시트 '요청' 탭 " + row + "행에 새 요청이 들어왔어요 (" + email + ")."), files: saved.length };
 }
 
 function fireRoutine(text) {
@@ -109,7 +159,16 @@ function fireRoutine(text) {
   }
 }
 
-/** 설정 확인용: 편집기에서 한 번 실행하면 권한 승인과 루틴 연결을 테스트할 수 있다. 로그에 200이 나오면 성공. */
-function testFire() {
-  Logger.log(fireRoutine('연결 테스트입니다. 처리할 요청이 없으면 그대로 종료하세요.'));
+function json(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
+
+/** 편집기에서 한 번 실행: 권한 승인 + 허용 계정 목록 확인 + 루틴 연결 테스트 */
+function setupCheck() {
+  secret();
+  CacheService.getScriptCache().remove('allowed');
+  isAllowed('x');
+  Logger.log('허용 계정: ' + CacheService.getScriptCache().get('allowed'));
+  Logger.log('GOOGLE_CLIENT_ID: ' + (PropertiesService.getScriptProperties().getProperty('GOOGLE_CLIENT_ID') ? '설정됨' : '없음'));
+  Logger.log('루틴 연결: ' + fireRoutine('연결 테스트입니다. 처리할 요청이 없으면 그대로 종료하세요.'));
 }
