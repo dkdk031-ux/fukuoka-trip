@@ -84,20 +84,25 @@ function checkSession(session) {
   } catch (err) { return ''; }
 }
 
-/** 폴더·시트를 공유받은 계정과 소유자만 허용 (10분 캐시) */
+/** 폴더·시트를 공유받은 계정과 소유자만 허용 (10분 캐시, 목록에 없으면 1분에 한 번 새로 확인) */
 function isAllowed(email) {
+  email = String(email).toLowerCase();
   const cache = CacheService.getScriptCache();
   let list = cache.get('allowed');
-  if (!list) {
-    const set = {};
-    const add = function (users) { users.forEach(function (u) { const m = u.getEmail(); if (m) set[m.toLowerCase()] = 1; }); };
-    const folder = DriveApp.getFolderById(FOLDER_ID);
-    const file = DriveApp.getFileById(SHEET_ID);
-    [folder, file].forEach(function (x) { add(x.getEditors()); add(x.getViewers()); set[x.getOwner().getEmail().toLowerCase()] = 1; });
-    list = Object.keys(set).join(',');
+  if (!list || (list.split(',').indexOf(email) < 0 && !cache.get('recheck'))) {
+    if (list) cache.put('recheck', '1', 60);
+    list = loadAllowed();
     cache.put('allowed', list, 600);
   }
-  return list.split(',').indexOf(String(email).toLowerCase()) > -1;
+  return list.split(',').indexOf(email) > -1;
+}
+function loadAllowed() {
+  const set = {};
+  const add = function (users) { users.forEach(function (u) { const m = u.getEmail(); if (m) set[m.toLowerCase()] = 1; }); };
+  [DriveApp.getFolderById(FOLDER_ID), DriveApp.getFileById(SHEET_ID)].forEach(function (x) {
+    add(x.getEditors()); add(x.getViewers()); set[x.getOwner().getEmail().toLowerCase()] = 1;
+  });
+  return Object.keys(set).join(',');
 }
 
 /* ───────── 데이터 ───────── */
@@ -170,8 +175,7 @@ function json(obj) {
 /** 편집기에서 한 번 실행: 권한 승인 + 허용 계정 목록 확인 + 루틴 연결 테스트 */
 function setupCheck() {
   secret();
-  CacheService.getScriptCache().remove('allowed');
-  isAllowed('x');
+  CacheService.getScriptCache().put('allowed', loadAllowed(), 600);
   Logger.log('허용 계정: ' + CacheService.getScriptCache().get('allowed'));
   Logger.log('클라이언트 ID: ' + clientIdOf());
   Logger.log('루틴 연결: ' + fireRoutine('연결 테스트입니다. 처리할 요청이 없으면 그대로 종료하세요.'));
