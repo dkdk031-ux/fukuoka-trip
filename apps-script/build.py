@@ -104,5 +104,11 @@ sub("addEventListener(\"scroll\",()=>requestAnimationFrame(spy),{passive:true});
 document.addEventListener("click",e=>{const a=e.target.closest('a[href^="#"]');if(!a||e.defaultPrevented)return;const id=a.getAttribute("href").slice(1);const el=id==="top"?document.body:document.getElementById(id);if(!el)return;e.preventDefault();
  const y=id==="top"?0:el.getBoundingClientRect().top+scrollY-($("#segWrap").offsetHeight||0)-8;scrollTo({top:Math.max(0,y),behavior:"smooth"})});''')
 
+# 6) 전역 이름 충돌 방지: Apps Script가 같은 페이지에 자기 스크립트를 넣으므로 앱 코드를 함수로 감싼다
+a = s.index("<script>\n") + len("<script>\n")
+b = s.rindex("</script>")
+s = s[:a] + "(function(){\n\"use strict\";\n" + s[a:b] + "\nwindow.sync=sync;\n})();\n" + s[b:]
+s = s.replace('onclick="sync(true)"', 'onclick="window.sync(true)"')
+
 (root / "apps-script" / "index.html").write_text(s, encoding="utf-8")
 print("apps-script/index.html", len(s.encode()), "bytes")

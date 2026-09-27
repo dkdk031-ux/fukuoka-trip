@@ -285,6 +285,8 @@ footer{text-align:center;font-size:12px;color:var(--ink3);padding:30px 0 10px;li
 <div class="toast" id="toast"></div>
 <div class="denied" id="denied" hidden><div><b>접근 권한이 없어요</b><p>이 여행앱은 초대받은 가족만 볼 수 있어요. 관리자에게 공유를 요청해 주세요.</p><p style="font-size:13px;color:#8a8f8c">여러 구글 계정에 로그인되어 있으면 이 화면이 뜰 수 있어요. 시크릿 창에서 초대받은 계정 하나로만 로그인해 열어 보세요.</p><p id="deniedMsg" style="font-size:12px;color:#8a8f8c;word-break:break-all"></p></div></div>
 <script>
+(function(){
+"use strict";
 /* ───────── 설정 ───────── */
 const SHEET_ID="1la5_IUEKxlXuIySWkCRexx_n-4QUPi80eRuLv0BW27Y";
 const SHEETS=["일정","예약정보","비용","쇼핑","체크리스트"];
@@ -476,7 +478,7 @@ function renderDays(){
  const days=itinerary(),{ymd,min}=nowJST();
  if(selDay==null||selDay<0||selDay>=days.length)selDay=defaultDay(days);
  renderNav(days);
- const d=days[selDay];if(!d){$("#days").innerHTML=(typeof LAST_ERR!=='undefined'&&LAST_ERR)?'<div class="card" style="margin-top:24px;padding:18px"><b>일정을 불러오지 못했어요</b><p class="hint" style="padding:6px 0 10px">'+esc(LAST_ERR)+'</p><button class="btn pri" onclick="sync(true)">다시 시도</button></div>':'<p class="hint" style="padding:40px 0;text-align:center">일정을 불러오는 중이에요…</p>';return days}
+ const d=days[selDay];if(!d){$("#days").innerHTML=(typeof LAST_ERR!=='undefined'&&LAST_ERR)?'<div class="card" style="margin-top:24px;padding:18px"><b>일정을 불러오지 못했어요</b><p class="hint" style="padding:6px 0 10px">'+esc(LAST_ERR)+'</p><button class="btn pri" onclick="window.sync(true)">다시 시도</button></div>':'<p class="hint" style="padding:40px 0;text-align:center">일정을 불러오는 중이에요…</p>';return days}
  const i=selDay,meta=dayMeta(d.key),ev=d.events.map(eventView),isToday=d.iso===ymd;
  let cur=-1;if(isToday)ev.forEach((e,j)=>{const m=minutesOf(e.time);if(m!=null&&m<=min)cur=j});
  const [mo,da]=d.key.split("/");
@@ -731,6 +733,9 @@ setInterval(()=>{if(document.visibilityState==="visible")renderDays()},60*1000);
 
 initFx();setSync(store.get("fuk5-syncAt",0)?"cache":"seed");renderAll();spy();sync();
 
+
+window.sync=sync;
+})();
 </script>
 </body>
 </html>
