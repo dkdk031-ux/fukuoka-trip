@@ -9,6 +9,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="후쿠오카">
 <meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <title>후쿠오카 3박 4일</title>
@@ -188,8 +191,7 @@ details.dis[open] summary{border-bottom:1px solid var(--hair)}
 .ask-files span{display:inline-flex;align-items:center;gap:6px;max-width:100%;height:30px;padding:0 6px 0 10px;border-radius:8px;background:var(--fill);font-size:12.5px;font-weight:600;color:var(--ink2)}
 .ask-files span em{font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px}.ask-files button{width:22px;height:22px;display:grid;place-items:center;color:var(--ink3)}.ask-files button svg.i{width:14px;height:14px}
 .row .att{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;color:var(--ink3);margin-top:3px}.row .att svg.i{width:13px;height:13px}
-.ask-me{align-self:center;font-size:13px;color:var(--ink3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ask-row{display:grid;grid-template-columns:1fr 84px;gap:6px;margin-top:6px}
+.ask-row{display:grid;grid-template-columns:1fr 1fr 84px;gap:6px;margin-top:6px}
 .ask-row input{min-width:0;border:0;background:var(--fill);border-radius:10px;padding:11px 12px;font-size:16px;outline:none}
 .ask-send{height:44px;border-radius:10px;background:var(--ink);color:#fff;font-weight:700;font-size:15px}.ask-send:disabled{opacity:.4}
 .ask-warn{margin:10px 16px 0;padding:10px 12px;border-radius:10px;background:var(--warn-soft);color:#8a4a08;font-size:13.5px;line-height:1.5}
@@ -207,7 +209,6 @@ footer{text-align:center;font-size:12px;color:var(--ink3);padding:30px 0 10px;li
 .tabbar a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0;font-size:10.5px;font-weight:600;color:var(--ink3)}
 .tabbar a svg.i{width:24px;height:24px;stroke-width:1.7}
 .tabbar a.on{color:var(--accent)}
-.denied[hidden]{display:none}.denied{position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-items:center;padding:24px;text-align:center}.denied b{display:block;font-size:22px;font-weight:800;letter-spacing:-.03em}.denied p{color:var(--ink2);margin:8px 0 0;font-size:15px}
 .toast{position:fixed;left:50%;bottom:calc(80px + env(safe-area-inset-bottom));transform:translate(-50%,12px);background:rgba(17,20,18,.92);color:#fff;padding:10px 16px;border-radius:12px;font-size:13.5px;font-weight:600;opacity:0;pointer-events:none;transition:.22s;z-index:90;white-space:nowrap}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 @media(max-width:520px){.wrap{padding:0 16px}.grid2{grid-template-columns:1fr}h1{font-size:30px}}
@@ -261,7 +262,7 @@ footer{text-align:center;font-size:12px;color:var(--ink3);padding:30px 0 10px;li
       <textarea id="askText" maxlength="500" placeholder="예: 11/2 저녁 캐널시티 대신 텐진 야키니쿠로 바꿔줘"></textarea>
       <div class="ask-files" id="askFiles"></div>
       <label class="ask-attach"><span data-ic="clip"></span>사진·PDF 첨부 (최대 3개)<input id="askFile" type="file" accept="image/*,application/pdf" multiple hidden></label>
-      <div class="ask-row"><span class="ask-me" id="askMe"></span><button class="ask-send" id="askSend" type="button">보내기</button></div>
+      <div class="ask-row"><input id="askName" placeholder="이름" maxlength="30" autocomplete="name"><input id="askPin" type="password" inputmode="numeric" placeholder="비밀번호" autocomplete="off"><button class="ask-send" id="askSend" type="button">보내기</button></div>
     </div>
     <div class="ask-warn" id="askWarn" hidden></div>
     <ul class="rows" id="askList"></ul>
@@ -283,15 +284,12 @@ footer{text-align:center;font-size:12px;color:var(--ink3);padding:30px 0 10px;li
   <a href="#checksec" data-tab="checksec" data-open="checksec"><span data-ic="check"></span>준비</a>
 </nav></div>
 <div class="toast" id="toast"></div>
-<div class="denied" id="denied" hidden><div><b>접근 권한이 없어요</b><p>이 여행앱은 초대받은 가족만 볼 수 있어요. 관리자에게 공유를 요청해 주세요.</p><p style="font-size:13px;color:#8a8f8c">여러 구글 계정에 로그인되어 있으면 이 화면이 뜰 수 있어요. 시크릿 창에서 초대받은 계정 하나로만 로그인해 열어 보세요.</p><p id="deniedMsg" style="font-size:12px;color:#8a8f8c;word-break:break-all"></p></div></div>
 <script>
-(function(){
-"use strict";
 /* ───────── 설정 ───────── */
 const SHEET_ID="1la5_IUEKxlXuIySWkCRexx_n-4QUPi80eRuLv0BW27Y";
 const SHEETS=["일정","예약정보","비용","쇼핑","체크리스트"];
 const OPTIONAL_SHEETS={"일자정보":"성공기준","앱설정":"항목","요청":"처리결과"};
-const APPS_SCRIPT_URL="gas"; // Apps Script 웹 앱: google.script.run 사용
+const APPS_SCRIPT_URL=""; // 요청 접수용 Apps Script 웹앱 주소 (apps-script/Code.gs 배포 후 입력)
 const REQ_STALE_MIN=15;   // 요청이 이 시간(분) 넘게 '대기'면 경고 // 탭 이름: 반드시 있어야 하는 헤더(없는 탭이면 gviz가 첫 탭을 돌려주므로 검증용)
 const YEAR=2026, TRIP_START="2026-10-31", TRIP_END="2026-11-03";
 const REFRESH_MS=5*60*1000;
@@ -362,7 +360,7 @@ const num=v=>{const n=+String(v??"").replace(/[^\d.-]/g,"");return isFinite(n)?n
 const krw=n=>Math.round(n).toLocaleString("ko-KR")+"원";
 const jpy=n=>"¥"+Math.round(n).toLocaleString("ja-JP");
 const WEEK="일월화수목금토";
-const btn=(href,label,icon,pri,ext=true)=>`<a class="btn ${pri?"pri":""}" href="${esc(href)}"${ext?' target="_blank" rel="noopener"':' target="_top"'}>${icon?ic(icon):""}${esc(label)}</a>`;
+const btn=(href,label,icon,pri,ext=true)=>`<a class="btn ${pri?"pri":""}" href="${esc(href)}"${ext?' target="_blank" rel="noopener"':""}>${icon?ic(icon):""}${esc(label)}</a>`;
 
 function objs(table){
  if(!table||!table.length)return[];
@@ -388,34 +386,40 @@ function nowJST(){const p=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Tokyo"
 
 /* ───────── 시트 동기화 ───────── */
 let DATA=Object.assign(structuredClone(SEED),store.get("fuk5-data",{}));
-let ME="";
-const gas=(fn,...args)=>new Promise((res,rej)=>google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](...args));
+function parseGviz(txt){
+ const obj=JSON.parse(txt.slice(txt.indexOf("{"),txt.lastIndexOf("}")+1));
+ if(obj.status==="error")throw new Error("gviz");
+ const cell=c=>{if(!c)return"";if(typeof c.v==="number"||typeof c.v==="boolean")return c.v;return c.f??c.v??""};
+ let cols=obj.table.cols.map(c=>c.label||"");
+ let rows=obj.table.rows.map(r=>(r.c||[]).map(cell));
+ if(cols.every(c=>!c)&&rows.length){cols=rows[0].map(String);rows=rows.slice(1)}
+ return[cols,...rows];
+}
+async function pullSheet(name){
+ const r=await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&headers=1&sheet=${encodeURIComponent(name)}&_=${Date.now()}`,{cache:"no-store"});
+ if(!r.ok)throw new Error(name);
+ return parseGviz(await r.text());
+}
 let syncing=false;
 async function sync(manual){
  if(syncing)return;syncing=true;$("#syncBtn").classList.add("spin");
  try{
-  const r=await gas("getData");
-  for(const[n,t]of Object.entries(r.tabs||{}))if(t&&t.length)DATA[n]=t;
-  ME=r.user||"";store.set("fuk5-me",ME);
+  const vals=await Promise.all(SHEETS.map(pullSheet));
+  SHEETS.forEach((n,i)=>{if(vals[i].length>1)DATA[n]=vals[i]});
+  for(const[n,need]of Object.entries(OPTIONAL_SHEETS)){
+   try{const t=await pullSheet(n);if(t[0].map(String).some(h=>h.trim()===need))DATA[n]=t}catch(e){}
+  }
   store.set("fuk5-data",DATA);store.set("fuk5-syncAt",Date.now());
   setSync("ok");if(manual)toast("최신 내용을 불러왔어요");
  }catch(e){
-  const msg=String(e&&e.message||e);
-  if(/권한|permission|access|찾을 수 없|not found/i.test(msg)){showDenied(msg);}
-  setSync(store.get("fuk5-syncAt",0)?"cache":"seed");LAST_ERR=msg;
-  $("#syncText").textContent="불러오기 실패: "+msg.slice(0,90);if(manual)toast("불러오지 못했어요");
+  setSync(store.get("fuk5-syncAt",0)?"cache":"seed");if(manual)toast("시트에 연결하지 못했어요");
  }
  syncing=false;$("#syncBtn").classList.remove("spin");renderAll();
-}
-let LAST_ERR="";
-function showDenied(msg){
- try{localStorage.removeItem("fuk5-data")}catch(e){}DATA=structuredClone(SEED);
- $("#denied").hidden=false;$("#deniedMsg").textContent=msg||"";
 }
 function setSync(state){
  const at=store.get("fuk5-syncAt",0),t=at?new Date(at).toLocaleTimeString("ko-KR",{hour:"numeric",minute:"2-digit"}):"";
  $("#syncLed").className="led "+(state==="ok"?"ok":state==="seed"?"off":"");
- $("#syncText").textContent=state==="ok"?`구글 시트 연동됨 · ${t}`:state==="cache"?`오프라인 · ${t} 기준`:"불러오는 중";
+ $("#syncText").textContent=state==="ok"?`구글 시트 연동됨 · ${t}`:state==="cache"?`오프라인 · ${t} 기준`:"기본 일정 표시 중";
 }
 
 /* ───────── 일정 ───────── */
@@ -478,7 +482,7 @@ function renderDays(){
  const days=itinerary(),{ymd,min}=nowJST();
  if(selDay==null||selDay<0||selDay>=days.length)selDay=defaultDay(days);
  renderNav(days);
- const d=days[selDay];if(!d){$("#days").innerHTML=(typeof LAST_ERR!=='undefined'&&LAST_ERR)?'<div class="card" style="margin-top:24px;padding:18px"><b>일정을 불러오지 못했어요</b><p class="hint" style="padding:6px 0 10px">'+esc(LAST_ERR)+'</p><button class="btn pri" onclick="window.sync(true)">다시 시도</button></div>':'<p class="hint" style="padding:40px 0;text-align:center">일정을 불러오는 중이에요…</p>';return days}
+ const d=days[selDay];if(!d){$("#days").innerHTML="";return days}
  const i=selDay,meta=dayMeta(d.key),ev=d.events.map(eventView),isToday=d.iso===ymd;
  let cur=-1;if(isToday)ev.forEach((e,j)=>{const m=minutesOf(e.time);if(m!=null&&m<=min)cur=j});
  const [mo,da]=d.key.split("/");
@@ -569,7 +573,7 @@ function renderBooking(){
   const contact=pick(o,"주소/연락처","주소"),addr=contact.split("/")[0].trim(),ph=telOf(contact.split("/").slice(1).join(" ")||pick(o,"전화"));
   const p=placesIn(pick(o,"업체/숙소")+" "+pick(o,"구분"))[0],dest=/[一-龯ぁ-んァ-ン]/.test(addr)?addr:(p?p.q:"");
   return `<li class="row"><div class="main"><b><span class="chip">${esc(pick(o,"구분"))}</span>${esc(pick(o,"업체/숙소"))}</b><span>${[pick(o,"일시"),pick(o,"상세")].filter(Boolean).map(esc).join(" · ")}</span>${pick(o,"금액")?`<span style="color:var(--ink);font-weight:700;margin-top:3px">${esc(pick(o,"금액"))}</span>`:""}</div>
-  <div class="links">${dest?`<a class="icon-btn" target="_blank" rel="noopener" href="${esc(dirUrl(dest))}" aria-label="길찾기">${ic("nav")}</a>`:""}${ph?`<a class="icon-btn" target="_top" href="tel:${ph.href}" aria-label="전화">${ic("phone")}</a>`:""}</div></li>`}).join("");
+  <div class="links">${dest?`<a class="icon-btn" target="_blank" rel="noopener" href="${esc(dirUrl(dest))}" aria-label="길찾기">${ic("nav")}</a>`:""}${ph?`<a class="icon-btn" href="tel:${ph.href}" aria-label="전화">${ic("phone")}</a>`:""}</div></li>`}).join("");
 }
 function renderShopping(){
  const rows=objs(DATA["쇼핑"]).filter(o=>pick(o,"매장"));const done=store.get("fuk5-shop",store.get("fuk4-shop",{}));
@@ -657,28 +661,30 @@ function renderRequests(){
  const stale=waiting.filter(o=>{const t=kstMs(pick(o,"시각"));return isFinite(t)&&Date.now()-t>REQ_STALE_MIN*60e3});
  $("#askCount").textContent=waiting.length?`처리 대기 ${waiting.length}`:rows.length?`${rows.length}건`:"";
  $("#askList").innerHTML=list.map(o=>{const st=pick(o,"상태")||"대기",cls=REQ_ST[st]||"",when=pick(o,"처리시각")||pick(o,"시각");
-  return `<li class="row"><div class="main"><b><span class="st ${cls}">${esc(st)}</span>${esc(pick(o,"요청"))}</b><span>${esc(pick(o,"이름").split("@")[0])}${when?" · "+esc(when):""}</span>${(pick(o,"첨부")||o.files)?`<span class="att">${ic("clip")}첨부 ${o.files||pick(o,"첨부").split("\n").filter(Boolean).length}개</span>`:""}${pick(o,"처리결과")?`<span class="res">${esc(pick(o,"처리결과"))}</span>`:""}</div></li>`}).join("");
+  return `<li class="row"><div class="main"><b><span class="st ${cls}">${esc(st)}</span>${esc(pick(o,"요청"))}</b><span>${esc(pick(o,"이름"))}${when?" · "+esc(when):""}</span>${(pick(o,"첨부")||o.files)?`<span class="att">${ic("clip")}첨부 ${o.files||pick(o,"첨부").split("\n").filter(Boolean).length}개</span>`:""}${pick(o,"처리결과")?`<span class="res">${esc(pick(o,"처리결과"))}</span>`:""}</div></li>`}).join("");
  const w=$("#askWarn");
  if(!APPS_SCRIPT_URL){w.hidden=false;w.textContent="요청 접수 주소가 아직 설정되지 않았어요. 관리자가 Apps Script를 연결하면 사용할 수 있어요.";}
  else if(stale.length){const hb=setting("요청 처리 확인");w.hidden=false;w.textContent=`요청 ${stale.length}건이 ${REQ_STALE_MIN}분 넘게 처리되지 않았어요. Claude 루틴이 실행되지 않았을 수 있어요(사용량 한도 등).${hb?` 마지막 처리: ${hb}`:""} 급하면 시트를 직접 수정해 주세요.`}
  else w.hidden=true;
- $("#askSend").disabled=false;$("#askMe").textContent=ME?`보내는 사람 ${ME}`:"";
+ $("#askSend").disabled=!APPS_SCRIPT_URL;
  // 처리 대기 중인 요청이 있으면 20초마다 시트를 다시 확인 (최대 10분)
  clearTimeout(reqPoll);if((waiting.length||pendingLocal.length)&&document.visibilityState==="visible"&&Date.now()-(store.get("fuk5-reqSentAt",0))<10*60e3)reqPoll=setTimeout(()=>sync(),20000);
 }
 async function sendRequest(){
- const text=$("#askText").value.trim();
- if(!text)return toast("요청 내용을 적어 주세요");
+ const text=$("#askText").value.trim(),name=$("#askName").value.trim(),pin=$("#askPin").value.trim();
+ if(!text)return toast("요청 내용을 적어 주세요");if(!name)return toast("이름을 적어 주세요");if(!pin)return toast("비밀번호를 적어 주세요");
  $("#askSend").disabled=true;
  try{
   const files=[];for(const f of askFiles)files.push(await packFile(f));
-  const j=await gas("submitRequest",{text,files});
-  store.set("fuk5-reqSentAt",Date.now());
-  pendingLocal.unshift({text,name:ME,at:Date.now(),files:files.length});store.set("fuk5-reqLocal",pendingLocal);
+  const r=await fetch(APPS_SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({text,name,pin,files})});
+  const j=await r.json();
+  if(!j.ok){toast(j.error||"보내지 못했어요");return}
+  store.set("fuk5-askName",name);store.set("fuk5-askPin",pin);store.set("fuk5-reqSentAt",Date.now());
+  pendingLocal.unshift({text,name,at:Date.now(),files:files.length});store.set("fuk5-reqLocal",pendingLocal);
   $("#askText").value="";askFiles=[];renderAskFiles();toast(j.fired==="not-configured"?"접수됐어요. 루틴 연결 전이라 처리가 늦을 수 있어요":"접수됐어요. Claude가 처리 중이에요");
   renderRequests();setTimeout(()=>sync(),8000);
- }catch(e){toast(String(e&&e.message||"보내지 못했어요").slice(0,60))}
- finally{$("#askSend").disabled=false}
+ }catch(e){toast("보내지 못했어요. 인터넷 연결을 확인해 주세요")}
+ finally{$("#askSend").disabled=!APPS_SCRIPT_URL}
 }
 $("#askSend").onclick=sendRequest;
 /* 첨부: 사진은 긴 변 1600px JPEG로 줄여서, PDF는 그대로 (8MB까지) */
@@ -697,7 +703,7 @@ async function packFile(f){
   return{name:f.name.replace(/\.\w+$/,"")+".jpg",type:"image/jpeg",data:b64(await blob.arrayBuffer())}}catch(e){}}
  return{name:f.name,type:f.type||"application/octet-stream",data:b64(await f.arrayBuffer())};
 }
-ME=store.get("fuk5-me","");
+$("#askName").value=store.get("fuk5-askName","");$("#askPin").value=store.get("fuk5-askPin","");
 
 /* ───────── 탭바 & 스크롤 ───────── */
 const TABS=["top","plan","mapsec","budget","checksec"];
@@ -717,8 +723,6 @@ function spy(){
 }
 document.querySelectorAll(".tabbar a").forEach(a=>a.addEventListener("click",()=>{setTab(a.dataset.tab);tabLock=Date.now()+900}));
 addEventListener("scroll",()=>requestAnimationFrame(spy),{passive:true});
-document.addEventListener("click",e=>{const a=e.target.closest('a[href^="#"]');if(!a||e.defaultPrevented)return;const id=a.getAttribute("href").slice(1);const el=id==="top"?document.body:document.getElementById(id);if(!el)return;e.preventDefault();
- const y=id==="top"?0:el.getBoundingClientRect().top+scrollY-($("#segWrap").offsetHeight||0)-8;scrollTo({top:Math.max(0,y),behavior:"smooth"})});
 
 /* ───────── 전체 렌더 & 이벤트 ───────── */
 function renderAll(){renderRequests();renderDays();renderBudget();renderBooking();renderShopping();renderChecklist();renderMap();loadWxCached()}
@@ -732,10 +736,7 @@ setInterval(()=>{if(document.visibilityState==="visible")sync()},REFRESH_MS);
 setInterval(()=>{if(document.visibilityState==="visible")renderDays()},60*1000);
 
 initFx();setSync(store.get("fuk5-syncAt",0)?"cache":"seed");renderAll();spy();sync();
-
-
-window.sync=sync;
-})();
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
 </body>
 </html>
