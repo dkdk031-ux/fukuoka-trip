@@ -16,7 +16,9 @@
 const SHEET_ID = '1la5_IUEKxlXuIySWkCRexx_n-4QUPi80eRuLv0BW27Y';
 const FOLDER_ID = '1mIYQG3k0QQxruvwEk0dHv-1LMhM0gtRx';        // ☆후쿠오카
 const ATTACH_FOLDER_ID = '1u2wL6asQIthUxrB_H34sQgSGiSMBHyRI'; // ☆후쿠오카/요청 첨부
-const TABS = ['일정', '예약정보', '비용', '쇼핑', '체크리스트', '일자정보', '앱설정', '요청'];
+const PHOTO_FOLDER_ID = '1guodmZA1GXNW_SJL8Lv36xcnqYmog9PI';  // ☆후쿠오카/여행 사진
+const TABS = ['일정', '예약정보', '비용', '쇼핑', '체크리스트', '일자정보', '앱설정', '요청', '사진'];
+const MAX_PHOTO_BYTES = 12 * 1024 * 1024;
 const CLIENT_ID = '96798192149-km1bfg6dm5lhnq3og56c4mto875nms0f.apps.googleusercontent.com'; // 공개돼도 되는 값
 const SESSION_DAYS = 30;
 const MAX_LEN = 500;
@@ -38,6 +40,9 @@ function doPost(e) {
     if (!isAllowed(email)) return json({ ok: false, auth: false, denied: true, error: '초대받지 않은 계정이에요: ' + email });
     if (body.action === 'data') return json(getData(email));
     if (body.action === 'request') return json(submitRequest(email, body));
+    if (body.action === 'photo') return json(uploadPhoto(email, body));
+    if (body.action === 'photoData') return json(photoData(body.id));
+    if (body.action === 'deletePhoto') return json(deletePhoto(email, body.id));
     return json({ ok: false, error: '알 수 없는 요청' });
   } catch (err) {
     return json({ ok: false, error: String(err && err.message || err) });
@@ -149,6 +154,59 @@ function submitRequest(email, req) {
     lock.releaseLock();
   }
   return { ok: true, row: row, fired: fireRoutine("시트 '요청' 탭 " + row + "행에 새 요청이 들어왔어요 (" + email + ")."), files: saved.length };
+}
+
+/* ───────── 여행 사진 ───────── */
+function uploadPhoto(email, req) {
+  const f = req.file || {};
+  const type = String(f.type || '');
+  if (!/^image\/(jpeg|png|webp|heic|heif)$/.test(type)) return { ok: false, error: '사진 파일만 올릴 수 있어요' };
+  const bytes = Utilities.base64Decode(String(f.data || ''));
+  if (!bytes.length || bytes.length > MAX_PHOTO_BYTES) return { ok: false, error: '사진이 너무 커요' };
+  const day = String(req.day || '').slice(0, 20), time = String(req.time || '').slice(0, 20);
+  const eventTitle = String(req.event || '').slice(0, 120), caption = String(req.caption || '').slice(0, 200);
+  const stamp = Utilities.formatDate(new Date(), 'Asia/Seoul', 'MMdd-HHmmss');
+  const name = (stamp + ' ' + email.split('@')[0] + ' ' + (eventTitle || '사진')).replace(/[\\/:*?"<>|]/g, '_').slice(0, 120) + '.jpg';
+  const file = DriveApp.getFolderById(PHOTO_FOLDER_ID).createFile(Utilities.newBlob(bytes, type, name));
+  // 앱 화면에서 바로 보이도록 '링크가 있는 사람 보기'로 둔다(주소는 로그인한 가족에게만 보임)
+  try { file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW); } catch (err) {}
+  const now = Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyyy-MM-dd HH:mm');
+  const taken = req.taken ? Utilities.formatDate(new Date(Number(req.taken)), 'Asia/Seoul', 'yyyy-MM-dd HH:mm') : '';
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    SpreadsheetApp.openById(SHEET_ID).getSheetByName('사진')
+      .appendRow(["'" + now, email, "'" + day, "'" + time, eventTitle, caption, file.getId(), taken ? "'" + taken : '']);
+  } finally {
+    lock.releaseLock();
+  }
+  return { ok: true, id: file.getId() };
+}
+
+function photoRow(id) {
+  const sh = SpreadsheetApp.openById(SHEET_ID).getSheetByName('사진');
+  const ids = sh.getRange(1, 7, sh.getLastRow(), 1).getValues();
+  for (let i = 1; i < ids.length; i++) if (String(ids[i][0]) === String(id)) return { sh: sh, row: i + 1 };
+  return null;
+}
+
+/** 영상 만들기용: 앨범에 등록된 사진만 원본 데이터를 돌려준다 */
+function photoData(id) {
+  if (!id || !photoRow(id)) return { ok: false, error: '앨범에 없는 사진이에요' };
+  const blob = DriveApp.getFileById(id).getBlob();
+  return { ok: true, mime: blob.getContentType(), data: Utilities.base64Encode(blob.getBytes()) };
+}
+
+/** 올린 사람 또는 소유자만 삭제 */
+function deletePhoto(email, id) {
+  const hit = photoRow(id);
+  if (!hit) return { ok: false, error: '앨범에 없는 사진이에요' };
+  const owner = DriveApp.getFileById(SHEET_ID).getOwner().getEmail().toLowerCase();
+  const uploader = String(hit.sh.getRange(hit.row, 2).getValue()).toLowerCase();
+  if (email !== uploader && email !== owner) return { ok: false, error: '올린 사람만 지울 수 있어요' };
+  hit.sh.deleteRow(hit.row);
+  try { DriveApp.getFileById(id).setTrashed(true); } catch (err) {}
+  return { ok: true };
 }
 
 function fireRoutine(text) {
