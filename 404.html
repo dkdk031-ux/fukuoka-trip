@@ -370,6 +370,18 @@ footer{font-family:var(--serif)}
 .v-stage video{max-width:100%;max-height:100%}
 .slide video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .home-today{margin-top:14px}.home-today .row b{font-family:var(--serif)}.home-today .row .tm{font-family:var(--display);font-weight:700;width:52px;flex:none}
+
+/* 업로드 카드 */
+.up{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom));z-index:95;width:min(calc(100% - 24px),520px);transform:translate(-50%,24px);opacity:0;pointer-events:none;
+ display:flex;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--hair);border-radius:16px;padding:10px 12px;box-shadow:0 14px 34px -12px rgba(40,25,10,.4);transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .3s}
+.up.vis{transform:translate(-50%,0);opacity:1}
+.up-thumb{width:52px;height:52px;border-radius:10px;overflow:hidden;background:var(--fill);flex:none;display:grid;place-items:center}
+.up-thumb img,.up-thumb canvas,.up-thumb video{width:100%;height:100%;object-fit:cover;display:block}
+.up-txt{flex:1;min-width:0}.up-txt b{display:block;font-size:14.5px;font-family:var(--serif)}.up-txt small{display:block;font-size:12.5px;color:var(--ink3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.up-bar{height:5px;border-radius:5px;background:var(--fill);overflow:hidden;margin-top:7px}.up-bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:5px;transition:width .25s}
+.up-bar.busy i{width:35%!important;animation:upbusy 1.1s ease-in-out infinite}@keyframes upbusy{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}
+.up.ok .up-bar i{background:#2fae74}
+.shots img,.album-grid img,.mis img{animation:fadein .35s ease}@keyframes fadein{from{opacity:0}to{opacity:1}}
 </style>
 </head>
 <body>
@@ -481,6 +493,7 @@ footer{font-family:var(--serif)}
 </nav></div>
 <div class="toast" id="toast"></div>
 <input type="file" id="shotInput" accept="image/*" multiple hidden>
+<div class="up" id="up" aria-live="polite"><div class="up-thumb" id="upThumb"></div><div class="up-txt"><b id="upTitle"></b><small id="upSub"></small><div class="up-bar"><i id="upBar"></i></div></div></div>
 <input type="file" id="clipInput" accept="video/*" capture="environment" hidden>
 <div class="sheet" id="expSheet" hidden><div class="sheet-box">
   <div class="sheet-h"><b id="expTitle">지출 기록</b><button type="button" class="v-x" id="expClose" aria-label="닫기">×</button></div>
@@ -950,10 +963,12 @@ $("#logoutBtn").onclick=()=>{if(confirm("로그아웃할까요?"))logout()};
 const shotUrl=(id,w)=>`https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w${w}`;
 function albumRows(){return objs(DATA["사진"]).filter(o=>pick(o,"파일ID"))}
 const isClip=o=>pick(o,"종류")==="영상";
-const tileImg=(o,w)=>`<img src="${shotUrl(pick(o,"파일ID"),w)}" loading="lazy" alt="" onerror="this.outerHTML='<div class=&quot;noimg&quot;>▶</div>'">`;
+const localThumb={},localMedia={};
+const thumbOf=(id,w)=>localThumb[id]||shotUrl(id,w);
+const tileImg=(o,w)=>`<img src="${thumbOf(pick(o,"파일ID"),w)}" loading="lazy" alt="" onerror="this.outerHTML='<div class=&quot;noimg&quot;>▶</div>'">`;
 /* 영상·원본은 API로 받아 blob URL로 (드라이브 링크는 영상 재생이 불안정) */
 const mediaCache={};
-async function mediaUrl(id){if(mediaCache[id])return mediaCache[id];const r=await api("photoData",{id});if(!r.ok)throw new Error(r.error||"불러오지 못했어요");
+async function mediaUrl(id){if(localMedia[id])return localMedia[id];if(mediaCache[id])return mediaCache[id];const r=await api("photoData",{id});if(!r.ok)throw new Error(r.error||"불러오지 못했어요");
  const blob=await (await fetch(`data:${r.mime};base64,${r.data}`)).blob();return mediaCache[id]=URL.createObjectURL(blob)}
 function photosFor(k,title){return albumRows().filter(o=>dayKey(pick(o,"일자"))===k&&plain(pick(o,"일정"))===plain(title))}
 function eventPhotosHtml(k,title){const ps=photosFor(k,title);if(!ps.length)return"";
@@ -977,15 +992,33 @@ function renderAlbum(){
 /* 사진 올리기 */
 let shotTarget=null;
 document.addEventListener("click",e=>{const b=e.target.closest("[data-shot]");if(!b)return;shotTarget=b.dataset.shot.split("|");$("#shotInput").click()});
+/* 업로드 카드 · 진행률 */
+let upHide=0;
+function upShow(title,sub,thumb){clearTimeout(upHide);const u=$("#up");u.classList.remove("ok");$("#upTitle").textContent=title;$("#upSub").textContent=sub||"";
+ const t=$("#upThumb");t.innerHTML="";if(thumb){if(typeof thumb==="string"){const im=new Image();im.src=thumb;t.append(im)}else t.append(thumb)}else t.innerHTML=ic("camera");
+ u.classList.add("vis");upProg(null)}
+function upProg(p,sub){const bar=$("#upBar").parentNode;if(p==null){bar.classList.add("busy")}else{bar.classList.remove("busy");$("#upBar").style.width=Math.round(p*100)+"%"}if(sub!=null)$("#upSub").textContent=sub}
+function upDone(title,sub){const u=$("#up");u.classList.add("ok");$("#upTitle").textContent=title;$("#upSub").textContent=sub||"";upProg(1);upHide=setTimeout(()=>u.classList.remove("vis"),1800)}
+function upFail(msg){$("#upTitle").textContent="올리지 못했어요";$("#upSub").textContent=msg||"";upProg(0);upHide=setTimeout(()=>$("#up").classList.remove("vis"),3000)}
+function apiUpload(action,extra,onp){return new Promise((ok,no)=>{const x=new XMLHttpRequest();x.open("POST",API_URL);x.setRequestHeader("Content-Type","text/plain;charset=utf-8");
+ x.upload.onprogress=e=>{if(e.lengthComputable&&onp)onp(e.loaded/e.total)};x.onload=()=>{try{ok(JSON.parse(x.responseText))}catch(e){no(new Error("서버 응답 오류"))}};x.onerror=()=>no(new Error("네트워크 오류"));
+ x.send(JSON.stringify(Object.assign({action,session:SESSION},extra||{})))})}
+function addLocalRow(row){(DATA["사진"]=DATA["사진"]||[["시각","이름","일자","시간","일정","설명","파일ID","촬영시각","종류"]]).push(row)}
+function softRefresh(){const y=scrollY;renderDays();renderAlbum();scrollTo(0,y)}
 $("#shotInput").onchange=async e=>{
  const files=[...e.target.files].filter(f=>f.type.startsWith("image/"));e.target.value="";
  if(!files.length||!shotTarget)return;const [day,time,title]=shotTarget;let ok=0;
  for(let i=0;i<files.length;i++){
-  toast(`사진 올리는 중 ${i+1}/${files.length}`);
-  try{const f=await packFile(files[i]);const r=await api("photo",{day,time,event:title,taken:files[i].lastModified,file:{type:f.type,data:f.data}});
-   if(r.auth===false){logout(r.error);return}if(r.ok)ok++;else toast(r.error||"올리지 못했어요")}catch(err){toast("올리지 못했어요")}
+  const preview=URL.createObjectURL(files[i]);
+  upShow(files.length>1?`사진 올리는 중 ${i+1}/${files.length}`:"사진 올리는 중",title,preview);
+  try{const f=await packFile(files[i]);
+   const r=await apiUpload("photo",{day,time,event:title,taken:files[i].lastModified,file:{type:f.type,data:f.data}},p=>upProg((i+p)/files.length));
+   if(r.auth===false){logout(r.error);return}
+   if(r.ok){ok++;localThumb[r.id]=preview;addLocalRow([new Date().toISOString().slice(0,16).replace("T"," "),ME,day,time,title,"",r.id,"","사진"]);softRefresh()}
+   else{upFail(r.error);return}
+  }catch(err){upFail(err.message);return}
  }
- if(ok){toast(`사진 ${ok}장을 올렸어요`);sync()}
+ if(ok){upDone(`사진 ${ok}장을 올렸어요`,title);setTimeout(()=>sync(),4000)}
 };
 /* 사진 보기 */
 let vList=[],vIdx=0;
@@ -996,7 +1029,7 @@ function openViewer(id){
 function showViewer(){
  const o=vList[vIdx];if(!o)return closeViewer();const id=pick(o,"파일ID");
  if(isClip(o)){$("#vStage").innerHTML='<p style="color:#b9ada0">영상 불러오는 중…</p>';mediaUrl(id).then(u=>{if(pick(vList[vIdx]||{},"파일ID")===id)$("#vStage").innerHTML=`<video src="${u}" autoplay loop playsinline controls></video>`}).catch(e=>{$("#vStage").innerHTML=`<p style="color:#b9ada0">${esc(e.message)}</p>`})}
- else $("#vStage").innerHTML=`<img src="${shotUrl(id,1600)}" alt="">`;
+ else $("#vStage").innerHTML=`<img src="${localThumb[id]||shotUrl(id,1600)}" alt="">`;
  $("#vCap").innerHTML=`${esc(pick(o,"일정"))}<small>${esc(pick(o,"일자"))} ${esc(pick(o,"시간"))} · ${esc(pick(o,"이름").split("@")[0])}</small>`;
  const mine=ME&&(pick(o,"이름").toLowerCase()===ME.toLowerCase());
  $("#vBar").innerHTML=`<button type="button" data-v="-1">이전</button><span style="color:#b9ada0;align-self:center;font-size:13px">${vIdx+1} / ${vList.length}</span><button type="button" data-v="1">다음</button>${mine?'<button type="button" data-v="del">삭제</button>':""}`;
@@ -1083,7 +1116,7 @@ function missions(){const out=[],seen=new Set();
 const clipOf=m=>albumRows().filter(o=>isClip(o)&&dayKey(pick(o,"일자"))===m.day.key&&plain(pick(o,"일정"))===m.event&&(pick(o,"설명")===m.p.id||!pick(o,"설명"))).slice(-1)[0];
 function renderMissions(){
  const ms=missions(),doneN=ms.filter(clipOf).length;$("#missionProg").textContent=`${doneN} / ${ms.length}`;
- $("#missions").innerHTML=ms.map(m=>{const c=clipOf(m),bg=c?shotUrl(pick(c,"파일ID"),600):m.p.img?photoSrc(m.p.img,600):"";
+ $("#missions").innerHTML=ms.map(m=>{const c=clipOf(m),bg=c?thumbOf(pick(c,"파일ID"),600):m.p.img?photoSrc(m.p.img,600):"";
   return `<div class="mis ${c?"done":""}">${bg?`<img src="${bg}" alt="" loading="lazy" onerror="this.remove()">`:""}${c?'<span class="ck">✓</span>':""}
    <div class="mt"><small>Day ${String(m.i+1).padStart(2,"0")} · ${esc(m.time)}</small><b>${esc(m.p.short.replace(/\(.*\)/,""))}</b>
    ${c?`<button type="button" class="go" data-view="${esc(pick(c,"파일ID"))}">${ic("play")}보기</button> `:""}<button type="button" class="go" data-clip-shot="${esc(m.day.key)}|${esc(m.time)}|${esc(m.event)}|${esc(m.p.id)}">${ic("video")}${c?"다시":"3초 찍기"}</button></div></div>`}).join("");
@@ -1091,7 +1124,7 @@ function renderMissions(){
 let clipTarget=null;
 document.addEventListener("click",e=>{const b=e.target.closest("[data-clip-shot]");if(!b)return;clipTarget=b.dataset.clipShot.split("|");$("#clipInput").click()});
 /* 찍은 영상을 앞 3초만, 세로 720×1280으로 다시 인코딩 (용량 약 1MB) */
-async function trimClip(file){
+async function trimClip(file,onFrame){
  if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream)return file;
  const u=URL.createObjectURL(file),v=document.createElement("video");v.src=u;v.playsInline=true;
  await new Promise((ok,no)=>{v.onloadedmetadata=ok;v.onerror=()=>no(new Error("영상을 읽지 못했어요"))});
@@ -1104,20 +1137,30 @@ async function trimClip(file){
  try{await v.play()}catch(e){v.muted=true;await v.play()}
  rec.start(250);
  await new Promise(fin=>{const tick=()=>{if(v.currentTime>=dur||v.ended){fin();return}
-  const s=Math.max(W/v.videoWidth,H/v.videoHeight),w=v.videoWidth*s,h=v.videoHeight*s;g.drawImage(v,(W-w)/2,(H-h)/2,w,h);requestAnimationFrame(tick)};tick()});
+  const s=Math.max(W/v.videoWidth,H/v.videoHeight),w=v.videoWidth*s,h=v.videoHeight*s;g.drawImage(v,(W-w)/2,(H-h)/2,w,h);if(onFrame)onFrame(c,Math.min(1,v.currentTime/dur));requestAnimationFrame(tick)};tick()});
  v.pause();rec.stop();await new Promise(r=>rec.onstop=r);try{ac?.close()}catch(e){}URL.revokeObjectURL(u);
  return new Blob(chunks,{type:(mime||"video/webm").split(";")[0]});
 }
 $("#clipInput").onchange=async e=>{
  const f=e.target.files[0];e.target.value="";if(!f||!clipTarget)return;const [day,time,title,spot]=clipTarget;
- try{toast("3초로 다듬는 중…");const blob=await trimClip(f);
-  if(blob.size>20*1024*1024)return toast("영상이 너무 커요. 짧게 다시 찍어 주세요");
-  toast("영상 올리는 중…");const data=b64(await blob.arrayBuffer());
-  const r=await api("photo",{day,time,event:title,caption:spot||"",taken:f.lastModified,file:{type:blob.type||f.type,data}});
+ const name=(PLACES.find(p=>p.id===spot)?.short||title).replace(/\(.*\)/,"");
+ try{
+  const live=document.createElement("canvas");live.width=108;live.height=192;
+  upShow("3초로 다듬는 중",name,live);
+  const blob=await trimClip(f,(cv,p)=>{live.getContext("2d").drawImage(cv,0,0,108,192);upProg(p*.4)});
+  if(blob.size>20*1024*1024){upFail("영상이 너무 커요. 짧게 다시 찍어 주세요");return}
+  const thumb=live.toDataURL("image/jpeg",.8);
+  $("#upTitle").textContent="영상 올리는 중";
+  const data=b64(await blob.arrayBuffer());
+  const r=await apiUpload("photo",{day,time,event:title,caption:spot||"",taken:f.lastModified,file:{type:blob.type||f.type,data}},p=>upProg(.4+p*.6));
   if(r.auth===false){logout(r.error);return}
-  if(r.ok){toast("미션 완료! 영상을 저장했어요");sync()}else toast(r.error||"올리지 못했어요");
- }catch(err){toast(String(err.message||"영상을 올리지 못했어요").slice(0,60))}
+  if(!r.ok){upFail(r.error);return}
+  localThumb[r.id]=thumb;localMedia[r.id]=URL.createObjectURL(blob);
+  addLocalRow([new Date().toISOString().slice(0,16).replace("T"," "),ME,day,time,title,spot||"",r.id,"","영상"]);softRefresh();
+  upDone("미션 완료!",`${name} 3초 영상을 저장했어요`);setTimeout(()=>sync(),4000);
+ }catch(err){upFail(String(err.message||"").slice(0,60))}
 };
+
 
 $("#videoBtn").onclick=()=>makeVideo().catch(e=>{document.querySelector(".rec")?.remove();toast("영상을 만들지 못했어요")});
 
