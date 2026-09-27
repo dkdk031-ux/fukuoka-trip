@@ -171,6 +171,10 @@ details.dis summary .chev{color:var(--ink3);transition:transform .2s}
 details.dis[open] summary .chev{transform:rotate(90deg)}
 details.dis[open] summary{border-bottom:1px solid var(--hair)}
 .dis-body{padding:4px 0}
+.sos-g{list-style:none;font-size:12.5px;font-weight:700;color:var(--ink3);padding:14px 16px 2px;letter-spacing:-.01em}
+details.dis.sos summary .ico{background:#fbeae7;color:var(--bad)}
+.sos .row .btn{flex:none}
+
 .hint{font-size:12.5px;color:var(--ink3);padding:10px 16px 14px;line-height:1.5}
 
 /* Map */
@@ -457,6 +461,7 @@ footer{font-family:var(--serif)}
 <section class="page" id="pg-more" hidden>
 <main class="wrap">
   <div class="sec-h"><h2 data-en="More">더보기</h2></div>
+  <details class="dis sos" id="sossec"><summary><span class="ico" data-ic="phone"></span>응급 연락처<em>병원 · 영사관</em><span class="chev" data-ic="chev"></span></summary><div class="dis-body"><ul class="rows"><li class="sos-g">긴급</li><li class="row"><div class="main"><b>구급차·소방</b><span>무료 · “칸코쿠진데스, 캉코쿠고 츠야쿠 오네가이시마스”</span></div><a class="btn sm" href="tel:119"><span data-ic="phone"></span>119</a></li><li class="row"><div class="main"><b>경찰</b><span>사고·분실·도난</span></div><a class="btn sm" href="tel:110"><span data-ic="phone"></span>110</a></li><li class="row"><div class="main"><b>주후쿠오카 총영사관 긴급</b><span>24시간 · 사고·사망·여권 분실</span></div><a class="btn sm" href="tel:08085882806"><span data-ic="phone"></span>080-8588-2806</a></li><li class="row"><div class="main"><b>영사콜센터 (서울)</b><span>24시간 · 신속해외송금(1회 최대 3,000달러) 안내</span></div><a class="btn sm" href="tel:+82232100404"><span data-ic="phone"></span>+82-2-3210-0404</a></li><li class="sos-g">아이가 아플 때</li><li class="row"><div class="main"><b>어린이 구급상담 #8000</b><span>간호사 상담(일본어) · 평일 19시~, 토 12시~, 일·공휴일 종일</span></div><a class="btn sm" href="tel:0927314119"><span data-ic="phone"></span>092-731-4119</a></li><li class="row"><div class="main"><b>후쿠오카시립 어린이병원</b><span>히가시구 · 국제의료지원센터</span></div><a class="btn sm" href="tel:0926827000"><span data-ic="phone"></span>092-682-7000</a></li><li class="sos-g">후쿠오카 (하카타·텐진)</li><li class="row"><div class="main"><b>후쿠오카 적십자병원</b><span>미나미구 · 외국인환자 인증(JMIP) · 한국어 통역 직원</span></div><a class="btn sm" href="tel:0925211211"><span data-ic="phone"></span>092-521-1211</a></li><li class="row"><div class="main"><b>규슈대학병원</b><span>히가시구 · JMIP · 국제진료지원센터 · 소아과</span></div><a class="btn sm" href="tel:0926411151"><span data-ic="phone"></span>092-641-1151</a></li><li class="row"><div class="main"><b>사이세이카이 후쿠오카 총합병원</b><span>텐진 · 3차 응급 · 골절 수술</span></div><a class="btn sm" href="tel:0927718151"><span data-ic="phone"></span>092-771-8151</a></li><li class="row"><div class="main"><b>규슈의료센터</b><span>주오구 모모치 · 응급 · 정형외과</span></div><a class="btn sm" href="tel:0928520700"><span data-ic="phone"></span>092-852-0700</a></li><li class="sos-g">유후인 · 벳푸</li><li class="row"><div class="main"><b>오이타대학병원</b><span>유후시 하사마 · 3차 응급 (유후인에서 차로 약 30분)</span></div><a class="btn sm" href="tel:0975494411"><span data-ic="phone"></span>097-549-4411</a></li><li class="row"><div class="main"><b>벳푸의료센터</b><span>벳푸 · 응급 · 소아 · 골절</span></div><a class="btn sm" href="tel:0977671111"><span data-ic="phone"></span>0977-67-1111</a></li></ul><div class="hint">한국어는 통역 직원·태블릿·전화통역으로 도와줘요. 진료비는 먼저 전액 결제하고 <b>영수증·진단서(영문)</b>를 받아 여행자보험에 청구하세요. 보험사 긴급번호도 휴대폰에 저장해 두세요.</div></div></details>
   <details class="dis" id="mapsec"><summary><span class="ico" data-ic="map"></span>지도<em>구글맵</em><span class="chev" data-ic="chev"></span></summary><div>
     <div class="map-chips" id="mapTools"></div>
     <iframe class="gmap" id="gmap" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="구글 지도"></iframe>
