@@ -3,297 +3,466 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#173b34">
+<meta name="theme-color" content="#173f35">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="format-detection" content="telephone=yes">
-<title>KYUSHU 2026</title>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="후쿠오카 일정">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&family=Noto+Serif+KR:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<title>후쿠오카 3박4일 · 일정 중심 여행앱</title>
 <style>
-:root{--green:#173b34;--green2:#245247;--cream:#f7f2e7;--paper:#fffdf8;--ink:#1f241f;--muted:#77766f;--terra:#a84f39;--line:#e8dfce;--gold:#c49c52;--shadow:0 10px 30px rgba(45,48,41,.08)}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth;background:var(--cream)}
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Pretendard","Apple SD Gothic Neo","Noto Sans KR",sans-serif;background:var(--cream);color:var(--ink);padding-bottom:calc(86px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}
-button,a{-webkit-tap-highlight-color:transparent}
-.app{max-width:760px;margin:auto;min-height:100vh}
-.hero{background:linear-gradient(155deg,#163a33 0%,#28564a 100%);color:#fff;padding:calc(22px + env(safe-area-inset-top)) 20px 22px;position:relative;overflow:hidden}
-.hero:after{content:"";position:absolute;width:220px;height:220px;border:1px solid rgba(255,255,255,.10);border-radius:50%;right:-90px;top:-85px}
-.kicker{font-size:11px;letter-spacing:.18em;color:#ead6a8;font-weight:800}
-h1{margin:10px 0 8px;font-size:28px;line-height:1.12;letter-spacing:-.04em}
-.hero p{margin:0;color:#d9e4df;font-size:13px}
-.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:18px}
-.hero-card{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px}
-.hero-card small{display:block;color:#cfe0da;font-size:10px;margin-bottom:4px}
-.hero-card b{font-size:14px}
-.sync{display:flex;align-items:center;gap:7px;margin-top:13px;font-size:11px;color:#cfe0da}
-.dot{width:7px;height:7px;border-radius:50%;background:#7ee0ad;box-shadow:0 0 0 4px rgba(126,224,173,.12)}
-.tabs{position:sticky;top:0;z-index:20;display:flex;gap:7px;overflow:auto;background:rgba(247,242,231,.94);backdrop-filter:blur(12px);padding:10px 12px;border-bottom:1px solid var(--line);scrollbar-width:none}
-.tabs::-webkit-scrollbar{display:none}
-.tab{border:0;background:#eee7da;color:#5d5b54;padding:9px 13px;border-radius:999px;font-size:12px;font-weight:800;white-space:nowrap}
-.tab.active{background:var(--green);color:#fff}
-main{padding:14px 12px 30px}
-.section{display:none} .section.active{display:block}
-.section-title{display:flex;justify-content:space-between;align-items:end;margin:7px 3px 11px}
-.section-title h2{font-size:20px;margin:0;letter-spacing:-.03em}
-.section-title span{font-size:11px;color:var(--muted)}
-.day-card{background:var(--paper);border:1px solid var(--line);border-radius:22px;margin:0 0 14px;overflow:hidden;box-shadow:var(--shadow)}
-.day-head{padding:15px 16px 12px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px}
-.day-badge{display:inline-flex;align-items:center;background:#efe6d3;color:#6a5531;border-radius:999px;padding:6px 9px;font-size:10px;font-weight:900}
-.day-head h3{font-size:17px;margin:7px 0 0}
-.route{font-size:11px;color:var(--muted);text-align:right;align-self:center;max-width:45%}
-.timeline{padding:6px 15px 12px}
-.event{display:grid;grid-template-columns:72px 15px 1fr;gap:8px;padding:12px 0;position:relative}
-.event:not(:last-child){border-bottom:1px dashed #e7dfd2}
-.time{font-size:11px;font-weight:900;color:#795b3b;padding-top:2px}
-.pin{width:9px;height:9px;border-radius:50%;background:var(--terra);margin-top:4px;position:relative}
-.pin:after{content:"";position:absolute;width:1px;height:calc(100% + 24px);background:#dfd5c7;left:4px;top:10px}
-.event:last-child .pin:after{display:none}
-.ev-title{font-size:14px;font-weight:900;line-height:1.25}
-.ev-sub{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5}
-.actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.action{font-size:11px;font-weight:800;border:1px solid #ddd2bf;background:#fff;border-radius:10px;padding:7px 9px;color:#3f4c47;text-decoration:none}
-.action.primary{background:#ecf3ef;border-color:#d2e2da;color:#1b5547}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.stat,.info-card{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:var(--shadow)}
-.stat small,.eyebrow{font-size:10px;color:var(--muted);font-weight:800}
-.stat strong{display:block;font-size:18px;margin-top:5px}
-.stat em{display:block;font-size:10px;color:var(--terra);font-style:normal;margin-top:4px}
-.info-card{margin-bottom:10px}
-.info-card h3{font-size:15px;margin:4px 0 8px}
-.info-row{font-size:12px;color:#5d5b54;line-height:1.55;margin-top:4px;word-break:break-word}
-.amount{font-weight:900;color:var(--green)}
-.pill{display:inline-block;padding:5px 8px;border-radius:999px;background:#f0e9dc;font-size:10px;font-weight:800;color:#6e5b39}
-.shop{display:flex;gap:12px;align-items:center}
-.shop-icon{width:42px;height:42px;border-radius:14px;background:#f1e8d7;display:grid;place-items:center;font-size:20px;flex:0 0 auto}
-.shop-main{flex:1}
-.shop-main b{font-size:14px}
-.shop-main div{font-size:11px;color:var(--muted);margin-top:4px}
-.check{display:flex;gap:11px;align-items:flex-start;padding:12px 2px;border-bottom:1px solid var(--line)}
-.check input{width:21px;height:21px;accent-color:var(--green);margin-top:1px}
-.check b{display:block;font-size:13px}
-.check span{display:block;font-size:11px;color:var(--muted);margin-top:3px}
-.budget-bar{height:9px;border-radius:999px;background:#e8dfcf;overflow:hidden;margin-top:8px}
-.budget-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green2),var(--terra));border-radius:999px;transition:.4s}
-.expense-form{display:grid;grid-template-columns:1fr 95px 70px;gap:7px;margin:10px 0}
-input,select{font-size:16px;border:1px solid var(--line);background:#fffdf9;border-radius:12px;padding:10px;min-width:0}
-.addbtn{border:0;background:var(--green);color:#fff;border-radius:12px;font-weight:900}
-.expenses{margin-top:8px}
-.expense{display:grid;grid-template-columns:1fr auto 28px;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:12px}
-.del{border:0;background:transparent;color:#aaa;font-size:17px}
-.bottom{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(8px + env(safe-area-inset-bottom));width:min(calc(100% - 18px),740px);height:66px;background:rgba(24,43,37,.96);border-radius:20px;display:grid;grid-template-columns:repeat(5,1fr);padding:7px;z-index:30;box-shadow:0 12px 35px rgba(0,0,0,.2);backdrop-filter:blur(16px)}
-.navbtn{border:0;background:transparent;color:#b9c8c3;border-radius:14px;font-size:10px;font-weight:800;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
-.navbtn i{font-style:normal;font-size:19px}
-.navbtn.active{background:rgba(255,255,255,.11);color:#fff}
-.toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:#173b34;color:#fff;padding:10px 14px;border-radius:12px;font-size:11px;opacity:0;pointer-events:none;transition:.25s;z-index:60}
-.toast.show{opacity:1;transform:translate(-50%,0)}
-.empty{text-align:center;padding:40px 10px;color:var(--muted);font-size:13px}
-@media(min-width:650px){main{padding:20px} .hero{border-radius:0 0 28px 28px}}
+:root{--bg:#f5f2eb;--card:#fff;--ink:#1f2a26;--muted:#6d756f;--line:#e5e1d8;--g:#173f35;--g2:#24594a;--g3:#edf5f1;--red:#a54734;--gold:#bc8d3f;--blue:#315f7d;--shadow:0 10px 30px rgba(23,63,53,.09);--max:760px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html{scroll-behavior:smooth;background:var(--bg)}body{margin:0;background:var(--bg);color:var(--ink);font-family:'Noto Sans KR',-apple-system,system-ui,sans-serif;line-height:1.48;padding-bottom:calc(92px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}a{color:inherit}button{font:inherit;cursor:pointer}.app{max-width:var(--max);margin:auto}
+.hero{padding:calc(22px + env(safe-area-inset-top)) 18px 16px;background:linear-gradient(145deg,#173f35,#285e4f);color:#fff;border-radius:0 0 28px 28px;box-shadow:var(--shadow);position:relative;overflow:hidden}.hero:after{content:"";position:absolute;width:220px;height:220px;border:1px solid rgba(255,255,255,.1);border-radius:50%;right:-90px;top:-85px;pointer-events:none}.hero-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.eyebrow{font-size:10.5px;letter-spacing:.12em;color:#d6e7df;font-weight:800}.hero h1{font-family:'Noto Serif KR',serif;font-size:27px;line-height:1.2;margin:5px 0 8px}.hero p{margin:0;color:#e8f2ee;font-size:12.5px}.trip-pill{flex:none;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);border-radius:14px;padding:9px 10px;text-align:center;position:relative;z-index:1}.trip-pill b{display:block;font-size:15px}.trip-pill span{font-size:9.5px;color:#dfece7}.hero-info{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.hero-info>div{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);border-radius:13px;padding:9px}.hero-info small{display:block;font-size:9.5px;color:#cfe1d9;font-weight:700}.hero-info b{display:block;font-size:11.5px;margin-top:2px}
+.sync{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:10.5px;color:#cfe1d9;position:relative;z-index:1}.sync .led{width:7px;height:7px;border-radius:50%;background:#e8c46a;box-shadow:0 0 0 4px rgba(232,196,106,.15);flex:none}.sync .led.ok{background:#7ee0ad;box-shadow:0 0 0 4px rgba(126,224,173,.15)}.sync .led.off{background:#e98b77;box-shadow:0 0 0 4px rgba(233,139,119,.15)}.sync span{flex:1}.sync button,.sync a{border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.1);color:#fff;border-radius:9px;padding:5px 8px;font-size:10px;font-weight:800;text-decoration:none;white-space:nowrap}.sync button.spin{opacity:.6}
+.daynav-wrap{position:sticky;top:0;z-index:60;background:rgba(245,242,235,.92);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);padding:calc(9px + env(safe-area-inset-top)) 12px 8px;border-bottom:1px solid rgba(229,225,216,.9)}.daynav{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-width:var(--max);margin:auto}.daynav a{text-decoration:none;text-align:center;padding:8px 3px;border-radius:14px;background:#fff;border:1px solid var(--line);font-size:10px;color:#68716c;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.daynav a b{display:block;color:var(--g);font-size:13px}.daynav a.today{background:var(--g);border-color:var(--g);color:#d6e7df}.daynav a.today b{color:#fff}
+.content{padding:0 13px}.status{margin:13px 0 0;background:#fff;border:1px solid var(--line);border-radius:17px;padding:12px 13px;box-shadow:0 5px 16px rgba(23,63,53,.05);display:flex;gap:10px;align-items:flex-start}.status .icon{width:34px;height:34px;border-radius:11px;background:var(--g3);display:flex;align-items:center;justify-content:center;flex:none}.status b{font-size:12.5px;color:var(--g)}.status p{font-size:11.5px;color:var(--muted);margin:2px 0 0}.status .next{margin-top:7px;display:flex;flex-wrap:wrap;gap:6px}
+.section-title{display:flex;justify-content:space-between;align-items:flex-end;margin:22px 2px 9px;scroll-margin-top:80px}.section-title h2{font-family:'Noto Serif KR',serif;color:var(--g);font-size:20px;margin:0}.section-title small{font-size:10.5px;color:var(--muted)}
+.day{scroll-margin-top:74px;background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:13px}.day-cover{padding:16px 15px 13px;background:linear-gradient(135deg,#fff,#f7faf8);border-bottom:1px solid var(--line)}.day-kicker{display:flex;justify-content:space-between;align-items:center;gap:8px}.day-kicker span:first-child{font-size:10.5px;font-weight:800;color:var(--red)}.badges{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}.badge{font-size:9.5px;font-weight:800;color:var(--g);background:var(--g3);padding:5px 8px;border-radius:999px;white-space:nowrap}.badge.wx{background:#eef4f9;color:var(--blue)}.day-cover h3{font-family:'Noto Serif KR',serif;color:var(--g);font-size:20px;line-height:1.3;margin:5px 0 5px}.day-cover p{font-size:11.5px;color:var(--muted);margin:0}.day-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}.day-summary div{background:#fff;border:1px solid var(--line);border-radius:11px;padding:7px}.day-summary small{font-size:8.8px;color:#858b87;display:block}.day-summary b{font-size:10.5px;color:#33423c;display:block;margin-top:2px}
+.timeline{padding:7px 14px 12px}.event{display:grid;grid-template-columns:52px 18px 1fr;gap:0;padding:9px 0;border-radius:12px}.time{font-size:10.5px;font-weight:800;color:#6e756f;padding-top:2px;word-break:keep-all}.rail{position:relative}.rail:before{content:"";position:absolute;left:8px;top:0;bottom:-18px;width:2px;background:#e2ded4}.event:last-child .rail:before{bottom:14px}.dot{position:absolute;left:3px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--g);border:3px solid #e7f0ec}.event.key .dot{background:var(--red);border-color:#f4e7e2}.event.now{background:#fff8e8;box-shadow:0 0 0 1px #efdcae}.event.now .dot{background:var(--gold);border-color:#f7ebcf;animation:pulse 1.6s infinite}.event.done{opacity:.55}@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(188,141,63,.18)}}.event-body{padding-left:4px;min-width:0}.event-title{font-size:13px;font-weight:800;color:#25332e}.event.key .event-title{color:#2b1f1b}.event.key .event-title .k{color:var(--red)}.event-desc{font-size:11.5px;color:#69706b;margin-top:3px;word-break:break-word}.event-memo{font-size:10.5px;color:#8a8f8b;margin-top:2px}.now-tag{display:inline-block;background:var(--gold);color:#fff;font-size:9px;font-weight:800;border-radius:6px;padding:1px 5px;margin-left:5px;vertical-align:1px}.actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}.act{text-decoration:none;border:1px solid #dfe1dc;background:#fff;padding:7px 9px;border-radius:10px;font-size:10.5px;font-weight:800;color:var(--g);white-space:nowrap}.act.primary{background:var(--g);border-color:var(--g);color:#fff}.act.soft{background:var(--g3)}.tip{margin-top:7px;background:#faf7ef;border:1px solid #eee3cb;border-radius:11px;padding:8px 9px;font-size:10.5px;color:#665c4e}.tip b{color:#8d5d2c}
+.plan-note{margin:0 14px 14px;padding:10px 11px;border-radius:13px;background:#f2f7f4;border:1px solid #dceae3;font-size:11px;color:#4c5c55}.plan-note b{color:var(--g)}
+.budget-hero{margin:0;background:linear-gradient(135deg,#173f35,#24594a);color:#fff;border-radius:18px;padding:14px 15px;box-shadow:var(--shadow)}.budget-hero .label{font-size:10px;color:#cfe1d9;font-weight:800}.budget-hero .amount{font-family:'Noto Serif KR',serif;font-size:24px;margin-top:3px}.budget-hero .amount span{font-size:14px;font-family:'Noto Sans KR',sans-serif}.budget-hero .sub{font-size:10.5px;color:#dfece7;margin-top:3px}.budget-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.budget-card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:11px 12px}.budget-card .name{font-size:11.5px;font-weight:800;color:var(--g)}.budget-card .price{font-size:15px;font-weight:800;color:#24332d;margin-top:3px}.budget-card .meta{font-size:9.5px;color:var(--muted);margin-top:3px;line-height:1.45}.budget-card.full{grid-column:1/-1}.budget-card.aside{background:#fbfaf6;border-style:dashed}.budget-total{margin-top:9px;background:#f2f7f4;border:1px solid #dceae3;border-radius:14px;padding:10px 11px;font-size:11px;color:#4c5c55}.budget-total b{color:var(--g)}
+.spend{margin-top:9px;background:#fff;border:1px solid var(--line);border-radius:17px;padding:13px;box-shadow:0 6px 18px rgba(23,63,53,.05)}.spend h3{font-size:12.5px;color:var(--g);margin:0}.spend .headline{font-size:17px;font-weight:800;margin-top:4px}.spend .headline small{font-size:10.5px;color:var(--muted);font-weight:600}.bar{height:9px;border-radius:999px;background:#ebe7dd;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--g2),var(--red));border-radius:999px;transition:.4s}.spend-form{display:grid;grid-template-columns:1fr 92px 66px;gap:6px;margin-top:10px}.spend-form input,.spend-form select{width:100%;min-width:0;border:1px solid var(--line);border-radius:11px;padding:9px;font:inherit;font-size:16px;background:#fdfcf9}.addbtn{width:100%;margin-top:6px;border:0;background:var(--g);color:#fff;border-radius:11px;padding:11px;font-weight:800;font-size:12px}.spend-list{margin-top:6px}.spend-row{display:grid;grid-template-columns:1fr auto 26px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line);font-size:11.5px}.spend-row small{display:block;font-size:9.5px;color:var(--muted)}.spend-row:last-child{border:0}.del{border:0;background:none;color:#aaa;font-size:17px;padding:0}
+.tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.tool{background:#fff;border:1px solid var(--line);border-radius:17px;padding:12px;box-shadow:0 6px 18px rgba(23,63,53,.05)}.tool h3{font-size:12.5px;color:var(--g);margin:0 0 7px}.tool p{font-size:10.5px;color:var(--muted);margin:0}.tool .big{font-family:'Noto Serif KR',serif;font-size:20px;color:var(--g);margin-top:4px}.weather{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.wx{background:#fff;border:1px solid var(--line);border-radius:14px;padding:9px}.wx b{font-size:10.5px;color:var(--g)}.wx strong{display:block;font-size:18px;margin-top:2px}.wx small{display:block;color:var(--muted);font-size:8.8px}
+details.more{background:#fff;border:1px solid var(--line);border-radius:18px;margin-bottom:9px;overflow:hidden;scroll-margin-top:80px}details.more summary{list-style:none;cursor:pointer;padding:13px 14px;display:flex;justify-content:space-between;align-items:center;font-size:12.5px;font-weight:800;color:var(--g)}details.more summary::-webkit-details-marker{display:none}details.more summary:after{content:'＋';font-size:18px;color:var(--red);transition:.2s}details.more[open] summary:after{transform:rotate(45deg)}details.more summary em{font-style:normal;font-size:10px;color:var(--muted);font-weight:700;margin-left:auto;margin-right:8px}.more-body{padding:0 13px 13px}.quick-list{display:grid;gap:7px}.quick-item{display:flex;justify-content:space-between;gap:9px;align-items:center;background:#fafafa;border:1px solid #ece9e2;border-radius:12px;padding:9px}.quick-item>div{min-width:0}.quick-item b{font-size:11.5px;color:#33423c}.quick-item span{font-size:9.5px;color:var(--muted);word-break:break-word}.quick-item .side{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex:none}.quick-item a{text-decoration:none;font-size:9.5px;font-weight:800;color:var(--g);white-space:nowrap}.quick-item .amt{font-size:10.5px;font-weight:800;color:var(--g);white-space:nowrap}.quick-item.done{opacity:.55}.quick-item.done b{text-decoration:line-through}.pill{display:inline-block;font-size:9px;font-weight:800;color:var(--red);background:#f7ebe7;border-radius:6px;padding:1px 6px;margin-right:4px;vertical-align:1px}.shop-check{width:20px;height:20px;accent-color:var(--g);flex:none}
+#map{height:350px;border-radius:15px;overflow:hidden;border:1px solid var(--line)}.map-tools{display:flex;gap:6px;margin-bottom:8px;overflow-x:auto;scrollbar-width:none}.map-tools::-webkit-scrollbar{display:none}.map-tools button{flex:1 0 auto;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 9px;font-size:10px;font-weight:800;color:var(--g)}.map-tools button.active{background:var(--g);color:#fff;border-color:var(--g)}.num-pin{background:var(--g);color:#fff;border:2px solid #fff;border-radius:50%;width:24px!important;height:24px!important;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;box-shadow:0 2px 6px rgba(0,0,0,.3)}.num-pin.shop{background:var(--red)}
+.wallet{display:grid;grid-template-columns:1fr 1fr;gap:8px}.wallet input{width:100%;border:1px solid var(--line);border-radius:11px;padding:10px;font:inherit;font-size:16px}.wallet label{font-size:9.5px;color:var(--muted);font-weight:800}.memo{width:100%;min-height:110px;border:1px solid var(--line);border-radius:12px;padding:11px;font:inherit;font-size:16px;resize:vertical}.check{display:flex;gap:9px;padding:9px 0;border-bottom:1px dashed #e5e1d8;align-items:flex-start}.check:last-child{border:0}.check input{width:20px;height:20px;accent-color:var(--g);margin:0;flex:none}.check label{font-size:11.5px}.check label span{display:block;font-size:9.5px;color:var(--muted)}.check.on label b{text-decoration:line-through;color:#8a8f8b}.progress{font-size:10px;color:var(--muted);margin-bottom:4px}.source-note{font-size:9.5px;color:#858b87;margin-top:8px}
+.bottom{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(8px + env(safe-area-inset-bottom));width:min(calc(100% - 18px),760px);z-index:80;background:rgba(255,255,255,.95);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:20px;padding:7px;display:grid;grid-template-columns:repeat(5,1fr);box-shadow:0 12px 30px rgba(23,63,53,.16)}.bottom a{text-decoration:none;text-align:center;font-size:9px;font-weight:800;color:#6e756f;padding:5px 2px;border-radius:11px}.bottom a span{display:block;font-size:17px;line-height:1.1;margin-bottom:2px}.bottom a.main{background:var(--g);color:#fff}footer{text-align:center;font-size:9.5px;color:#8b908c;padding:18px 10px 4px}
+.toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--g);color:#fff;padding:10px 14px;border-radius:12px;font-size:11px;opacity:0;pointer-events:none;transition:.25s;z-index:90}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:520px){.hero h1{font-size:24px}.tool-grid{grid-template-columns:1fr}.event{grid-template-columns:48px 18px 1fr}.content{padding:0 10px}.daynav-wrap{padding-left:8px;padding-right:8px}}
 </style>
 </head>
 <body>
-<div class="app">
+<div class="app" id="top">
 <header class="hero">
-  <div class="kicker">KYUSHU · AUTUMN 2026</div>
-  <h1>유후인 · 벳푸 · 후쿠오카<br>3박 4일</h1>
-  <p>10.31 토 — 11.3 화 · 성인 2 + 아동 1</p>
-  <div class="hero-grid">
-    <div class="hero-card"><small>OUTBOUND</small><b>ICN 07:45 → FUK 09:15</b></div>
-    <div class="hero-card"><small>RETURN</small><b>FUK 13:50 → ICN 15:30</b></div>
+  <div class="hero-top">
+    <div><div class="eyebrow">FUKUOKA · YUFUIN · BEPPU</div><h1>3박 4일 여행 일정</h1><p>일정이 메인. 여행 중에는 이 화면만 보면 되게 구성했습니다.</p></div>
+    <div class="trip-pill"><b id="dDay">D-</b><span>2026.10.31 출발</span></div>
   </div>
-  <div class="sync"><span class="dot"></span><span id="syncText">Google Sheets 연결 확인 중…</span></div>
+  <div class="hero-info">
+    <div><small>✈️ 가는편</small><b>10/31 07:45 인천 → 09:15 후쿠오카</b></div>
+    <div><small>✈️ 오는편</small><b>11/03 13:50 후쿠오카 → 15:30 인천</b></div>
+    <div><small>🚗 렌터카</small><b>10/31 10:00 픽업 · 11/02 14:00 반납</b></div>
+    <div><small>👨‍👩‍👧 여행 구성</small><b>성인 2 · 아기 · 임산부 동반</b></div>
+  </div>
+  <div class="sync"><i class="led" id="syncLed"></i><span id="syncText">Google Sheets 연결 확인 중…</span><button id="syncBtn" type="button">↻ 새로고침</button><a id="sheetLink" target="_blank" rel="noopener">시트 열기</a></div>
 </header>
 
-<nav class="tabs" id="dayTabs"></nav>
+<nav class="daynav-wrap"><div class="daynav" id="daynav"></div></nav>
 
-<main>
-<section id="itinerary" class="section active">
-  <div class="section-title"><h2>여행 일정</h2><span>일정이 메인</span></div>
-  <div id="itineraryRoot"></div>
-</section>
+<main class="content">
+  <div class="status"><div class="icon">📍</div><div style="min-width:0;flex:1"><b id="statusTitle">출발 준비 단계</b><p id="statusText">예약 정보와 준비물을 점검하세요.</p><div class="next" id="statusNext"></div></div></div>
 
-<section id="booking" class="section">
-  <div class="section-title"><h2>예약</h2><span>숙소 · 렌터카 · 항공</span></div>
-  <div id="bookingRoot"></div>
-</section>
+  <div class="section-title" id="plan"><h2>전체 일정</h2><small>시간순 · 길찾기 바로가기</small></div>
+  <div id="days"></div>
 
-<section id="budget" class="section">
-  <div class="section-title"><h2>여행비</h2><span>확정비 + 현지 지출</span></div>
+  <div class="section-title" id="budget"><h2>여행비용</h2><small>시트 ‘비용’ 탭 기준</small></div>
   <div id="budgetRoot"></div>
-</section>
+  <div class="spend" id="spend"></div>
 
-<section id="shopping" class="section">
-  <div class="section-title"><h2>쇼핑</h2><span>아기옷 포함</span></div>
-  <div id="shoppingRoot"></div>
-</section>
+  <div class="section-title" id="tools"><h2>여행 도구</h2><small>일정 아래에 보조 기능만 배치</small></div>
+  <div class="tool-grid">
+    <div class="tool"><h3>🌦️ 실시간 날씨</h3><p>후쿠오카·유후인·벳푸 현재 날씨</p><div class="weather" id="weather" style="margin-top:8px"></div><p id="wxNote" style="margin-top:7px"></p></div>
+    <div class="tool"><h3>💴 엔화 계산</h3><div class="wallet"><div><label for="jpy">JPY</label><input id="jpy" type="number" value="10000" inputmode="decimal"></div><div><label for="rate100">100엔당 원화</label><input id="rate100" type="number" step="0.01" inputmode="decimal"></div></div><div class="big" id="krw">-</div><p>환율은 시트 ‘환전’ 비고에서 자동으로 가져오고, 직접 수정하면 이 기기에 저장됩니다.</p></div>
+  </div>
 
-<section id="checklist" class="section">
-  <div class="section-title"><h2>체크리스트</h2><span>기기별 저장</span></div>
-  <div id="checkRoot"></div>
-</section>
+  <div class="section-title"><h2>추가 정보</h2><small>필요할 때만 펼치기</small></div>
+  <details class="more" id="mapsec"><summary>🗺️ 전체 동선 지도</summary><div class="more-body"><div class="map-tools" id="mapTools"></div><div id="map"></div><div class="source-note">DAY를 고르면 그날 방문 순서대로 번호와 경로가 표시됩니다.</div></div></details>
+  <details class="more" id="booksec"><summary>🎫 예약 정보 <em id="bookCount"></em></summary><div class="more-body"><div class="quick-list" id="bookRoot"></div><div class="source-note">예약 확인서와 실제 체크인 조건은 예약처/호텔 안내를 우선하세요.</div></div></details>
+  <details class="more" id="shopsec"><summary>🛍️ 쇼핑 포인트 <em id="shopCount"></em></summary><div class="more-body"><div class="quick-list" id="shopRoot"></div><div class="source-note">체크하면 ‘다녀옴’으로 표시돼요 (이 기기에만 저장).</div></div></details>
+  <details class="more" id="checksec"><summary>✅ 준비물 체크 & 메모 <em id="checkCount"></em></summary><div class="more-body"><div id="checks"></div><textarea id="memo" class="memo" style="margin-top:9px" placeholder="쇼핑할 것, 식당 후보, 예약번호, 꼭 살 것 등을 적어두세요."></textarea><div class="source-note">항목은 시트 ‘체크리스트’ 탭에서 불러오고, 체크 상태와 메모는 이 기기에 저장됩니다.</div></div></details>
+  <details class="more"><summary>📲 홈화면에 설치</summary><div class="more-body"><div class="quick-list"><div class="quick-item"><div><b>iPhone / Safari</b><br><span>공유 → 홈 화면에 추가</span></div><span>설치형</span></div><div class="quick-item"><div><b>Android / Chrome</b><br><span>브라우저 메뉴 → 앱 설치/홈화면 추가</span></div><span>PWA</span></div></div><div class="source-note">한 번 열어두면 오프라인에서도 마지막으로 동기화된 일정이 보입니다.</div></div></details>
+
+  <footer>후쿠오카 일정 중심 웹앱 · 2026.10.31~11.03<br>영업시간·교통상황은 변동될 수 있으므로 당일 공식정보 확인 권장</footer>
 </main>
-
-<nav class="bottom">
- <button class="navbtn active" data-section="itinerary"><i>🗓️</i>일정</button>
- <button class="navbtn" data-section="booking"><i>🎫</i>예약</button>
- <button class="navbtn" data-section="budget"><i>💴</i>비용</button>
- <button class="navbtn" data-section="shopping"><i>🛍️</i>쇼핑</button>
- <button class="navbtn" data-section="checklist"><i>✅</i>체크</button>
-</nav>
-<div class="toast" id="toast"></div>
 </div>
 
+<nav class="bottom"><a href="#top"><span>🏠</span>홈</a><a class="main" href="#plan" id="navPlan"><span>🗓️</span>일정</a><a href="#mapsec" data-open="mapsec"><span>🗺️</span>지도</a><a href="#budget"><span>💴</span>비용</a><a href="#checksec" data-open="checksec"><span>✅</span>준비</a></nav>
+<div class="toast" id="toast"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script>
+/* ───────── 설정 ───────── */
 const SHEET_ID="11guqFq5PdUM2qJGRVRcpecr_F0Y60pCtshlAPg7hNNk";
-const SEED={"일정": [["일자", "시간", "지역", "일정", "세부내용", "이동/메모"], ["10/31(토)", "07:45", "인천", "출국", "인천 → 후쿠오카 09:15", ""], ["10/31(토)", "10:00", "후쿠오카공항", "렌터카 픽업", "Budget 후쿠오카공항점", "공항 셔틀 미팅장소 → 영업소"], ["10/31(토)", "오전~점심", "이동", "유후인 이동", "약 1.5~2시간", "중간 휴식 권장"], ["10/31(토)", "오후", "유후인", "긴린코 · 플로랄빌리지", "가볍게 산책/사진", "아기띠 병행"], ["10/31(토)", "저녁", "벳푸", "노가미혼칸 체크인", "2박", "온천 짧게"], ["11/1(일)", "오전", "벳푸/우사", "아프리칸 사파리", "마이카 사파리 중심", "현금 대비"], ["11/1(일)", "오후", "벳푸", "지고쿠메구리 1~2곳", "우미지고쿠/치노이케 중심", "무리해서 7곳 전부 X"], ["11/1(일)", "오후", "벳푸", "니시마츠야", "아기옷 1차 쇼핑", ""], ["11/1(일)", "저녁", "벳푸", "노가미혼칸 2박째", "휴식 중심", ""], ["11/2(월)", "오전", "벳푸→후쿠오카", "이동", "약 2시간", ""], ["11/2(월)", "14:00", "하카타", "렌터카 반납", "Budget 하카타역 치쿠시구치점", ""], ["11/2(월)", "14:00 이후", "하카타", "호텔 포르자Ⅱ 체크인", "FORZA Double Room", "성인2+아동1"], ["11/2(월)", "오후", "후쿠오카", "오호리공원", "산책/휴식", ""], ["11/2(월)", "오후~저녁", "텐진/다이묘", "몽벨 · nanamica 쇼핑", "아웃도어 쇼핑", ""], ["11/2(월)", "저녁", "하카타", "캐널시티", "쇼핑/식사", "야타이 제외"], ["11/3(화)", "오전", "하카타역", "하카타한큐", "7F BREEZE/산리오 등 아기쇼핑", "이온몰 제외"], ["11/3(화)", "오전", "하카타역", "아뮤플라자", "7F MARKEY'S 확인", "한큐와 연결"], ["11/3(화)", "11:00 전후", "하카타→공항", "공항 이동", "지하철 공항선", ""], ["11/3(화)", "13:50", "후쿠오카공항", "귀국", "후쿠오카 → 인천 15:30", ""]], "예약정보": [["구분", "업체/숙소", "일시", "주소/연락처", "상세", "금액"], ["렌터카 픽업", "Budget 후쿠오카공항점", "10/31 10:00", "福岡市博多区月隈1丁目7-5 / 092-612-0543", "소형 에코카·AT·금연·내비·ETC·베이비시트", "¥21,930"], ["렌터카 반납", "Budget 하카타역 치쿠시구치점", "11/2 14:00", "福岡市博多区博多駅東1丁目18-10 / 092-461-8255", "하카타역 치쿠시구치 인근", ""], ["숙소", "노가미혼칸", "10/31~11/2", "大分県別府市北浜1-12-1 / 0977-22-1334", "2박", "337,317원 + 온천세 별도"], ["숙소", "호텔 포르자 하카타에키 치쿠시구치 II", "11/2 14:00 ~ 11/3 11:00", "福岡市博多区博多駅東1-13-3 / 092-473-7114", "FORZA Double Room, Non Smoking / 성인2+아동1 / 여기어때 예약번호 26092621016D74ES1", "147,662원"], ["항공", "인천↔후쿠오카", "10/31~11/3", "", "3인", "543,000원"], ["eSIM", "2인", "", "", "여행용", "800원"], ["여행자보험", "2인", "", "", "", "0원"]], "비용": [["항목", "통화", "금액", "비고"], ["항공권", "KRW", "543000", "3인"], ["료칸", "KRW", "337317", "노가미혼칸"], ["포르자Ⅱ", "KRW", "147662", "11/2 1박"], ["eSIM", "KRW", "800", "2인"], ["여행자보험", "KRW", "0", "2인"], ["렌터카", "JPY", "21930", "현지결제 여부 확인"], ["환전", "JPY", "110000", "환전단가 100엔=865.05원 기준"], ["환전 원화환산", "KRW", "951555", "11만엔 환전"], ["아기쇼핑 예산", "KRW", "500000", "50만원 미만 목표"], ["현지 생활비 예상", "JPY", "50000", "식사·교통·관광·잡비 대략"]], "쇼핑": [["지역/시설", "매장", "카테고리", "예정일", "메모"], ["벳푸", "니시마츠야 벳푸 야마나미점", "아기옷/용품", "11/1", "1차 쇼핑"], ["하카타한큐 7F", "BREEZE terrace", "아기옷", "11/3", "BREEZE / après les cours 등"], ["JR 하카타시티 아뮤플라자 7F", "MARKEY'S", "아기옷", "11/3", "한큐와 연결해서 이동"], ["하카타한큐 7F", "산리오", "캐릭터/기념품", "11/3", ""], ["텐진", "몽벨", "아웃도어", "11/2", ""], ["다이묘", "nanamica", "아웃도어/퍼플라벨", "11/2", ""], ["캐널시티", "산리오/쇼핑", "기념품", "11/2", ""]], "체크리스트": [["체크", "분류", "항목"], ["FALSE", "서류", "여권·항공권·숙소 예약확인"], ["FALSE", "임산부", "산모수첩·필요 서류·편한 신발·수분"], ["FALSE", "아기", "유모차·아기띠·기저귀·물티슈"], ["FALSE", "아기", "분유/이유식·보온병·체온계·해열제"], ["FALSE", "날씨", "가디건·경량패딩·담요·우산"], ["FALSE", "결제", "해외결제카드·현금 ¥110,000"], ["FALSE", "렌터카", "ETC·카시트·반납시간 확인"], ["FALSE", "귀국", "11/3 하카타한큐 쇼핑 후 공항 이동시간 확인"]]};
 const SHEETS=["일정","예약정보","비용","쇼핑","체크리스트"];
-let DATA=structuredClone(SEED);
+const OPTIONAL_SHEETS={"일자정보":"성공기준"}; // 탭 이름: 반드시 있어야 하는 헤더(없는 탭이면 gviz가 첫 탭을 돌려주므로 검증용)
+const YEAR=2026, TRIP_START="2026-10-31", TRIP_END="2026-11-03";
+const REFRESH_MS=5*60*1000;
 
+/* 시트가 안 열릴 때 쓰는 내장 데이터 (시트와 같은 형식: 첫 줄 = 헤더) */
+const SEED={
+"일정":[["일자","시간","지역","일정","세부내용","이동/메모","중요","팁"],
+["10/31(토)","07:45","인천","인천공항 출발","후쿠오카 09:15 도착 예정","","",""],
+["10/31(토)","09:15","후쿠오카공항","후쿠오카공항 도착 → Budget 셔틀","수하물 수령 후 공항 앞 셔틀 미팅장소로 이동","카시트·ETC·내비 옵션 확인","Y",""],
+["10/31(토)","10:00","후쿠오카공항","Budget 후쿠오카공항점 렌터카 픽업","소형 에코카 · AT · 금연 · ETC 카드/베이비시트 포함","","Y",""],
+["10/31(토)","10:30","이동","유후인으로 출발","약 1시간 30분~2시간. 중간에 휴게소 1회 쉬는 전제로 움직이기","","","가족여행: 아기 수유/기저귀와 임산부 휴식 때문에 도착 시간을 15~20분 여유 있게 잡는 게 좋습니다."],
+["10/31(토)","12:30","유후인","유후인 도착 · 점심","주차 후 점심부터 해결. 웨이팅이 길면 바로 대체 매장으로 전환","","",""],
+["10/31(토)","14:00","유후인","긴린코 → 유후인 거리 → 플로랄빌리지","긴린코를 기준점으로 잡고 상점가를 천천히 이동","자갈길은 아기띠 병행","Y",""],
+["10/31(토)","16:30","이동","벳푸로 이동","유후인 → 벳푸 약 40~60분. 해 지기 전에 이동 시작","","",""],
+["10/31(토)","17:30","벳푸","노가미혼칸 체크인","저녁은 숙소 주변에서 편하게","온천은 컨디션 좋을 때만 짧게","Y",""],
+["11/1(일)","08:30","벳푸","숙소 출발","사파리까지 약 30~40분. 입장 시작 시간 전후 도착 목표","","",""],
+["11/1(일)","09:30~","우사","아프리칸 사파리","자가용으로 도는 마이카 사파리 중심","당일 운영시간 공식 페이지 확인 · 현금 대비","Y",""],
+["11/1(일)","12:30","이동","점심","사파리 인근 또는 벳푸 복귀 동선에서. 아이 식사 시간 우선","","",""],
+["11/1(일)","14:00","벳푸","우미지고쿠 중심 지고쿠메구리","7곳 전부보다 대표 1~2곳만","우미지고쿠 1순위 · 여유 있으면 치노이케","Y",""],
+["11/1(일)","16:00","벳푸","니시마츠야 벳푸 야마나미점","아기옷·소모품 1차 쇼핑","","","쇼핑 팁: 생활형 아기용품은 여기서 먼저 해결하고, Day4 하카타한큐는 산리오·베이비·기념품 위주로."],
+["11/1(일)","17:30","벳푸","노가미혼칸 복귀 · 저녁","벳푸역/키타하마 근처 가까운 곳 우선","둘째 날 피로 누적 시점","",""],
+["11/2(월)","09:00","벳푸→후쿠오카","체크아웃 → 후쿠오카 출발","약 2시간. 휴게소 포함해 반납 시간에 쫓기지 않게 출발","","",""],
+["11/2(월)","11:30","하카타","호텔 포르자Ⅱ 짐 보관","JR 하카타역 치쿠시구치 도보 약 3분. 체크인 전이라 짐 먼저 맡기기","","Y",""],
+["11/2(월)","13:30","하카타","렌터카 반납 (Budget 하카타역 치쿠시구치점)","예약 반납시간 14:00","","Y",""],
+["11/2(월)","14:10","하카타","포르자Ⅱ 체크인","FORZA Double Room · Non Smoking · 성인 2 + 아동 1","체크인 14:00 / 체크아웃 11:00","Y","예약번호: 여기어때 26092621016D74ES1"],
+["11/2(월)","14:40","후쿠오카","오호리공원","지하철 이동. 유모차로 걷기 좋고 도시 일정 시작점으로 편안함","","Y",""],
+["11/2(월)","16:00","텐진/다이묘","몽벨 · nanamica 쇼핑","필요한 브랜드만 찍고 이동해서 체력 소모 줄이기","","Y",""],
+["11/2(월)","18:00","하카타","캐널시티 하카타 · 저녁","쇼핑과 식사를 한 장소에서 끝내기","야타이 제외","Y",""],
+["11/2(월)","20:00","하카타","포르자Ⅱ 복귀","다음날 10시 하카타한큐 일정이 있어 무리한 야간 일정 없음","","",""],
+["11/3(화)","08:30","하카타","기상 · 체크아웃 준비","체크아웃 마감 11:00. 수하물 최종 정리","","",""],
+["11/3(화)","09:30","하카타","체크아웃 · 짐 맡기기 → 하카타한큐","포르자Ⅱ에 짐을 맡긴 뒤 하카타역 한큐로 도보 이동","","",""],
+["11/3(화)","10:00","하카타역","하카타한큐 오픈 → 마지막 쇼핑","7F 베이비·키즈/산리오 먼저, 시간 남으면 B1 식품·기념품","아뮤플라자 7F MARKEY'S와 연결","Y","추천 순서: 7F 산리오/베이비 → B1 기념품. 영업시간 10:00~20:00."],
+["11/3(화)","10:50","하카타→공항","쇼핑 종료 → 공항 이동","13:50 국제선이므로 쇼핑 연장 금지. 택시 또는 국제선 직행버스","","Y",""],
+["11/3(화)","11:30","후쿠오카공항","국제선 도착 목표","체크인·수하물 위탁·출국심사","","",""],
+["11/3(화)","13:50","후쿠오카공항","후쿠오카 출발 → 인천 15:30","여행 종료","","Y",""]],
+"일자정보":[["일자","탭","배지","제목","설명","요약1","요약2","요약3","성공기준"],
+["10/31","유후인","🚗 렌터카","후쿠오카공항 → 유후인 → 벳푸","첫날 핵심은 욕심내지 않고 유후인 산책 후 벳푸에 안정적으로 들어가는 것.","메인:긴린코·유후인","이동:공항→유후인→벳푸","숙박:노가미혼칸","긴린코를 보고 벳푸 숙소에 무리 없이 도착하면 성공. 유후인 체류가 늦어지면 플로랄빌리지를 줄이세요."],
+["11/1","벳푸","🦁 사파리","아프리칸 사파리 → 벳푸 지옥 → 쇼핑","오전에 사파리, 오후에 벳푸 핵심 1~2곳. 아이 컨디션을 보면서 강도를 조절.","메인:아프리칸 사파리","관광:우미지고쿠 중심","쇼핑:니시마츠야","사파리 + 우미지고쿠만 해도 충분합니다. 지고쿠 추가 관광은 가족 컨디션이 좋을 때만."],
+["11/2","후쿠오카","🏨 포르자 하카타","벳푸 → 포르자Ⅱ · 렌터카 반납 → 오호리 · 텐진 · 캐널시티","후쿠오카 도심으로 전환하는 날. 호텔에 짐을 두고 가볍게 움직이는 구성.","숙소:포르자Ⅱ 14:00","반납:Budget 14:00","저녁:캐널시티/하카타","포르자Ⅱ 짐 보관 → 렌터카 14:00 반납 → 체크인까지 먼저 끝내면 이후가 편합니다. 호텔과 반납점이 모두 하카타역 동쪽이라 동선이 좋습니다."],
+["11/3","귀국","🛍️ 하카타한큐","하카타한큐 → 후쿠오카공항 → 귀국","하카타역 직결 백화점에서 마지막 쇼핑 후 바로 공항으로.","쇼핑:10:00 하카타한큐","공항 이동:11:00 전후 출발","비행:13:50 출발","하카타한큐는 하카타역 직결이라 쇼핑 후 공항 이동이 단순합니다. 10:50 전후에는 쇼핑을 마치세요."]],
+"예약정보":[["구분","업체/숙소","일시","주소/연락처","상세","금액"],["렌터카 픽업","Budget 후쿠오카공항점","10/31 10:00","福岡市博多区月隈1丁目7-5 / 092-612-0543","소형 에코카·AT·금연·내비·ETC·베이비시트","¥21,930"],["렌터카 반납","Budget 하카타역 치쿠시구치점","11/2 14:00","福岡市博多区博多駅東1丁目18-10 / 092-461-8255","하카타역 치쿠시구치 인근",""],["숙소","노가미혼칸","10/31~11/2","大分県別府市北浜1-12-1 / 0977-22-1334","2박","337,317원 + 온천세 별도"],["숙소","호텔 포르자 하카타에키 치쿠시구치 II","11/2 14:00 ~ 11/3 11:00","福岡市博多区博多駅東1-13-3 / 092-473-7114","FORZA Double Room, Non Smoking / 성인2+아동1 / 여기어때 예약번호 26092621016D74ES1","147,662원"],["항공","인천↔후쿠오카","10/31~11/3","","3인","543,000원"],["eSIM","2인","","","여행용","800원"],["여행자보험","2인","","","","0원"]],
+"비용":[["항목","통화","금액","비고"],["항공권","KRW","543000","3인"],["료칸","KRW","337317","노가미혼칸"],["포르자Ⅱ","KRW","147662","11/2 1박"],["eSIM","KRW","800","2인"],["여행자보험","KRW","0","2인"],["렌터카","JPY","21930","현지결제 여부 확인"],["환전","JPY","110000","환전단가 100엔=865.05원 기준"],["환전 원화환산","KRW","951555","11만엔 환전"],["아기쇼핑 예산","KRW","500000","50만원 미만 목표"],["현지 생활비 예상","JPY","50000","식사·교통·관광·잡비 대략"]],
+"쇼핑":[["지역/시설","매장","카테고리","예정일","메모"],["벳푸","니시마츠야 벳푸 야마나미점","아기옷/용품","11/1","1차 쇼핑"],["하카타한큐 7F","BREEZE terrace","아기옷","11/3","BREEZE / après les cours 등"],["JR 하카타시티 아뮤플라자 7F","MARKEY'S","아기옷","11/3","한큐와 연결해서 이동"],["하카타한큐 7F","산리오","캐릭터/기념품","11/3",""],["텐진","몽벨","아웃도어","11/2",""],["다이묘","nanamica","아웃도어/퍼플라벨","11/2",""],["캐널시티","산리오/쇼핑","기념품","11/2",""]],
+"체크리스트":[["체크","분류","항목"],["FALSE","서류","여권·항공권·숙소 예약확인"],["FALSE","임산부","산모수첩·필요 서류·편한 신발·수분"],["FALSE","아기","유모차·아기띠·기저귀·물티슈"],["FALSE","아기","분유/이유식·보온병·체온계·해열제"],["FALSE","날씨","가디건·경량패딩·담요·우산"],["FALSE","결제","해외결제카드·현금 ¥110,000"],["FALSE","렌터카","ETC·카시트·반납시간 확인"],["FALSE","귀국","11/3 하카타한큐 쇼핑 후 공항 이동시간 확인"]]
+};
+
+/* 장소 사전: 시트 문구에 키워드가 있으면 길찾기·전화·공식사이트·지도 좌표를 자동으로 붙임 */
+const PLACES=[
+ {id:"shuttle",m:/셔틀/,short:"셔틀장소",q:"福岡県福岡市博多区空港前3丁目2-25",tel:"+81926120543"},
+ {id:"budgetAir",m:/Budget.*공항|공항점|렌터카 픽업/,short:"Budget 공항점",q:"福岡県福岡市博多区月隈1丁目7-5",tel:"+81926120543",lat:33.5769,lng:130.4674,k:"spot"},
+ {id:"kinrin",m:/긴린코/,short:"긴린코",q:"金鱗湖 由布院",lat:33.2673,lng:131.3631,k:"spot"},
+ {id:"floral",m:/플로랄/,short:"플로랄빌리지",q:"湯布院フローラルヴィレッジ",links:[["플로랄빌리지","http://floral-village.com/"]],lat:33.2646,lng:131.3582,k:"spot"},
+ {id:"nogami",m:/노가미/,short:"노가미혼칸",q:"大分県別府市北浜1-12-1 野上本館",tel:"+81977221334",lat:33.2781,lng:131.5050,k:"spot"},
+ {id:"safari",m:/사파리/,short:"사파리",q:"大分県宇佐市安心院町南畑2-1755-1",links:[["오늘 운영 확인","https://africansafari.co.jp/"]],lat:33.3687,lng:131.3476,k:"spot"},
+ {id:"umi",m:/우미지고쿠|지고쿠|지옥/,short:"우미지고쿠",q:"海地獄 別府",links:[["공식사이트","http://www.beppu-jigoku.com/"]],lat:33.3164,lng:131.4686,k:"spot"},
+ {id:"nishi",m:/니시마츠야/,short:"니시마츠야",q:"大分県別府市大字鶴見108-1 西松屋",lat:33.306,lng:131.477,k:"shop"},
+ {id:"forza",m:/포르자/,short:"포르자Ⅱ",q:"福岡市博多区博多駅東1-13-3 ホテルフォルツァ博多駅筑紫口II",tel:"+81924737114",links:[["공식사이트","https://www.hotelforza.jp/hakata2/"]],lat:33.5902,lng:130.4233,k:"spot"},
+ {id:"budgetHkt",m:/렌터카 반납|반납점|Budget 하카타/,short:"반납점",q:"福岡県福岡市博多区博多駅東1丁目18-10",tel:"+81924618255",lat:33.5892,lng:130.4240,k:"spot"},
+ {id:"ohori",m:/오호리/,short:"오호리공원",q:"大濠公園 福岡",lat:33.5861,lng:130.3764,k:"spot"},
+ {id:"montbell",m:/몽벨/,short:"몽벨",q:"モンベル 福岡天神店",lat:33.590,lng:130.398,k:"shop"},
+ {id:"nanamica",m:/nanamica/i,short:"nanamica",q:"nanamica 福岡 大名",lat:33.587,lng:130.393,k:"shop"},
+ {id:"canal",m:/캐널/,short:"캐널시티",q:"キャナルシティ博多",links:[["공식정보","https://canalcity.co.jp/"]],lat:33.5911,lng:130.4106,k:"shop"},
+ {id:"hankyu",m:/한큐|BREEZE/i,short:"하카타한큐",q:"福岡市博多区博多駅中央街1番1号 博多阪急",links:[["공식사이트","https://www.hankyu-dept.co.jp/hakata/"],["7F 키즈","https://www.hankyu-dept.co.jp/hakata/floor/7f.html"]],lat:33.5898,lng:130.4207,k:"shop"},
+ {id:"amu",m:/아뮤|MARKEY/i,short:"아뮤플라자",q:"アミュプラザ博多",lat:33.5897,lng:130.4198,k:"shop"},
+ {id:"fukIntl",m:/공항 이동|국제선/,short:"공항 국제선",q:"福岡空港国際線旅客ターミナル",links:[["공항 공식","https://www.fukuoka-airport.jp/"]],lat:33.5859,lng:130.4507,k:"spot"}
+];
+
+/* ───────── 유틸 ───────── */
 const $=s=>document.querySelector(s);
-const esc=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
-const toast=t=>{const e=$("#toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),1800)};
-const maps=q=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q);
-const phone=s=>{const m=String(s||"").match(/0\d{1,3}-\d{3,4}-\d{4}/);return m?m[0]:null}
+const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const toast=t=>{const e=$("#toast");e.textContent=t;e.classList.add("show");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("show"),1800)};
+const dirUrl=q=>"https://www.google.com/maps/dir/?api=1&destination="+encodeURIComponent(q);
+const searchUrl=q=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q);
+const safeUrl=u=>/^https?:\/\//i.test(String(u||"").trim())?String(u).trim():"";
+const telOf=s=>{const m=String(s||"").match(/(\+?\d[\d-]{8,}\d)/);if(!m)return null;let n=m[1].replace(/-/g,"");if(n.startsWith("0"))n="+81"+n.slice(1);return{show:m[1],href:n}};
+const truthy=v=>/^(y|yes|true|o|1|중요|★|✔|v)$/i.test(String(v??"").trim());
+const num=v=>{const n=+String(v??"").replace(/[^\d.-]/g,"");return isFinite(n)?n:0};
+const krw=n=>Math.round(n).toLocaleString("ko-KR")+"원";
+const jpy=n=>"¥"+Math.round(n).toLocaleString("ja-JP");
+const WEEK="일월화수목금토";
 
+/* 시트 표 → 객체 배열 (헤더 이름으로 접근, 열 순서가 바뀌어도 동작) */
+function objs(table){
+ if(!table||!table.length)return[];
+ const h=table[0].map(x=>String(x||"").trim());
+ return table.slice(1).map(r=>{const o={};h.forEach((k,i)=>{if(k)o[k]=r[i]??""});return o});
+}
+const pick=(o,...keys)=>{for(const k of keys){const v=o[k];if(v!=null&&String(v).trim()!=="")return String(v).trim()}return""};
+
+/* 날짜 → "10/31" 키 */
+function dayKey(v){
+ const s=String(v||"");let m=s.match(/(\d{4})\s*[-.\/년]\s*(\d{1,2})\s*[-.\/월]\s*(\d{1,2})/);
+ if(m)return `${+m[2]}/${+m[3]}`;
+ m=s.match(/(\d{1,2})\s*[\/.월-]\s*(\d{1,2})/);
+ return m?`${+m[1]}/${+m[2]}`:"";
+}
+const isoOf=k=>{const[m,d]=k.split("/").map(Number);return `${YEAR}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`};
+const wdOf=k=>WEEK[new Date(isoOf(k)+"T12:00:00+09:00").getUTCDay()];
+/* "09:30~", "오전" 같은 시간 → 분 (현재 일정 표시용 대략값) */
+function minutesOf(t){
+ const s=String(t||"");const m=s.match(/(\d{1,2}):(\d{2})/);if(m)return(+m[1])*60+(+m[2]);
+ if(/새벽/.test(s))return 360;if(/오전/.test(s))return 540;if(/점심/.test(s))return 720;if(/오후/.test(s))return 840;if(/저녁/.test(s))return 1080;if(/밤|야간/.test(s))return 1260;
+ return null;
+}
+/* 여행지(일본) 기준 현재 시각 */
+function nowJST(){const p=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Tokyo",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(new Date());const g=t=>p.find(x=>x.type===t).value;return{ymd:`${g("year")}-${g("month")}-${g("day")}`,min:(+g("hour"))*60+(+g("minute"))}}
+
+/* ───────── 시트 동기화 ───────── */
+let DATA=Object.assign(structuredClone(SEED),store.get("fuk4-data",{}));
 function parseGviz(txt){
-  const a=txt.indexOf("{"), b=txt.lastIndexOf("}");
-  const obj=JSON.parse(txt.slice(a,b+1));
-  const cols=obj.table.cols.map(c=>c.label||"");
-  const rows=obj.table.rows.map(r=>r.c.map(c=>c?c.v:""));
-  return [cols,...rows];
+ const obj=JSON.parse(txt.slice(txt.indexOf("{"),txt.lastIndexOf("}")+1));
+ if(obj.status==="error")throw new Error("gviz");
+ const cell=c=>{if(!c)return"";if(typeof c.v==="number"||typeof c.v==="boolean")return c.v;return c.f??c.v??""};
+ let cols=obj.table.cols.map(c=>c.label||"");
+ let rows=obj.table.rows.map(r=>(r.c||[]).map(cell));
+ if(cols.every(c=>!c)&&rows.length){cols=rows[0].map(String);rows=rows.slice(1)} // 헤더 인식 실패 대비
+ return[cols,...rows];
 }
 async function pullSheet(name){
-  const u=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(name)}`;
-  const r=await fetch(u,{cache:"no-store"});
-  if(!r.ok) throw new Error(name);
-  return parseGviz(await r.text());
+ const r=await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&headers=1&sheet=${encodeURIComponent(name)}&_=${Date.now()}`,{cache:"no-store"});
+ if(!r.ok)throw new Error(name);
+ return parseGviz(await r.text());
 }
-async function sync(){
-  try{
-    const vals=await Promise.all(SHEETS.map(pullSheet));
-    SHEETS.forEach((n,i)=>DATA[n]=vals[i]);
-    localStorage.setItem("fukuokaData",JSON.stringify(DATA));
-    localStorage.setItem("fukuokaSyncAt",new Date().toISOString());
-    $("#syncText").textContent="Google Sheets 실시간 연동 · 방금 업데이트";
-  }catch(e){
-    const c=localStorage.getItem("fukuokaData");
-    if(c) DATA=JSON.parse(c);
-    $("#syncText").textContent=c?"오프라인 · 마지막 동기화 데이터":"내장 일정으로 표시 중";
+let syncing=false;
+async function sync(manual){
+ if(syncing)return;syncing=true;$("#syncBtn").classList.add("spin");
+ try{
+  const vals=await Promise.all(SHEETS.map(pullSheet));
+  SHEETS.forEach((n,i)=>{if(vals[i].length>1)DATA[n]=vals[i]});
+  for(const[n,need]of Object.entries(OPTIONAL_SHEETS)){
+   try{const t=await pullSheet(n);if(t[0].map(String).some(h=>h.trim()===need))DATA[n]=t}catch(e){}
   }
-  renderAll();
+  store.set("fuk4-data",DATA);store.set("fuk4-syncAt",Date.now());
+  setSync("ok");if(manual)toast("시트에서 최신 내용을 불러왔어요");
+ }catch(e){
+  setSync(store.get("fuk4-syncAt",0)?"cache":"seed");if(manual)toast("시트 연결 실패 · 저장된 내용 표시");
+ }
+ syncing=false;$("#syncBtn").classList.remove("spin");renderAll();
+}
+function setSync(state){
+ const at=store.get("fuk4-syncAt",0),t=at?new Date(at).toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"}):"";
+ $("#syncLed").className="led "+(state==="ok"?"ok":state==="seed"?"off":"");
+ $("#syncText").textContent=state==="ok"?`Google Sheets 실시간 연동 · ${t} 업데이트`:state==="cache"?`오프라인 · ${t} 동기화 데이터`:"내장 일정으로 표시 중";
 }
 
-function groupedItinerary(){
-  const rows=DATA["일정"].slice(1).filter(r=>r[0]);
-  const g={};
-  rows.forEach(r=>(g[r[0]]??=[]).push(r));
-  return g;
-}
-function routeFor(rows){
-  const places=[...new Set(rows.map(r=>r[2]).filter(Boolean))];
-  return places.join(" → ");
-}
-function eventActions(r){
-  const q=[r[2],r[3]].filter(Boolean).join(" ");
-  let html=`<a class="action primary" href="${maps(q)}" target="_blank">지도</a>`;
-  if(/Budget|호텔|노가미|한큐|아뮤|니시마츠야|몽벨|nanamica|캐널|사파리|긴린코|지고쿠|오호리/.test(r.join(" ")))
-    html+=`<a class="action" href="${maps(q)}" target="_blank">길찾기</a>`;
-  return html;
-}
-function renderDayTabs(){
- const g=groupedItinerary(), root=$("#dayTabs");
- root.innerHTML=Object.keys(g).map((d,i)=>`<button class="tab ${i===0?"active":""}" data-day="${esc(d)}">${esc(d)}</button>`).join("");
- root.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
-   root.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===b));
-   document.getElementById("day-"+b.dataset.day.replace(/[^0-9]/g,"")).scrollIntoView({behavior:"smooth",block:"start"});
+/* ───────── 일정 ───────── */
+function itinerary(){
+ const rows=objs(DATA["일정"]).filter(o=>pick(o,"일자","날짜")&&pick(o,"일정","제목"));
+ const days=[];const map={};
+ rows.forEach(o=>{
+  const k=dayKey(pick(o,"일자","날짜"));if(!k)return;
+  if(!map[k]){map[k]={key:k,iso:isoOf(k),events:[]};days.push(map[k])}
+  map[k].events.push(o);
  });
+ days.sort((a,b)=>a.iso.localeCompare(b.iso));
+ return days;
 }
-function renderItinerary(){
- const g=groupedItinerary();
- $("#itineraryRoot").innerHTML=Object.entries(g).map(([d,rows],i)=>`
- <article class="day-card" id="day-${d.replace(/[^0-9]/g,"")}">
-   <div class="day-head">
-    <div><span class="day-badge">DAY ${i+1} · ${esc(d)}</span><h3>${esc(rows[0]?.[2]||"")}</h3></div>
-    <div class="route">${esc(routeFor(rows))}</div>
-   </div>
-   <div class="timeline">${rows.map(r=>`
-    <div class="event">
-      <div class="time">${esc(r[1])}</div><div class="pin"></div>
-      <div><div class="ev-title">${esc(r[3])}</div>
-      <div class="ev-sub">${esc(r[4])}${r[5]?` · ${esc(r[5])}`:""}</div>
-      <div class="actions">${eventActions(r)}</div></div>
-    </div>`).join("")}</div>
- </article>`).join("");
+function dayMeta(k){
+ const o=objs(DATA["일자정보"]).find(x=>dayKey(pick(x,"일자","날짜"))===k)||{};
+ const sums=["요약1","요약2","요약3"].map(c=>pick(o,c)).filter(Boolean).map(s=>{const i=s.indexOf(":");return i>0?[s.slice(0,i),s.slice(i+1)]:["",s]});
+ return{tab:pick(o,"탭"),badge:pick(o,"배지"),title:pick(o,"제목"),lead:pick(o,"설명"),sums,note:pick(o,"성공기준")};
 }
-function renderBooking(){
- const rows=DATA["예약정보"].slice(1).filter(r=>r[0]);
- $("#bookingRoot").innerHTML=rows.map(r=>{
-  const ph=phone(r[3]);
-  const addr=String(r[3]||"").split("/")[0].trim();
-  return `<div class="info-card">
-    <span class="pill">${esc(r[0])}</span>
-    <h3>${esc(r[1])}</h3>
-    <div class="info-row">${esc(r[2])}</div>
-    <div class="info-row">${esc(r[4])}</div>
-    ${r[5]?`<div class="info-row amount">${esc(r[5])}</div>`:""}
-    <div class="actions">
-      ${addr?`<a class="action primary" href="${maps(addr)}" target="_blank">지도</a>`:""}
-      ${ph?`<a class="action" href="tel:${ph}">전화</a>`:""}
-    </div>
-  </div>`}).join("");
+function placesIn(text){return PLACES.filter(p=>p.m.test(text))}
+function eventView(o){
+ const title=pick(o,"일정","제목"),desc=pick(o,"세부내용","내용"),memo=pick(o,"이동/메모","메모"),area=pick(o,"지역");
+ const text=[title,desc,area].join(" ");
+ const found=placesIn(title+" "+desc);
+ const addr=pick(o,"주소","목적지"),link=safeUrl(pick(o,"링크","URL")),telS=telOf(pick(o,"전화"));
+ const acts=[];const seen=new Set();
+ const add=(html,key)=>{if(!seen.has(key)){seen.add(key);acts.push(html)}};
+ if(addr)add(`<a class="act primary" target="_blank" rel="noopener" href="${dirUrl(addr)}">길찾기</a>`,"dir:"+addr);
+ found.forEach((p,i)=>add(`<a class="act ${!addr&&i===0?"primary":""}" target="_blank" rel="noopener" href="${dirUrl(p.q)}">${esc(p.short)} 길찾기</a>`,"dir:"+p.id));
+ if(!addr&&!found.length&&!/이동|출발|출국|귀국|기상|복귀|준비|도착 목표/.test(title)&&area&&area!=="이동")
+  add(`<a class="act" target="_blank" rel="noopener" href="${searchUrl(area+" "+title.replace(/[·→~]/g," "))}">지도에서 보기</a>`,"search");
+ if(telS)add(`<a class="act" href="tel:${telS.href}">${esc(telS.show)}</a>`,"tel:"+telS.href);
+ found.forEach(p=>{if(p.tel)add(`<a class="act" href="tel:${p.tel}">${esc(p.short)} 전화</a>`,"tel:"+p.tel)});
+ if(link)add(`<a class="act soft" target="_blank" rel="noopener" href="${esc(link)}">링크</a>`,"link:"+link);
+ found.forEach(p=>(p.links||[]).forEach(([l,u])=>add(`<a class="act" target="_blank" rel="noopener" href="${u}">${esc(l)}</a>`,"link:"+u)));
+ const key=truthy(pick(o,"중요","핵심"));
+ const tip=pick(o,"팁","TIP","Tip");let tipHtml="";
+ if(tip){const i=tip.indexOf(":");tipHtml=`<div class="tip">${i>0&&i<14?`<b>${esc(tip.slice(0,i))}:</b>${esc(tip.slice(i+1))}`:esc(tip)}</div>`}
+ return{title,desc,memo,time:pick(o,"시간"),key,acts:acts.slice(0,6),tipHtml,places:found,text};
 }
-function moneyKRW(n){return Number(n||0).toLocaleString("ko-KR")+"원"}
-function moneyJPY(n){return "¥"+Number(n||0).toLocaleString("ja-JP")}
+function renderDays(){
+ const days=itinerary(),{ymd,min}=nowJST();
+ $("#daynav").style.gridTemplateColumns=`repeat(${Math.min(days.length,6)||1},1fr)`;
+ $("#daynav").innerHTML=days.map((d,i)=>{const meta=dayMeta(d.key);const area=(meta.title||pick(d.events[0],"지역")).split(/[→·]/).map(s=>s.trim()).filter(Boolean);const lbl=meta.tab||(i===days.length-1&&days.length>1?"귀국":(area[1]||area[0]||""));return `<a href="#d${i+1}" class="${d.iso===ymd?"today":""}"><b>${d.key.replace(/^(\d)\//,"$1/")}</b>${wdOf(d.key)} · ${esc(lbl)}</a>`}).join("");
+ let nowIdx=null;
+ $("#days").innerHTML=days.map((d,i)=>{
+  const meta=dayMeta(d.key),ev=d.events.map(eventView);
+  const isToday=d.iso===ymd;let cur=-1;
+  if(isToday)ev.forEach((e,j)=>{const m=minutesOf(e.time);if(m!=null&&m<=min)cur=j});
+  if(isToday)nowIdx={day:i,cur,ev};
+  const [mo,da]=d.key.split("/");
+  const title=meta.title||[...new Set(d.events.map(o=>pick(o,"지역")).filter(x=>x&&x!=="이동"))].join(" → ");
+  return `<section class="day" id="d${i+1}">
+   <div class="day-cover"><div class="day-kicker"><span>DAY ${i+1} · ${mo}월 ${da}일 ${wdOf(d.key)}요일</span><span class="badges"><span class="badge wx" id="wx-${d.iso}" hidden></span>${meta.badge?`<span class="badge">${esc(meta.badge)}</span>`:""}</span></div>
+   <h3>${esc(title)}</h3>${meta.lead?`<p>${esc(meta.lead)}</p>`:""}
+   ${meta.sums.length?`<div class="day-summary">${meta.sums.map(([a,b])=>`<div><small>${esc(a)}</small><b>${esc(b)}</b></div>`).join("")}</div>`:""}</div>
+   <div class="timeline">${ev.map((e,j)=>`<div class="event ${e.key?"key":""} ${isToday&&j===cur?"now":""} ${isToday&&cur>=0&&j<cur?"done":""}" ${isToday&&j===cur?'id="nowEvent"':""}><div class="time">${esc(e.time)}</div><div class="rail"><i class="dot"></i></div><div class="event-body"><div class="event-title">${esc(e.title)}${isToday&&j===cur?'<span class="now-tag">지금</span>':""}</div>${e.desc?`<div class="event-desc">${esc(e.desc)}</div>`:""}${e.memo?`<div class="event-memo">📝 ${esc(e.memo)}</div>`:""}${e.acts.length?`<div class="actions">${e.acts.join("")}</div>`:""}${e.tipHtml}</div></div>`).join("")}</div>
+   ${meta.note?`<div class="plan-note"><b>${i===days.length-1&&days.length>1?"귀국일 핵심":"이 날의 성공 기준"}:</b> ${esc(meta.note)}</div>`:""}
+  </section>`}).join("");
+ renderStatus(days,nowIdx);
+ return days;
+}
+function renderStatus(days,nowIdx){
+ const {ymd}=nowJST();let st,tx,next="";
+ if(ymd<TRIP_START){
+  const d=Math.round((Date.parse(TRIP_START+"T00:00:00+09:00")-Date.parse(ymd+"T00:00:00+09:00"))/864e5);
+  $("#dDay").textContent=`D-${d}`;st="출발 준비 단계";
+  tx=d<=10?"실제 일기예보가 나오기 시작했어요. 날씨에 맞춰 옷차림을 확정하고 준비물을 점검하세요.":"렌터카·항공·숙소와 준비물을 확인하고, 출발 10일 전부터 실제 예보를 기준으로 옷차림을 확정하세요.";
+  const c=objs(DATA["체크리스트"]).filter(o=>pick(o,"항목")),saved=store.get("fuk4-checks",{});
+  const left=c.filter((o,i)=>!(saved[i]??truthy(pick(o,"체크")))).length;
+  if(c.length)next=`<a class="act soft" href="#checksec" data-open="checksec">✅ 준비물 ${left?left+"개 남음":"모두 완료"}</a>`;
+ }else if(ymd<=TRIP_END){
+  $("#dDay").textContent="여행중";
+  const i=days.findIndex(d=>d.iso===ymd);st=i>=0?`DAY ${i+1} · ${dayMeta(days[i].key).tab||"오늘 일정"}`:"여행 진행 중";
+  tx="오늘 일정의 고정 시간부터 지키고, 나머지는 가족 컨디션에 따라 줄여도 됩니다.";
+  if(nowIdx){const n=nowIdx.ev[nowIdx.cur+1],c=nowIdx.ev[nowIdx.cur];
+   if(c)tx=`지금: ${c.time} ${c.title}`+(n?` · 다음: ${n.time} ${n.title}`:" · 오늘 마지막 일정");
+   else if(n)tx=`첫 일정: ${n.time} ${n.title}`;
+   next=`<a class="act primary" href="#${nowIdx.cur>=0?"nowEvent":"d"+(nowIdx.day+1)}">지금 일정 보기</a>`+(n&&n.acts[0]?n.acts[0].replace('class="act primary"','class="act"').replace('class="act "','class="act"'):"");
+  }
+ }else{$("#dDay").textContent="완료";st="여행 완료";tx="사진 백업과 카드 결제내역을 확인하세요."}
+ $("#statusTitle").textContent=st;$("#statusText").textContent=tx;$("#statusNext").innerHTML=next;
+}
+
+/* ───────── 비용 ───────── */
+const EXCLUDE=/환전|예산|예상/;
+const ICON=[[/항공/,"✈️"],[/료칸|호텔|포르자|숙소|노가미/,"🏨"],[/eSIM|유심/i,"📱"],[/렌터카/,"🚕"],[/보험/,"🛡️"],[/환전/,"💴"],[/쇼핑/,"🛍️"],[/생활비|식/,"🍱"]];
+const iconOf=n=>(ICON.find(([r])=>r.test(n))||[0,"🧾"])[1];
+function rateDefault(){const o=objs(DATA["비용"]).find(x=>pick(x,"항목")==="환전");const m=pick(o||{},"비고").match(/100\s*엔\s*=\s*([\d.,]+)/);return m?num(m[1]):861.23}
+const rate=()=>num($("#rate100").value)||rateDefault();
 function renderBudget(){
- const rows=DATA["비용"].slice(1).filter(r=>r[0]);
- const krw=rows.filter(r=>r[1]==="KRW"&&!["환전 원화환산","아기쇼핑 예산"].includes(r[0])).reduce((s,r)=>s+(+r[2]||0),0);
- const jpyFixed=rows.filter(r=>r[1]==="JPY"&&r[0]==="렌터카").reduce((s,r)=>s+(+r[2]||0),0);
- const cash=+(rows.find(r=>r[0]==="환전")?.[2]||0);
- const shopBudget=+(rows.find(r=>r[0]==="아기쇼핑 예산")?.[2]||0);
- const expenses=JSON.parse(localStorage.getItem("fukuokaExpenses")||"[]");
- const spentJPY=expenses.filter(x=>x.currency==="JPY").reduce((s,x)=>s+x.amount,0);
- const remain=Math.max(0,cash-spentJPY);
- const pct=cash?Math.min(100,spentJPY/cash*100):0;
- $("#budgetRoot").innerHTML=`
-  <div class="grid">
-   <div class="stat"><small>확정 원화</small><strong>${moneyKRW(krw)}</strong><em>환전금 제외</em></div>
-   <div class="stat"><small>렌터카</small><strong>${moneyJPY(jpyFixed)}</strong><em>현지결제 확인</em></div>
-   <div class="stat"><small>환전 보유</small><strong>${moneyJPY(cash)}</strong><em>100엔=865.05원</em></div>
-   <div class="stat"><small>아기쇼핑 한도</small><strong>${moneyKRW(shopBudget)}</strong><em>50만원 미만</em></div>
-  </div>
-  <div class="info-card" style="margin-top:10px">
-   <div class="eyebrow">현지 현금 사용</div><h3>${moneyJPY(spentJPY)} 사용 · ${moneyJPY(remain)} 남음</h3>
-   <div class="budget-bar"><i style="width:${pct}%"></i></div>
-   <div class="expense-form"><input id="expName" placeholder="예: 점심"><input id="expAmt" inputmode="decimal" placeholder="금액"><select id="expCur"><option>JPY</option><option>KRW</option></select></div>
-   <button class="addbtn" style="width:100%;padding:11px" onclick="addExpense()">지출 추가</button>
-   <div class="expenses">${expenses.map((x,i)=>`<div class="expense"><span>${esc(x.name)}</span><b>${x.currency==="JPY"?moneyJPY(x.amount):moneyKRW(x.amount)}</b><button class="del" onclick="delExpense(${i})">×</button></div>`).join("")}</div>
-  </div>`;
+ const rows=objs(DATA["비용"]).filter(o=>pick(o,"항목"));
+ const cur=o=>pick(o,"통화").toUpperCase()||"KRW";
+ const fixed=rows.filter(o=>!EXCLUDE.test(pick(o,"항목")));
+ const K=fixed.filter(o=>cur(o)==="KRW").reduce((s,o)=>s+num(pick(o,"금액")),0);
+ const J=fixed.filter(o=>cur(o)==="JPY").reduce((s,o)=>s+num(pick(o,"금액")),0);
+ const fmt=o=>cur(o)==="JPY"?jpy(num(pick(o,"금액"))):krw(num(pick(o,"금액")));
+ const card=(o,aside)=>`<div class="budget-card ${aside?"aside":""} ${/항공/.test(pick(o,"항목"))?"full":""}"><div class="name">${iconOf(pick(o,"항목"))} ${esc(pick(o,"항목"))}</div><div class="price">${fmt(o)}</div>${pick(o,"비고")?`<div class="meta">${esc(pick(o,"비고"))}</div>`:""}</div>`;
+ $("#budgetRoot").innerHTML=`<div class="budget-hero"><div class="label">원화 확정 금액</div><div class="amount">${krw(K)}${J?` <span>+ ${jpy(J)}</span>`:""}</div><div class="sub">${J?`엔화 포함 약 ${krw(K+J*rate()/100)} · `:""}환전금·예산은 합계에서 제외</div></div>
+ <div class="budget-grid">${fixed.map(o=>card(o)).join("")}${rows.filter(o=>EXCLUDE.test(pick(o,"항목"))).map(o=>card(o,true)).join("")}</div>
+ <div class="budget-total"><b>참고:</b> 점선 카드(환전·예산·예상)는 ‘쓴 돈’이 아니라 보유 현금/목표로 따로 표시했습니다. 금액은 구글 시트 ‘비용’ 탭을 고치면 바로 반영돼요.</div>`;
+ renderSpend(rows);
+}
+function renderSpend(rows){
+ rows=rows||objs(DATA["비용"]);
+ const cash=num(pick(rows.find(o=>pick(o,"항목")==="환전")||{},"금액"));
+ const list=store.get("fuk4-expenses",store.get("fukuokaExpenses",[]));
+ const r=rate()/100;
+ const spentJ=list.filter(x=>x.currency==="JPY").reduce((s,x)=>s+x.amount,0);
+ const totalK=list.reduce((s,x)=>s+(x.currency==="JPY"?x.amount*r:x.amount),0);
+ const pct=cash?Math.min(100,spentJ/cash*100):0;
+ $("#spend").innerHTML=`<h3>🧾 현지 지출 기록</h3>
+ <div class="headline">${jpy(spentJ)} 사용${cash?` · <span style="color:var(--g)">${jpy(Math.max(0,cash-spentJ))} 남음</span>`:""}<br><small>전체 지출 원화 환산 약 ${krw(totalK)}${cash?` · 환전 ${jpy(cash)} 기준`:""}</small></div>
+ ${cash?`<div class="bar"><i style="width:${pct}%"></i></div>`:""}
+ <div class="spend-form"><input id="expName" placeholder="예: 점심 라멘" enterkeyhint="next"><input id="expAmt" inputmode="decimal" placeholder="금액" enterkeyhint="done"><select id="expCur"><option>JPY</option><option>KRW</option></select></div>
+ <button class="addbtn" id="expAdd" type="button">지출 추가</button>
+ <div class="spend-list">${list.map((x,i)=>`<div class="spend-row"><span>${esc(x.name)}<small>${x.day?esc(x.day)+" · ":""}${new Date(x.date).toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"})}</small></span><b>${x.currency==="JPY"?jpy(x.amount):krw(x.amount)}</b><button class="del" data-i="${i}" aria-label="삭제">×</button></div>`).join("")}</div>
+ <div class="source-note">지출 기록은 이 기기에만 저장됩니다.</div>`;
+ $("#expAdd").onclick=addExpense;$("#expAmt").onkeydown=e=>{if(e.key==="Enter")addExpense()};
+ $("#spend").querySelectorAll(".del").forEach(b=>b.onclick=()=>{if(!confirm("이 지출을 삭제할까요?"))return;const a=store.get("fuk4-expenses",[]);a.splice(+b.dataset.i,1);store.set("fuk4-expenses",a);renderSpend()});
 }
 function addExpense(){
- const name=$("#expName").value.trim(), amount=+$("#expAmt").value, currency=$("#expCur").value;
- if(!name||!amount)return toast("항목과 금액을 입력해줘");
- const a=JSON.parse(localStorage.getItem("fukuokaExpenses")||"[]");a.unshift({name,amount,currency,date:new Date().toISOString()});
- localStorage.setItem("fukuokaExpenses",JSON.stringify(a));renderBudget();toast("지출 저장됨");
+ const name=$("#expName").value.trim(),amount=num($("#expAmt").value),currency=$("#expCur").value;
+ if(!name||!amount)return toast("항목과 금액을 입력해 주세요");
+ const {ymd}=nowJST(),d=itinerary().findIndex(x=>x.iso===ymd);
+ const a=store.get("fuk4-expenses",store.get("fukuokaExpenses",[]));a.unshift({name,amount,currency,date:new Date().toISOString(),day:d>=0?`DAY ${d+1}`:""});
+ store.set("fuk4-expenses",a);renderSpend();toast("지출 저장됨");
 }
-function delExpense(i){const a=JSON.parse(localStorage.getItem("fukuokaExpenses")||"[]");a.splice(i,1);localStorage.setItem("fukuokaExpenses",JSON.stringify(a));renderBudget()}
+
+/* ───────── 예약 · 쇼핑 · 체크리스트 ───────── */
+function renderBooking(){
+ const rows=objs(DATA["예약정보"]).filter(o=>pick(o,"구분")||pick(o,"업체/숙소"));
+ $("#bookCount").textContent=rows.length+"건";
+ $("#bookRoot").innerHTML=rows.map(o=>{
+  const contact=pick(o,"주소/연락처","주소"),addr=contact.split("/")[0].trim(),ph=telOf(contact.split("/").slice(1).join(" ")||pick(o,"전화"));
+  const p=placesIn(pick(o,"업체/숙소")+" "+pick(o,"구분"))[0];
+  const dest=/[一-龯ぁ-んァ-ン]/.test(addr)?addr:(p?p.q:"");
+  return `<div class="quick-item"><div><span class="pill">${esc(pick(o,"구분"))}</span><b>${esc(pick(o,"업체/숙소"))}</b><br><span>${[pick(o,"일시"),pick(o,"상세"),addr].filter(Boolean).map(esc).join(" · ")}</span></div>
+  <div class="side">${pick(o,"금액")?`<span class="amt">${esc(pick(o,"금액"))}</span>`:""}${dest?`<a target="_blank" rel="noopener" href="${dirUrl(dest)}">길찾기</a>`:""}${ph?`<a href="tel:${ph.href}">전화</a>`:""}</div></div>`}).join("");
+}
 function renderShopping(){
- const rows=DATA["쇼핑"].slice(1).filter(r=>r[1]);
- const icons={"아기옷":"👶","아기옷/용품":"🧸","캐릭터/기념품":"🎀","아웃도어":"🥾","아웃도어/퍼플라벨":"🧥","기념품":"🎁"};
- $("#shoppingRoot").innerHTML=rows.map(r=>`<div class="info-card shop">
-  <div class="shop-icon">${icons[r[2]]||"🛍️"}</div><div class="shop-main"><b>${esc(r[1])}</b><div>${esc(r[0])} · ${esc(r[3])} · ${esc(r[2])}</div><div>${esc(r[4]||"")}</div></div>
-  <a class="action primary" href="${maps(r[1]+" "+r[0])}" target="_blank">지도</a>
- </div>`).join("");
+ const rows=objs(DATA["쇼핑"]).filter(o=>pick(o,"매장"));const done=store.get("fuk4-shop",{});
+ $("#shopCount").textContent=`${rows.filter(o=>done[pick(o,"매장")]).length}/${rows.length}`;
+ $("#shopRoot").innerHTML=rows.map(o=>{const n=pick(o,"매장"),where=pick(o,"지역/시설"),p=placesIn(n+" "+where)[0];
+  return `<div class="quick-item ${done[n]?"done":""}"><input type="checkbox" class="shop-check" data-n="${esc(n)}" ${done[n]?"checked":""} aria-label="다녀옴"><div style="flex:1"><b>${esc(n)}</b><br><span>${[pick(o,"예정일"),where,pick(o,"카테고리"),pick(o,"메모")].filter(Boolean).map(esc).join(" · ")}</span></div><div class="side"><a target="_blank" rel="noopener" href="${p?dirUrl(p.q):searchUrl(n+" "+where)}">지도</a></div></div>`}).join("");
+ $("#shopRoot").querySelectorAll(".shop-check").forEach(c=>c.onchange=()=>{const d=store.get("fuk4-shop",{});d[c.dataset.n]=c.checked;store.set("fuk4-shop",d);renderShopping()});
 }
 function renderChecklist(){
- const rows=DATA["체크리스트"].slice(1).filter(r=>r[2]), saved=JSON.parse(localStorage.getItem("fukuokaChecks")||"{}");
- $("#checkRoot").innerHTML=rows.map((r,i)=>`<label class="check"><input type="checkbox" data-ci="${i}" ${saved[i]?"checked":""}><div><b>${esc(r[2])}</b><span>${esc(r[1])}</span></div></label>`).join("");
- $("#checkRoot").querySelectorAll("input").forEach(c=>c.onchange=()=>{saved[c.dataset.ci]=c.checked;localStorage.setItem("fukuokaChecks",JSON.stringify(saved))});
+ const rows=objs(DATA["체크리스트"]).filter(o=>pick(o,"항목")),saved=store.get("fuk4-checks",store.get("fukuokaChecks",{}));
+ const on=i=>saved[i]??truthy(pick(rows[i],"체크"));
+ const n=rows.filter((o,i)=>on(i)).length;$("#checkCount").textContent=`${n}/${rows.length}`;
+ $("#checks").innerHTML=`<div class="progress">${n}/${rows.length} 완료</div><div class="bar" style="margin:0 0 4px"><i style="width:${rows.length?n/rows.length*100:0}%"></i></div>`+rows.map((o,i)=>`<div class="check ${on(i)?"on":""}"><input type="checkbox" id="c${i}" data-i="${i}" ${on(i)?"checked":""}><label for="c${i}"><b>${esc(pick(o,"항목"))}</b>${pick(o,"분류")?`<span>${esc(pick(o,"분류"))}</span>`:""}</label></div>`).join("");
+ $("#checks").querySelectorAll("input").forEach(c=>c.onchange=()=>{const s=store.get("fuk4-checks",store.get("fukuokaChecks",{}));s[c.dataset.i]=c.checked;store.set("fuk4-checks",s);renderChecklist();renderStatus(itinerary(),null)});
 }
-function renderAll(){renderDayTabs();renderItinerary();renderBooking();renderBudget();renderShopping();renderChecklist()}
-document.querySelectorAll(".navbtn").forEach(b=>b.onclick=()=>{
- document.querySelectorAll(".navbtn").forEach(x=>x.classList.toggle("active",x===b));
- document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active",s.id===b.dataset.section));
- window.scrollTo({top:0,behavior:"smooth"});
-});
-renderAll();sync();
+
+/* ───────── 날씨 ───────── */
+const wxNames={0:'맑음',1:'대체로 맑음',2:'구름 조금',3:'흐림',45:'안개',48:'안개',51:'이슬비',53:'이슬비',55:'강한 이슬비',61:'약한 비',63:'비',65:'강한 비',71:'눈',73:'눈',75:'많은 눈',80:'소나기',81:'소나기',82:'강한 소나기',95:'뇌우',96:'뇌우',99:'뇌우'};
+const wxIcon=c=>c<=1?"☀️":c<=2?"⛅":c<=3?"☁️":c<=48?"🌫️":c<=67||(c>=80&&c<=82)?"🌧️":c<=77?"❄️":"⛈️";
+const wxPlaces=[['후쿠오카',33.5902,130.4017],['유후인',33.2620,131.3560],['벳푸',33.2795,131.4970]];
+async function loadWx(){
+ const box=$("#weather");if(!WX)box.innerHTML=wxPlaces.map(p=>`<div class="wx"><b>${p[0]}</b><small>불러오는 중</small></div>`).join("");
+ try{
+  const a=await Promise.all(wxPlaces.map(async p=>{const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${p[1]}&longitude=${p[2]}&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=16&timezone=Asia%2FTokyo`);return[p[0],await r.json()]}));
+  WX=a;paintWx();
+ }catch(e){box.innerHTML=wxPlaces.map(p=>`<div class="wx"><b>${p[0]}</b><small>연결 실패</small></div>`).join("")}
+}
+let WX=null;
+function paintWx(){
+ if(!WX)return;const a=WX,box=$("#weather");
+  box.innerHTML=a.map(([n,j])=>`<div class="wx"><b>${n}</b><strong>${Math.round(j.current.temperature_2m)}°</strong><small>${wxIcon(j.current.weather_code)} ${wxNames[j.current.weather_code]||'날씨'}</small></div>`).join("");
+  // 여행일 예보를 각 DAY 카드에 표시 (16일 이내가 되면 자동으로 나타남)
+  const W=Object.fromEntries(a);let shown=0;
+  itinerary().forEach(d=>{
+   const t=(dayMeta(d.key).title||"")+" "+d.events.map(o=>pick(o,"지역")).join(" ");
+   const city=/유후인/.test(t)&&!/벳푸 ?(도착|체크인)|벳푸$/.test(dayMeta(d.key).title)?"유후인":/벳푸|사파리/.test(t)&&!/하카타/.test(dayMeta(d.key).title)?"벳푸":"후쿠오카";
+   const j=W[city],i=j?.daily?.time?.indexOf(d.iso)??-1,el=document.getElementById("wx-"+d.iso);
+   if(i>=0&&el){const c=j.daily.weather_code[i],pp=j.daily.precipitation_probability_max?.[i];el.textContent=`${wxIcon(c)} ${Math.round(j.daily.temperature_2m_min[i])}~${Math.round(j.daily.temperature_2m_max[i])}°${pp!=null?` · ☔${pp}%`:""}`;el.title=`${city} 예보`;el.hidden=false;shown++}
+  });
+  $("#wxNote").textContent=shown?"여행일 예보는 각 DAY 카드 상단에 표시됩니다.":"여행 16일 전부터 DAY 카드에 날짜별 예보가 자동 표시됩니다.";
+}
+
+/* ───────── 엔화 계산 ───────── */
+function fx(){$("#krw").textContent=`약 ${krw(num($("#jpy").value)*rate()/100)}`}
+function initFx(){
+ const saved=store.get("fuk4-rate",null);$("#rate100").value=saved||rateDefault();
+ $("#jpy").oninput=fx;$("#rate100").oninput=()=>{store.set("fuk4-rate",num($("#rate100").value)||null);fx();renderBudget()};fx();
+}
+
+/* ───────── 지도 ───────── */
+let map,layer,mapKind="all";
+function mapGroups(){
+ const days=itinerary(),g=[{id:"all",label:"전체"}];
+ days.forEach((d,i)=>{const seq=[];d.events.forEach(o=>placesIn(pick(o,"일정","제목")+" "+pick(o,"세부내용")).forEach(p=>{if(p.lat&&!seq.includes(p))seq.push(p)}));g.push({id:"d"+(i+1),label:`D${i+1} ${d.key}`,seq})});
+ g.push({id:"shop",label:"쇼핑"});return g;
+}
+function renderMapTools(){
+ $("#mapTools").innerHTML=mapGroups().map(x=>`<button type="button" data-kind="${x.id}" class="${x.id===mapKind?"active":""}">${esc(x.label)}</button>`).join("");
+ $("#mapTools").querySelectorAll("button").forEach(b=>b.onclick=()=>{mapKind=b.dataset.kind;renderMapTools();draw()});
+}
+function initMap(){if(!window.L||map)return;map=L.map('map',{scrollWheelZoom:false}).setView([33.39,130.81],8);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:18}).addTo(map);draw()}
+function draw(){
+ if(!map)return;if(layer)layer.remove();layer=L.layerGroup().addTo(map);
+ const grp=mapGroups().find(x=>x.id===mapKind)||{id:"all"};
+ const pts=grp.seq||PLACES.filter(p=>p.lat&&(grp.id==="all"||p.k==="shop"));
+ pts.forEach((p,i)=>{const icon=L.divIcon({className:"",html:`<div class="num-pin ${p.k==="shop"?"shop":""}">${grp.seq?i+1:p.k==="shop"?"🛍":"•"}</div>`,iconSize:[24,24],iconAnchor:[12,12]});
+  L.marker([p.lat,p.lng],{icon}).addTo(layer).bindPopup(`<b>${esc(p.short)}</b><br><a target="_blank" rel="noopener" href="${dirUrl(p.q)}">Google Maps 길찾기</a>`)});
+ if(grp.seq&&pts.length>1)L.polyline(pts.map(p=>[p.lat,p.lng]),{color:"#a54734",weight:3,opacity:.7,dashArray:"6 6"}).addTo(layer);
+ if(pts.length)map.fitBounds(L.latLngBounds(pts.map(p=>[p.lat,p.lng])),{padding:[30,30],maxZoom:15});
+}
+
+/* ───────── 전체 렌더 & 이벤트 ───────── */
+function renderAll(){renderDays();renderBudget();renderBooking();renderShopping();renderChecklist();renderMapTools();draw();loadWxCached()}
+let wxAt=0;function loadWxCached(){if(Date.now()-wxAt>10*60*1000){wxAt=Date.now();loadWx()}else paintWx()}
+
+$("#sheetLink").href=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`;
+$("#syncBtn").onclick=()=>{wxAt=0;sync(true)};
+document.getElementById('mapsec').addEventListener('toggle',e=>{if(e.target.open){map?setTimeout(()=>map.invalidateSize(),100):setTimeout(initMap,50)}});
+document.addEventListener("click",e=>{const a=e.target.closest("[data-open]");if(a){const d=document.getElementById(a.dataset.open);if(d&&!d.open)d.open=true}});
+const memo=$("#memo");memo.value=store.get("fuk4-memo",null)??(localStorage.getItem("fuk3-memo")||"");memo.oninput=()=>store.set("fuk4-memo",memo.value);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&Date.now()-store.get("fuk4-syncAt",0)>60*1000)sync()});
+setInterval(()=>{if(document.visibilityState==="visible")sync()},REFRESH_MS);
+setInterval(()=>{if(document.visibilityState==="visible"){renderDays();paintWx()}},60*1000);
+
+initFx();setSync(store.get("fuk4-syncAt",0)?"cache":"seed");renderAll();sync();
+/* 여행 당일이면 오늘 DAY로 자동 이동 */
+(()=>{const {ymd}=nowJST();const i=itinerary().findIndex(d=>d.iso===ymd);if(i>=0&&!location.hash)setTimeout(()=>{(document.getElementById("nowEvent")||document.getElementById("d"+(i+1))).scrollIntoView({block:"center"})},400)})();
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
 </body>
 </html>
