@@ -279,6 +279,20 @@ input[type=checkbox]:checked{background:var(--accent);border-color:var(--accent)
 footer{font-family:var(--serif)}
 @media(max-width:520px){.mast{font-size:56px}.cover,.cover-text{min-height:270px}.day-h h3{font-size:24px}}
 @media(max-width:370px){.mast{font-size:48px}}
+
+/* 사진 */
+.cover-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.cover:after{z-index:0;background:linear-gradient(180deg,rgba(20,18,24,.35) 0%,rgba(20,18,24,0) 35%,rgba(20,18,24,.05) 55%,rgba(20,18,24,.7) 100%)}
+.cover-text{z-index:1}
+.cover .issue{color:#fffaf2;opacity:.9;text-shadow:0 1px 6px rgba(0,0,0,.35)}
+.cover .mast{color:#fffaf2;text-shadow:0 2px 18px rgba(0,0,0,.35)}
+.cover{min-height:360px}.cover-text{min-height:360px}
+.day-photo{position:relative;margin:0 0 18px;border-radius:18px;overflow:hidden;aspect-ratio:16/10;background:var(--fill);box-shadow:0 14px 30px -20px rgba(60,35,15,.6)}
+.day-photo img{display:block;width:100%;height:100%;object-fit:cover}
+.day-photo figcaption{position:absolute;left:14px;bottom:12px;font-family:var(--serif);font-size:13.5px;color:#fffaf2;text-shadow:0 1px 8px rgba(0,0,0,.5)}
+.day-photo:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 60%,rgba(0,0,0,.35));pointer-events:none}
+.credits{margin-top:8px;font-size:11px;line-height:1.7}.credits a{color:var(--ink3);text-decoration:underline}
+@media(max-width:520px){.cover,.cover-text{min-height:330px}}
 </style>
 </head>
 <body>
@@ -294,6 +308,7 @@ footer{font-family:var(--serif)}
       <path d="M0 238 L80 225 L160 236 L250 222 L330 234 L400 226 V260 H0Z" fill="#2c2a33"/>
       <g fill="none" stroke="#fff8ee" stroke-width="2.4" stroke-linecap="round" opacity=".55"><path d="M178 214c-8-12 8-18 0-30s8-18 0-28"/><path d="M194 216c-7-10 7-15 0-25s7-15 0-24"/><path d="M209 215c-6-9 6-13 0-22s6-13 0-20"/></g>
     </svg>
+    <img class="cover-photo" id="coverPhoto" alt="" onerror="this.remove()">
     <div class="cover-text">
       <div class="issue">VOL. 01 · AUTUMN 2026</div>
       <h1 class="mast">Fukuoka</h1>
@@ -353,7 +368,7 @@ footer{font-family:var(--serif)}
   <details class="dis"><summary><span class="ico" data-ic="users"></span>계정<em id="meEmail"></em><span class="chev" data-ic="chev"></span></summary><div class="dis-body"><ul class="rows"><li class="row"><div class="main"><b id="meEmail2"></b><span>초대 관리는 구글 드라이브 ☆후쿠오카 폴더 공유에서 해요.</span></div><button class="btn" type="button" id="logoutBtn">로그아웃</button></li></ul></div></details>
   <details class="dis"><summary><span class="ico" data-ic="phone"></span>홈 화면에 추가<span class="chev" data-ic="chev" style="margin-left:auto"></span></summary><div class="dis-body"><ul class="rows"><li class="row"><div class="main"><b>iPhone</b><span>Safari 공유 버튼 → 홈 화면에 추가</span></div></li><li class="row"><div class="main"><b>Android</b><span>Chrome 메뉴 → 앱 설치</span></div></li></ul><div class="hint">한 번 열어두면 오프라인에서도 마지막으로 불러온 일정이 보여요.</div></div></details>
 
-  <footer>영업시간·교통은 바뀔 수 있어요. 당일 공식 정보를 확인하세요.</footer>
+  <footer>영업시간·교통은 바뀔 수 있어요. 당일 공식 정보를 확인하세요.<div class="credits" id="credits"></div></footer>
 </main>
 
 <div class="tabbar"><nav>
@@ -376,7 +391,17 @@ const OPTIONAL_SHEETS={"일자정보":"성공기준","앱설정":"항목","요�
 const API_URL="https://script.google.com/macros/s/AKfycbxUY5_LBbZ93hl516Xd8pGvH9dk2j149c_Cg0t371FW3qUV4y44MuTbs1bg3d_aL7LG/exec"; // apps-script/Code.gs 웹 앱
 const GOOGLE_CLIENT_ID="96798192149-km1bfg6dm5lhnq3og56c4mto875nms0f.apps.googleusercontent.com"; // Google Cloud OAuth 클라이언트 ID (웹 애플리케이션)
 const APPS_SCRIPT_URL=API_URL;
-const REQ_STALE_MIN=15;   // 요청이 이 시간(분) 넘게 '대기'면 경고 // 탭 이름: 반드시 있어야 하는 헤더(없는 탭이면 gviz가 첫 탭을 돌려주므로 검증용)
+const REQ_STALE_MIN=15;
+/* 사진: Wikimedia Commons 자유 라이선스 이미지 (시트 '일자정보'에 '사진' 열(URL)이 있으면 그걸 우선 사용) */
+const PHOTOS={
+ cover:{f:"Yufuin_and_Mount_Yufu.jpg",cap:"유후인 마을과 유후다케"},
+ "10/31":{f:"Lake_Kinrin_20221022-2.jpg",cap:"가을의 긴린코"},
+ "11/1":{f:"Umi_Jigoku_(Sea_Hell)_in_Beppu.jpg",cap:"코발트빛 우미지고쿠"},
+ "11/2":{f:"Sunset_in_Ohori_Park.JPG",cap:"오호리공원의 노을"},
+ "11/3":{f:"Nakasu-nakashimamachi_view_from_Susaki_Bridge_Chūō-ku_Hakata-ku_Fukuoka_City_20221230.jpg",cap:"나카스 강변, 하카타"}
+};
+const photoSrc=(f,w)=>`https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(f)}?width=${w}`;
+const photoPage=f=>`https://commons.wikimedia.org/wiki/File:${encodeURIComponent(f)}`;   // 요청이 이 시간(분) 넘게 '대기'면 경고 // 탭 이름: 반드시 있어야 하는 헤더(없는 탭이면 gviz가 첫 탭을 돌려주므로 검증용)
 const YEAR=2026, TRIP_START="2026-10-31", TRIP_END="2026-11-03";
 const REFRESH_MS=5*60*1000;
 
@@ -597,7 +622,9 @@ function renderDays(){
  let cur=-1;if(isToday)ev.forEach((e,j)=>{const m=minutesOf(e.time);if(m!=null&&m<=min)cur=j});
  const [mo,da]=d.key.split("/");
  const title=meta.title||[...new Set(d.events.map(o=>pick(o,"지역")).filter(x=>x&&x!=="이동"))].join(" → ");
+ const dp=(()=>{const u=safeUrl(pick(objs(DATA["일자정보"]).find(x=>dayKey(pick(x,"일자","날짜"))===d.key)||{},"사진"));const p=PHOTOS[d.key];return u?{src:u,cap:"",page:u}:p?{src:photoSrc(p.f,1200),cap:p.cap,page:photoPage(p.f)}:null})();
  $("#days").innerHTML=`<section class="day" id="d${i+1}">
+  ${dp?`<figure class="day-photo"><img src="${esc(dp.src)}" alt="${esc(dp.cap)}" loading="lazy" onerror="this.parentNode.remove()">${dp.cap?`<figcaption>${esc(dp.cap)}</figcaption>`:""}</figure>`:""}
   <div class="day-h"><div class="k"><span class="dno">Day ${String(i+1).padStart(2,"0")}</span><span class="dt">${["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"][+mo-1]} ${da} · ${["SUN","MON","TUE","WED","THU","FRI","SAT"][new Date(d.iso+"T12:00:00+09:00").getUTCDay()]}</span>${meta.badge?`<span class="bdg">${esc(meta.badge)}</span>`:""}<span class="wx" id="wx-${d.iso}"></span></div><h3>${esc(title)}</h3>${meta.lead?`<p>${esc(meta.lead)}</p>`:""}</div>
   <div class="card">
    ${meta.sums.length?`<div class="facts3">${meta.sums.map(([a,b])=>`<div><small>${esc(a)}</small><b>${esc(b)}</b></div>`).join("")}</div>`:""}
@@ -836,6 +863,10 @@ document.querySelectorAll(".tabbar a").forEach(a=>a.addEventListener("click",()=
 addEventListener("scroll",()=>requestAnimationFrame(spy),{passive:true});
 
 /* ───────── 전체 렌더 & 이벤트 ───────── */
+function initPhotos(){
+ const c=PHOTOS.cover;$("#coverPhoto").src=photoSrc(c.f,1400);$("#coverPhoto").alt=c.cap;
+ $("#credits").innerHTML="사진: Wikimedia Commons · "+Object.values(PHOTOS).map(p=>`<a href="${photoPage(p.f)}" target="_blank" rel="noopener">${esc(p.cap)}</a>`).join(" · ");
+}
 function renderAll(){renderRequests();renderDays();renderBudget();renderBooking();renderShopping();renderChecklist();renderMap();loadWxCached()}
 $("#sheetLink").href=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`;
 $("#syncBtn").onclick=()=>{wxAt=0;sync(true)};
@@ -846,7 +877,7 @@ document.addEventListener("visibilitychange",()=>{if(document.visibilityState===
 setInterval(()=>{if(document.visibilityState==="visible")sync()},REFRESH_MS);
 setInterval(()=>{if(document.visibilityState==="visible")renderDays()},60*1000);
 
-initFx();setSync(store.get("fuk5-syncAt",0)?"cache":"seed");renderAll();spy();sync();
+initPhotos();initFx();setSync(store.get("fuk5-syncAt",0)?"cache":"seed");renderAll();spy();sync();
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
 </body>
