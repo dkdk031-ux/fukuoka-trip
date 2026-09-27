@@ -521,7 +521,7 @@ function renderNav(days){
 }
 function renderDays(){
  const days=itinerary(),{ymd,min}=nowJST();
- if(selDay==null||selDay>=days.length)selDay=defaultDay(days);
+ if(selDay==null||selDay<0||selDay>=days.length)selDay=defaultDay(days);
  renderNav(days);
  const d=days[selDay];if(!d){$("#days").innerHTML="";return days}
  const i=selDay,meta=dayMeta(d.key),ev=d.events.map(eventView),isToday=d.iso===ymd;
