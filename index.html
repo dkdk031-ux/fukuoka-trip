@@ -184,6 +184,16 @@ details.dis[open] summary{border-bottom:1px solid var(--hair)}
 .map-foot{display:flex;gap:8px;padding:6px 16px 16px}
 .map-foot .btn{flex:1;justify-content:center;height:42px}
 
+.ask-form{padding:14px 16px 4px}
+.ask-form textarea{display:block;width:100%;min-height:84px;border:0;border-radius:12px;background:var(--fill);padding:12px;font-size:16px;line-height:1.5;resize:vertical;outline:none}
+.ask-row{display:grid;grid-template-columns:1fr 1fr 84px;gap:6px;margin-top:6px}
+.ask-row input{min-width:0;border:0;background:var(--fill);border-radius:10px;padding:11px 12px;font-size:16px;outline:none}
+.ask-send{height:44px;border-radius:10px;background:var(--ink);color:#fff;font-weight:700;font-size:15px}.ask-send:disabled{opacity:.4}
+.ask-warn{margin:10px 16px 0;padding:10px 12px;border-radius:10px;background:var(--warn-soft);color:#8a4a08;font-size:13.5px;line-height:1.5}
+.st{display:inline-block;font-size:11.5px;font-weight:700;border-radius:5px;padding:1px 6px;margin-right:6px;vertical-align:1px;background:var(--fill);color:var(--ink2)}
+.st.wait{background:var(--warn-soft);color:var(--warn)}.st.run{background:#e9f0f8;color:#2f6690}.st.ok{background:var(--accent-soft);color:var(--accent)}.st.bad{background:#fbeae7;color:var(--bad)}
+.row .res{display:block;font-size:13.5px;color:var(--ink2);margin-top:4px;line-height:1.5}
+.hrs-src.stale{color:var(--warn)}
 .memo{display:block;width:calc(100% - 32px);margin:8px 16px 4px;min-height:110px;border:0;border-radius:12px;background:var(--fill);padding:12px;font-size:16px;line-height:1.55;resize:vertical;outline:none}
 
 footer{text-align:center;font-size:12px;color:var(--ink3);padding:30px 0 10px;line-height:1.6}
@@ -242,6 +252,15 @@ footer{text-align:center;font-size:12px;color:var(--ink3);padding:30px 0 10px;li
     <ul class="stops" id="stops"></ul>
     <div class="map-foot" id="mapFoot"></div>
   </div></details>
+  <details class="dis" id="asksec"><summary><span class="ico" data-ic="chat"></span>Claude에게 요청<em id="askCount"></em><span class="chev" data-ic="chev"></span></summary><div>
+    <div class="ask-form">
+      <textarea id="askText" maxlength="500" placeholder="예: 11/2 저녁 캐널시티 대신 텐진 야키니쿠로 바꿔줘"></textarea>
+      <div class="ask-row"><input id="askName" placeholder="이름" maxlength="30" autocomplete="name"><input id="askPin" type="password" inputmode="numeric" placeholder="비밀번호" autocomplete="off"><button class="ask-send" id="askSend" type="button">보내기</button></div>
+    </div>
+    <div class="ask-warn" id="askWarn" hidden></div>
+    <ul class="rows" id="askList"></ul>
+    <div class="hint">요청은 시트 ‘요청’ 탭에 쌓이고, Claude가 처리하면 시트와 앱에 반영돼요. 보통 몇 분 걸려요.</div>
+  </div></details>
   <details class="dis" id="booksec"><summary><span class="ico" data-ic="ticket"></span>예약<em id="bookCount"></em><span class="chev" data-ic="chev"></span></summary><div class="dis-body"><ul class="rows" id="bookRoot"></ul><div class="hint">체크인 조건 등은 예약처·호텔 안내를 우선하세요.</div></div></details>
   <details class="dis" id="shopsec"><summary><span class="ico" data-ic="bag"></span>쇼핑<em id="shopCount"></em><span class="chev" data-ic="chev"></span></summary><div class="dis-body"><ul class="rows" id="shopRoot"></ul><div class="hint" id="shopHint"></div></div></details>
   <details class="dis" id="checksec"><summary><span class="ico" data-ic="check"></span>준비물<em id="checkCount"></em><span class="chev" data-ic="chev"></span></summary><div class="dis-body"><div class="bar" id="checkBar"><i></i></div><ul class="rows" id="checks"></ul><textarea id="memo" class="memo" placeholder="메모: 식당 후보, 꼭 살 것, 예약번호 등"></textarea><div class="hint">항목은 시트 ‘체크리스트’ 탭에서 불러와요. 체크 상태와 메모는 이 기기에 저장돼요.</div></div></details>
@@ -262,7 +281,9 @@ footer{text-align:center;font-size:12px;color:var(--ink3);padding:30px 0 10px;li
 /* ───────── 설정 ───────── */
 const SHEET_ID="1la5_IUEKxlXuIySWkCRexx_n-4QUPi80eRuLv0BW27Y";
 const SHEETS=["일정","예약정보","비용","쇼핑","체크리스트"];
-const OPTIONAL_SHEETS={"일자정보":"성공기준","앱설정":"항목"}; // 탭 이름: 반드시 있어야 하는 헤더(없는 탭이면 gviz가 첫 탭을 돌려주므로 검증용)
+const OPTIONAL_SHEETS={"일자정보":"성공기준","앱설정":"항목","요청":"처리결과"};
+const APPS_SCRIPT_URL=""; // 요청 접수용 Apps Script 웹앱 주소 (apps-script/Code.gs 배포 후 입력)
+const REQ_STALE_MIN=15;   // 요청이 이 시간(분) 넘게 '대기'면 경고 // 탭 이름: 반드시 있어야 하는 헤더(없는 탭이면 gviz가 첫 탭을 돌려주므로 검증용)
 const YEAR=2026, TRIP_START="2026-10-31", TRIP_END="2026-11-03";
 const REFRESH_MS=5*60*1000;
 
@@ -303,6 +324,7 @@ const SEED={
 ["11/1","벳푸","🦁 사파리","아프리칸 사파리 → 벳푸 지옥 → 쇼핑","오전에 사파리, 오후에 벳푸 핵심 1~2곳. 아이 컨디션을 보면서 강도를 조절.","메인:아프리칸 사파리","관광:우미지고쿠 중심","쇼핑:니시마츠야","사파리 + 우미지고쿠만 해도 충분합니다. 지고쿠 추가 관광은 가족 컨디션이 좋을 때만."],
 ["11/2","후쿠오카","🏨 포르자 하카타","벳푸 → 포르자Ⅱ · 렌터카 반납 → 오호리 · 텐진 · 캐널시티","후쿠오카 도심으로 전환하는 날. 호텔에 짐을 두고 가볍게 움직이는 구성.","숙소:포르자Ⅱ 14:00","반납:Budget 14:00","저녁:캐널시티/하카타","포르자Ⅱ 짐 보관 → 렌터카 14:00 반납 → 체크인까지 먼저 끝내면 이후가 편합니다. 호텔과 반납점이 모두 하카타역 동쪽이라 동선이 좋습니다."],
 ["11/3","귀국","🛍️ 하카타한큐","하카타한큐 → 후쿠오카공항 → 귀국","하카타역 직결 백화점에서 마지막 쇼핑 후 바로 공항으로.","쇼핑:10:00 하카타한큐","공항 이동:11:00 전후 출발","비행:13:50 출발","하카타한큐는 하카타역 직결이라 쇼핑 후 공항 이동이 단순합니다. 10:50 전후에는 쇼핑을 마치세요."]],
+"요청":[["시각","이름","요청","상태","처리결과","처리시각"]],
 "앱설정":[["항목","값","설명"],["영업시간 확인","2026-09-27 09:53",""]],
 "예약정보":[["구분","업체/숙소","일시","주소/연락처","상세","금액"],["렌터카 픽업","Budget 후쿠오카공항점","10/31 10:00","福岡市博多区月隈1丁目7-5 / 092-612-0543","소형 에코카·AT·금연·내비·ETC·베이비시트","¥21,930"],["렌터카 반납","Budget 하카타역 치쿠시구치점","11/2 14:00","福岡市博多区博多駅東1丁目18-10 / 092-461-8255","하카타역 치쿠시구치 인근",""],["숙소","노가미혼칸","10/31~11/2","大分県別府市北浜1-12-1 / 0977-22-1334","2박","337,317원 + 온천세 별도"],["숙소","호텔 포르자 하카타에키 치쿠시구치 II","11/2 14:00 ~ 11/3 11:00","福岡市博多区博多駅東1-13-3 / 092-473-7114","FORZA Double Room, Non Smoking / 성인2+아동1 / 여기어때 예약번호 26092621016D74ES1","147,662원"],["항공","인천↔후쿠오카","10/31~11/3","","3인","543,000원"],["eSIM","2인","","","여행용","800원"],["여행자보험","2인","","","","0원"]],
 "비용":[["항목","통화","금액","비고"],["항공권","KRW","543000","3인"],["료칸","KRW","337317","노가미혼칸"],["포르자Ⅱ","KRW","147662","11/2 1박"],["eSIM","KRW","800","2인"],["여행자보험","KRW","0","2인"],["렌터카","JPY","21930","현지결제 여부 확인"],["환전","JPY","110000","환전단가 100엔=865.05원 기준"],["환전 원화환산","KRW","951555","11만엔 환전"],["아기쇼핑 예산","KRW","500000","50만원 미만 목표"],["현지 생활비 예상","JPY","50000","식사·교통·관광·잡비 대략"]],
@@ -350,7 +372,8 @@ const ICONS={
  users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5a6.5 6.5 0 0 1 3.5 5.5"/>',
  ticket:'<path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4Z"/><path d="M14 6v12" stroke-dasharray="2 2"/>',
  bag:'<path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>',
- x:'<path d="M6 6l12 12M18 6 6 18"/>'
+ x:'<path d="M6 6l12 12M18 6 6 18"/>',
+ chat:'<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9.5h8M8 12.5h5"/>'
 };
 const ic=(n,cls="")=>`<svg class="i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n]||""}</svg>`;
 document.querySelectorAll("[data-ic]").forEach(el=>el.insertAdjacentHTML("afterbegin",ic(el.dataset.ic)));
@@ -447,6 +470,8 @@ function dayMeta(k){
 const placesIn=text=>PLACES.filter(p=>p.m.test(text));
 const setting=k=>pick(objs(DATA["앱설정"]).find(o=>pick(o,"항목")===k)||{},"값");
 /* "2026-09-27 09:53" → "9/27 오전 9:53 기준" */
+const kstMs=v=>{const m=String(v||"").match(/(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{2})/);return m?Date.parse(`${m[1]}-${m[2].padStart(2,"0")}-${m[3].padStart(2,"0")}T${m[4].padStart(2,"0")}:${m[5]}:00+09:00`):NaN};
+const hoursStale=()=>{const t=kstMs(setting("영업시간 확인")),{ymd}=nowJST();return isFinite(t)&&ymd<=TRIP_END&&Date.now()-t>26*3600e3};
 function hoursStamp(){const v=setting("영업시간 확인");const m=v.match(/(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{2})/);if(!m)return v?`${v} 기준`:"";const h=+m[4];return `${+m[2]}/${+m[3]} ${h<12?"오전":"오후"} ${h%12||12}:${m[5]} 기준`}
 
 /* 영업시간 문자열 → 첫 "HH:MM–HH:MM" 구간 */
@@ -505,7 +530,7 @@ function renderDays(){
      ${e.desc?`<div class="d">${esc(e.desc)}</div>`:""}${e.memo?`<div class="m">${esc(e.memo)}</div>`:""}
      ${hoursView(e.hours,pm,now,now?min:null)}
      ${e.acts.length?`<div class="acts">${e.acts.join("")}</div>`:""}${e.tipHtml}</div></div>`}).join("")}</div>
-   ${ev.some(e=>e.hours)&&hoursStamp()?`<div class="hrs-src">${ic("clock")}영업시간 ${esc(hoursStamp())}${setting("영업시간 변경")&&setting("영업시간 변경")!=="변경 없음"?` · ${esc(setting("영업시간 변경"))}`:""}</div>`:""}
+   ${ev.some(e=>e.hours)&&hoursStamp()?`<div class="hrs-src ${hoursStale()?"stale":""}">${ic("clock")}영업시간 ${esc(hoursStamp())}${hoursStale()?" · 자동 업데이트가 하루 넘게 안 됐어요":""}${setting("영업시간 변경")&&setting("영업시간 변경")!=="변경 없음"?` · ${esc(setting("영업시간 변경"))}`:""}</div>`:""}
    ${meta.note?`<p class="note"><b>${i===days.length-1&&days.length>1?"귀국일 체크":"오늘의 기준"}</b> · ${esc(meta.note)}</p>`:""}
   </div></section>`;
  paintWx();renderStatus(days);
@@ -657,6 +682,45 @@ function renderMap(){
  if($("#mapsec").open){const u=embedUrl(grp,mapFocus);if($("#gmap").dataset.src!==u){$("#gmap").dataset.src=u;$("#gmap").src=u}}
 }
 
+/* ───────── Claude에게 요청 ───────── */
+const REQ_ST={"대기":"wait","처리중":"run","완료":"ok","실패":"bad"};
+let pendingLocal=store.get("fuk5-reqLocal",[]),reqPoll=0;
+function renderRequests(){
+ const rows=objs(DATA["요청"]).filter(o=>pick(o,"요청"));
+ const sheetKeys=new Set(rows.map(o=>pick(o,"요청")+"|"+pick(o,"이름")));
+ pendingLocal=pendingLocal.filter(x=>!sheetKeys.has(x.text+"|"+x.name)&&Date.now()-x.at<30*60e3);store.set("fuk5-reqLocal",pendingLocal);
+ const list=[...pendingLocal.map(x=>({시각:"",이름:x.name,요청:x.text,상태:"보내는 중",at:x.at})),...rows.slice().reverse()].slice(0,12);
+ const waiting=rows.filter(o=>/대기|처리중/.test(pick(o,"상태")||"대기"));
+ const stale=waiting.filter(o=>{const t=kstMs(pick(o,"시각"));return isFinite(t)&&Date.now()-t>REQ_STALE_MIN*60e3});
+ $("#askCount").textContent=waiting.length?`처리 대기 ${waiting.length}`:rows.length?`${rows.length}건`:"";
+ $("#askList").innerHTML=list.map(o=>{const st=pick(o,"상태")||"대기",cls=REQ_ST[st]||"",when=pick(o,"처리시각")||pick(o,"시각");
+  return `<li class="row"><div class="main"><b><span class="st ${cls}">${esc(st)}</span>${esc(pick(o,"요청"))}</b><span>${esc(pick(o,"이름"))}${when?" · "+esc(when):""}</span>${pick(o,"처리결과")?`<span class="res">${esc(pick(o,"처리결과"))}</span>`:""}</div></li>`}).join("");
+ const w=$("#askWarn");
+ if(!APPS_SCRIPT_URL){w.hidden=false;w.textContent="요청 접수 주소가 아직 설정되지 않았어요. 관리자가 Apps Script를 연결하면 사용할 수 있어요.";}
+ else if(stale.length){const hb=setting("요청 처리 확인");w.hidden=false;w.textContent=`요청 ${stale.length}건이 ${REQ_STALE_MIN}분 넘게 처리되지 않았어요. Claude 루틴이 실행되지 않았을 수 있어요(사용량 한도 등).${hb?` 마지막 처리: ${hb}`:""} 급하면 시트를 직접 수정해 주세요.`}
+ else w.hidden=true;
+ $("#askSend").disabled=!APPS_SCRIPT_URL;
+ // 처리 대기 중인 요청이 있으면 20초마다 시트를 다시 확인 (최대 10분)
+ clearTimeout(reqPoll);if((waiting.length||pendingLocal.length)&&document.visibilityState==="visible"&&Date.now()-(store.get("fuk5-reqSentAt",0))<10*60e3)reqPoll=setTimeout(()=>sync(),20000);
+}
+async function sendRequest(){
+ const text=$("#askText").value.trim(),name=$("#askName").value.trim(),pin=$("#askPin").value.trim();
+ if(!text)return toast("요청 내용을 적어 주세요");if(!name)return toast("이름을 적어 주세요");if(!pin)return toast("비밀번호를 적어 주세요");
+ $("#askSend").disabled=true;
+ try{
+  const r=await fetch(APPS_SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({text,name,pin})});
+  const j=await r.json();
+  if(!j.ok){toast(j.error||"보내지 못했어요");return}
+  store.set("fuk5-askName",name);store.set("fuk5-askPin",pin);store.set("fuk5-reqSentAt",Date.now());
+  pendingLocal.unshift({text,name,at:Date.now()});store.set("fuk5-reqLocal",pendingLocal);
+  $("#askText").value="";toast(j.fired==="not-configured"?"접수됐어요. 루틴 연결 전이라 처리가 늦을 수 있어요":"접수됐어요. Claude가 처리 중이에요");
+  renderRequests();setTimeout(()=>sync(),8000);
+ }catch(e){toast("보내지 못했어요. 인터넷 연결을 확인해 주세요")}
+ finally{$("#askSend").disabled=!APPS_SCRIPT_URL}
+}
+$("#askSend").onclick=sendRequest;
+$("#askName").value=store.get("fuk5-askName","");$("#askPin").value=store.get("fuk5-askPin","");
+
 /* ───────── 탭바 & 스크롤 ───────── */
 const TABS=["top","plan","mapsec","budget","checksec"];
 let tabLock=0;
@@ -677,7 +741,7 @@ document.querySelectorAll(".tabbar a").forEach(a=>a.addEventListener("click",()=
 addEventListener("scroll",()=>requestAnimationFrame(spy),{passive:true});
 
 /* ───────── 전체 렌더 & 이벤트 ───────── */
-function renderAll(){renderDays();renderBudget();renderBooking();renderShopping();renderChecklist();renderMap();loadWxCached()}
+function renderAll(){renderRequests();renderDays();renderBudget();renderBooking();renderShopping();renderChecklist();renderMap();loadWxCached()}
 $("#sheetLink").href=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`;
 $("#syncBtn").onclick=()=>{wxAt=0;sync(true)};
 $("#mapsec").addEventListener("toggle",()=>{if($("#mapsec").open)renderMap()});
