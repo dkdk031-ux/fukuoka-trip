@@ -399,8 +399,11 @@ let DATA=Object.assign(structuredClone(SEED),store.get("fuk5-data",{}));
 /* 구글 시트 데이터는 Apps Script API를 거쳐서만 받는다 (로그인한 초대 계정만) */
 let SESSION=store.get("fuk5-session",""),ME=store.get("fuk5-me",""),LAST_ERR="";
 async function api(action,extra){
- const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(Object.assign({action,session:SESSION},extra||{}))});
- return r.json();
+ let r,t;
+ try{r=await fetch(API_URL,{method:"POST",redirect:"follow",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(Object.assign({action,session:SESSION},extra||{}))})}
+ catch(e){throw new Error("네트워크 오류: "+(e&&e.message||e))}
+ t=await r.text();
+ try{return JSON.parse(t)}catch(e){throw new Error(`서버 응답 오류(${r.status}): `+t.replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim().slice(0,160))}
 }
 let syncing=false;
 async function sync(manual){
@@ -438,7 +441,7 @@ async function onGoogle(resp){
   if(!r.ok){$("#loginMsg").textContent=r.error||"로그인하지 못했어요";return}
   SESSION=r.session;ME=r.email;store.set("fuk5-session",SESSION);store.set("fuk5-me",ME);
   $("#login").hidden=true;toast(`${ME} 로그인`);sync();
- }catch(e){$("#loginMsg").textContent="서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요."}
+ }catch(e){$("#loginMsg").textContent="서버에 연결하지 못했어요. "+String(e&&e.message||e).slice(0,200)}
 }
 function logout(msg){
  SESSION="";ME="";["fuk5-session","fuk5-me","fuk5-data","fuk5-syncAt"].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
