@@ -1000,9 +1000,16 @@ function upShow(title,sub,thumb){clearTimeout(upHide);const u=$("#up");u.classLi
 function upProg(p,sub){const bar=$("#upBar").parentNode;if(p==null){bar.classList.add("busy")}else{bar.classList.remove("busy");$("#upBar").style.width=Math.round(p*100)+"%"}if(sub!=null)$("#upSub").textContent=sub}
 function upDone(title,sub){const u=$("#up");u.classList.add("ok");$("#upTitle").textContent=title;$("#upSub").textContent=sub||"";upProg(1);upHide=setTimeout(()=>u.classList.remove("vis"),1800)}
 function upFail(msg){$("#upTitle").textContent="올리지 못했어요";$("#upSub").textContent=msg||"";upProg(0);upHide=setTimeout(()=>$("#up").classList.remove("vis"),3000)}
-function apiUpload(action,extra,onp){return new Promise((ok,no)=>{const x=new XMLHttpRequest();x.open("POST",API_URL);x.setRequestHeader("Content-Type","text/plain;charset=utf-8");
- x.upload.onprogress=e=>{if(e.lengthComputable&&onp)onp(e.loaded/e.total)};x.onload=()=>{try{ok(JSON.parse(x.responseText))}catch(e){no(new Error("서버 응답 오류"))}};x.onerror=()=>no(new Error("네트워크 오류"));
- x.send(JSON.stringify(Object.assign({action,session:SESSION},extra||{})))})}
+/* 업로드: Apps Script는 사전 요청(OPTIONS)을 받지 않아 XHR 진행 이벤트를 쓸 수 없음 → 단순 fetch + 크기 기반 예상 진행률 */
+async function apiUpload(action,extra,onp){
+ const body=JSON.stringify(Object.assign({action,session:SESSION},extra||{}));
+ const est=Math.max(1.5,body.length/(350*1024)),t0=performance.now();let timer=0;
+ if(onp){const step=()=>{const p=1-Math.exp(-((performance.now()-t0)/1000)/est*1.6);onp(Math.min(.95,p));timer=setTimeout(step,120)};step()}
+ try{let r;
+  try{r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body})}catch(e){throw new Error("인터넷 연결을 확인해 주세요")}
+  const t=await r.text();try{return JSON.parse(t)}catch(e){throw new Error(`서버 응답 오류(${r.status})`)}
+ }finally{clearTimeout(timer);if(onp)onp(1)}
+}
 function addLocalRow(row){(DATA["사진"]=DATA["사진"]||[["시각","이름","일자","시간","일정","설명","파일ID","촬영시각","종류"]]).push(row)}
 function softRefresh(){const y=scrollY;renderDays();renderAlbum();scrollTo(0,y)}
 $("#shotInput").onchange=async e=>{
