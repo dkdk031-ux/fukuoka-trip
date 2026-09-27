@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#f7f7f5">
+<meta name="theme-color" content="#f5efe4">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -14,6 +14,8 @@
 <link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500;1,700&display=swap">
 <title>후쿠오카 3박 4일</title>
 <script src="https://accounts.google.com/gsi/client" async></script>
 <style>
@@ -216,13 +218,87 @@ footer{text-align:center;font-size:12px;color:var(--ink3);padding:30px 0 10px;li
 .toast.show{opacity:1;transform:translate(-50%,0)}
 @media(max-width:520px){.wrap{padding:0 16px}.grid2{grid-template-columns:1fr}h1{font-size:30px}}
 @media(max-width:370px){.pass{grid-template-columns:1fr}.leg+.leg{border-left:0;border-top:1px dashed var(--fill2)}.facts3{grid-template-columns:1fr 1fr}.facts3 div:nth-child(3){grid-column:1/-1;border-left:0;border-top:1px solid var(--hair)}.seg a{font-size:10.5px}.seg a b{font-size:14px}}
+
+/* ───────── 여행 매거진 테마 ───────── */
+:root{--bg:#f5efe4;--surface:#fffdf8;--fill:#efe6d6;--fill2:#e3d7c3;--ink:#1f2633;--ink2:#4a505c;--ink3:#8c8577;--hair:rgba(60,45,25,.12);
+ --accent:#b5532a;--accent-soft:#f5e1d3;--navy:#1f2633;--r:16px;
+ --serif:"Gowun Batang","Noto Serif KR",serif;--display:"Playfair Display",Georgia,serif}
+body{background:var(--bg)}
+.top{padding-top:calc(12px + env(safe-area-inset-top))}
+.cover{position:relative;border-radius:22px;overflow:hidden;min-height:300px;color:#fffaf2;box-shadow:0 18px 40px -22px rgba(80,40,15,.55)}
+.cover-art{position:absolute;inset:0;width:100%;height:100%}
+.cover:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(31,38,51,.05) 30%,rgba(31,38,51,.55))}
+.cover-text{position:relative;z-index:1;padding:22px 22px 26px;display:flex;flex-direction:column;min-height:300px}
+.issue{font-family:var(--display);font-size:11.5px;letter-spacing:.28em;font-weight:500;color:#2c2a33;opacity:.75}
+.mast{font-family:var(--display);font-style:italic;font-weight:700;font-size:64px;line-height:.95;letter-spacing:-.02em;margin:10px 0 0;color:#2c2a33}
+.cover .sub{margin-top:auto;font-family:var(--serif);font-size:17px;line-height:1.55;color:#fffaf2;text-shadow:0 1px 8px rgba(0,0,0,.25);font-weight:700}
+.cover .dday{position:absolute;z-index:1;right:18px;bottom:22px;text-align:right}
+.cover .dday b{font-family:var(--display);font-style:italic;font-weight:700;font-size:40px;color:#fffaf2;letter-spacing:-.01em}
+.cover .dday small{color:#f6e6d2;font-size:12px}
+.pass{background:var(--surface);border-color:var(--hair);border-radius:var(--r)}
+.leg .rt b{font-family:var(--display);font-weight:700;letter-spacing:.02em}
+.leg+.leg{border-left-color:var(--fill2)}
+.seg-wrap{background:rgba(245,239,228,.88)}
+.seg{background:var(--fill)}
+.seg a b{font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:0}
+.seg a.on{background:var(--navy);box-shadow:none;color:#e9dccb}.seg a.on b{color:#fffaf2}
+.seg a.today:after{background:var(--accent)}
+.card,.dis,details.dis{background:var(--surface);border-color:var(--hair)}
+.status .ic{background:var(--accent-soft);color:var(--accent)}
+.status b{font-family:var(--serif);font-size:17px}
+.sec-h{margin-top:44px;border-top:1.5px solid var(--navy);padding-top:12px}
+.sec-h h2{font-family:var(--serif);font-weight:700;font-size:26px;letter-spacing:-.02em}
+.sec-h h2[data-en]:before{content:attr(data-en);display:block;font-family:var(--display);font-style:italic;font-weight:500;font-size:14px;color:var(--accent);letter-spacing:.02em;margin-bottom:2px}
+.day{margin-top:30px}
+.day-h .k{gap:10px;color:var(--ink2);font-weight:600;flex-wrap:wrap}
+.day-h .dno{font-family:var(--display);font-style:italic;font-weight:700;font-size:22px;color:var(--accent);letter-spacing:0}
+.day-h .dt{font-family:var(--display);font-size:12px;letter-spacing:.2em;color:var(--ink2)}
+.day-h .bdg{font-size:12px;color:var(--ink2);border:1px solid var(--hair);border-radius:999px;padding:2px 9px}
+.day-h h3{font-family:var(--serif);font-weight:700;font-size:27px;line-height:1.35;letter-spacing:-.03em;margin:8px 0 10px}
+.day-h p{font-family:var(--serif);font-size:16px;line-height:1.75;color:var(--ink2)}
+.facts3 div+div{border-left-color:var(--hair)}.facts3 b{font-family:var(--serif);font-size:15px}
+.ev .t{font-family:var(--display);font-weight:700;font-size:15.5px;letter-spacing:0;color:var(--navy)}
+.ev.key .tt:before{background:var(--accent);width:7px;height:7px}
+.ev .tt{letter-spacing:-.025em}
+.ev.now{background:linear-gradient(90deg,#fbe9d8,rgba(251,233,216,0) 75%)}
+.btn{background:var(--fill);border-radius:999px;padding:0 14px}
+.btn.pri{background:var(--navy);color:#fffaf2}
+.tip{background:#f7eee0;border-left:3px solid var(--accent);border-radius:4px 10px 10px 4px}
+.note{background:transparent;font-family:var(--serif);font-size:15px;line-height:1.75;border-top:1px dashed var(--fill2)}
+.note b{color:var(--accent)}
+.total strong{font-family:var(--display);font-weight:700;letter-spacing:-.01em;font-size:36px}
+.spend-h strong,.fx-out{font-family:var(--display);letter-spacing:0}
+.add,.ask-send{background:var(--navy)}
+.bar i{background:var(--accent)}
+input[type=checkbox]:checked{background:var(--accent);border-color:var(--accent)}
+.map-chips button.on{background:var(--navy)}
+.stop.on .n{background:var(--accent)}
+.tabbar{background:rgba(250,245,236,.9)}
+.tabbar a.on{color:var(--accent)}
+.login{background:var(--bg)}.login h1{font-family:var(--display);font-style:italic;font-size:52px;letter-spacing:-.02em}
+footer{font-family:var(--serif)}
+@media(max-width:520px){.mast{font-size:56px}.cover,.cover-text{min-height:270px}.day-h h3{font-size:24px}}
+@media(max-width:370px){.mast{font-size:48px}}
 </style>
 </head>
 <body>
 <div class="wrap" id="top">
 <header class="top">
-  <div class="top-row">
-    <div><div class="over">2026. 10. 31 – 11. 3 · 3박 4일</div><h1>후쿠오카</h1><div class="sub">유후인 · 벳푸 · 하카타</div></div>
+  <div class="cover">
+    <svg class="cover-art" viewBox="0 0 400 260" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+      <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3d9b8"/><stop offset=".55" stop-color="#eab58c"/><stop offset="1" stop-color="#d98a5f"/></linearGradient></defs>
+      <rect width="400" height="260" fill="url(#sky)"/>
+      <circle cx="300" cy="92" r="34" fill="#fbeedc" opacity=".9"/>
+      <path d="M0 190 L70 150 L120 165 L190 88 L215 70 L240 90 L300 140 L350 128 L400 150 V260 H0Z" fill="#9c5a3c" opacity=".55"/>
+      <path d="M0 215 L60 190 L130 205 L200 170 L270 196 L330 180 L400 200 V260 H0Z" fill="#6e3b2a" opacity=".75"/>
+      <path d="M0 238 L80 225 L160 236 L250 222 L330 234 L400 226 V260 H0Z" fill="#2c2a33"/>
+      <g fill="none" stroke="#fff8ee" stroke-width="2.4" stroke-linecap="round" opacity=".55"><path d="M178 214c-8-12 8-18 0-30s8-18 0-28"/><path d="M194 216c-7-10 7-15 0-25s7-15 0-24"/><path d="M209 215c-6-9 6-13 0-22s6-13 0-20"/></g>
+    </svg>
+    <div class="cover-text">
+      <div class="issue">VOL. 01 · AUTUMN 2026</div>
+      <h1 class="mast">Fukuoka</h1>
+      <div class="sub">유후인 · 벳푸 · 하카타<br>가족과 함께하는 가을 3박 4일</div>
+    </div>
     <div class="dday"><b id="dDay">D-</b><small id="dDaySub">출발까지</small></div>
   </div>
   <div class="pass">
@@ -242,18 +318,18 @@ footer{text-align:center;font-size:12px;color:var(--ink3);padding:30px 0 10px;li
   <div id="plan" style="scroll-margin-top:90px"></div>
   <div id="days"></div>
 
-  <div class="sec-h" id="budget"><h2>경비</h2><small>시트 ‘비용’ 탭 기준</small></div>
+  <div class="sec-h" id="budget"><h2 data-en="Budget">경비</h2><small>시트 ‘비용’ 탭 기준</small></div>
   <div id="budgetRoot"></div>
   <div class="label">현지 지출</div>
   <div class="card" id="spend"></div>
 
-  <div class="sec-h" id="tools"><h2>도구</h2></div>
+  <div class="sec-h" id="tools"><h2 data-en="Toolkit">도구</h2></div>
   <div class="grid2">
     <div class="card tool"><h3>현재 날씨</h3><p id="wxNote">여행 16일 전부터 날짜별 예보가 일정에 표시돼요.</p><div class="wxl" id="weather"></div></div>
     <div class="card tool"><h3>엔화 환산</h3><div class="fx"><div><label for="jpy">엔 (JPY)</label><input id="jpy" type="number" value="10000" inputmode="decimal"></div><div><label for="rate100">100엔당 원</label><input id="rate100" type="number" step="0.01" inputmode="decimal"></div></div><div class="fx-out" id="krw">-</div><p>환율은 시트 ‘환전’ 비고에서 가져오고, 직접 고치면 이 기기에 저장돼요.</p></div>
   </div>
 
-  <div class="sec-h"><h2>더보기</h2></div>
+  <div class="sec-h"><h2 data-en="Journal">더보기</h2></div>
   <details class="dis" id="mapsec"><summary><span class="ico" data-ic="map"></span>지도<em>구글맵</em><span class="chev" data-ic="chev"></span></summary><div>
     <div class="map-chips" id="mapTools"></div>
     <iframe class="gmap" id="gmap" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="구글 지도"></iframe>
@@ -289,7 +365,7 @@ footer{text-align:center;font-size:12px;color:var(--ink3);padding:30px 0 10px;li
 </nav></div>
 <div class="toast" id="toast"></div>
 <div class="login" id="login" hidden><div class="login-box">
-  <div class="over">2026. 10. 31 – 11. 3</div><h1>후쿠오카</h1><p>초대받은 가족만 볼 수 있어요.<br>구글 계정으로 로그인해 주세요.</p>
+  <div class="over">VOL. 01 · AUTUMN 2026</div><h1>Fukuoka</h1><p>초대받은 가족만 볼 수 있어요.<br>구글 계정으로 로그인해 주세요.</p>
   <div id="gbtn" class="gbtn"></div><p class="login-msg" id="loginMsg"></p>
 </div></div>
 <script>
@@ -522,7 +598,7 @@ function renderDays(){
  const [mo,da]=d.key.split("/");
  const title=meta.title||[...new Set(d.events.map(o=>pick(o,"지역")).filter(x=>x&&x!=="이동"))].join(" → ");
  $("#days").innerHTML=`<section class="day" id="d${i+1}">
-  <div class="day-h"><div class="k">Day ${i+1} · ${mo}월 ${da}일 ${wdOf(d.key)}요일${meta.badge?` · ${esc(meta.badge)}`:""}<span class="wx" id="wx-${d.iso}"></span></div><h3>${esc(title)}</h3>${meta.lead?`<p>${esc(meta.lead)}</p>`:""}</div>
+  <div class="day-h"><div class="k"><span class="dno">Day ${String(i+1).padStart(2,"0")}</span><span class="dt">${["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"][+mo-1]} ${da} · ${["SUN","MON","TUE","WED","THU","FRI","SAT"][new Date(d.iso+"T12:00:00+09:00").getUTCDay()]}</span>${meta.badge?`<span class="bdg">${esc(meta.badge)}</span>`:""}<span class="wx" id="wx-${d.iso}"></span></div><h3>${esc(title)}</h3>${meta.lead?`<p>${esc(meta.lead)}</p>`:""}</div>
   <div class="card">
    ${meta.sums.length?`<div class="facts3">${meta.sums.map(([a,b])=>`<div><small>${esc(a)}</small><b>${esc(b)}</b></div>`).join("")}</div>`:""}
    <div class="tl">${ev.map((e,j)=>{const now=isToday&&j===cur,done=isToday&&cur>=0&&j<cur;const pm=minutesOf(e.time);
