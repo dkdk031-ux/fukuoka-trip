@@ -9,7 +9,7 @@
  * 접속 허용: ☆후쿠오카 폴더(또는 시트)를 공유받은 계정 + 소유자. 공유에서 빼면 10분 안에 차단된다.
  *
  * 스크립트 속성
- *   GOOGLE_CLIENT_ID  Google Cloud에서 만든 OAuth 클라이언트 ID (필수)
+ *   GOOGLE_CLIENT_ID  (선택) OAuth 클라이언트 ID. 비우면 아래 CLIENT_ID 사용
  *   ROUTINE_FIRE_URL, ROUTINE_TOKEN, ROUTINE_HEADERS(JSON)  요청이 들어오면 Claude 루틴을 깨운다 (선택)
  *   SESSION_SECRET    로그인 유지용 서명 키. 비워두면 처음 실행 때 자동 생성
  */
@@ -17,6 +17,7 @@ const SHEET_ID = '1la5_IUEKxlXuIySWkCRexx_n-4QUPi80eRuLv0BW27Y';
 const FOLDER_ID = '1mIYQG3k0QQxruvwEk0dHv-1LMhM0gtRx';        // ☆후쿠오카
 const ATTACH_FOLDER_ID = '1u2wL6asQIthUxrB_H34sQgSGiSMBHyRI'; // ☆후쿠오카/요청 첨부
 const TABS = ['일정', '예약정보', '비용', '쇼핑', '체크리스트', '일자정보', '앱설정', '요청'];
+const CLIENT_ID = '96798192149-km1bfg6dm5lhnq3og56c4mto875nms0f.apps.googleusercontent.com'; // 공개돼도 되는 값
 const SESSION_DAYS = 30;
 const MAX_LEN = 500;
 const MAX_FILES = 3;
@@ -45,8 +46,7 @@ function doPost(e) {
 
 /* ───────── 로그인 ───────── */
 function login(idToken) {
-  const clientId = PropertiesService.getScriptProperties().getProperty('GOOGLE_CLIENT_ID');
-  if (!clientId) return { ok: false, error: '관리자 설정 필요: GOOGLE_CLIENT_ID' };
+  const clientId = clientIdOf();
   const res = UrlFetchApp.fetch('https://oauth2.googleapis.com/tokeninfo?id_token=' + encodeURIComponent(idToken || ''), { muteHttpExceptions: true });
   if (res.getResponseCode() !== 200) return { ok: false, auth: false, error: '구글 로그인 확인에 실패했어요' };
   const info = JSON.parse(res.getContentText());
@@ -56,6 +56,10 @@ function login(idToken) {
   const email = String(info.email).toLowerCase();
   if (!isAllowed(email)) return { ok: false, auth: false, denied: true, error: '초대받지 않은 계정이에요: ' + email };
   return { ok: true, email: email, name: info.name || '', session: makeSession(email) };
+}
+
+function clientIdOf() {
+  return (PropertiesService.getScriptProperties().getProperty('GOOGLE_CLIENT_ID') || CLIENT_ID).trim();
 }
 
 function secret() {
@@ -169,6 +173,6 @@ function setupCheck() {
   CacheService.getScriptCache().remove('allowed');
   isAllowed('x');
   Logger.log('허용 계정: ' + CacheService.getScriptCache().get('allowed'));
-  Logger.log('GOOGLE_CLIENT_ID: ' + (PropertiesService.getScriptProperties().getProperty('GOOGLE_CLIENT_ID') ? '설정됨' : '없음'));
+  Logger.log('클라이언트 ID: ' + clientIdOf());
   Logger.log('루틴 연결: ' + fireRoutine('연결 테스트입니다. 처리할 요청이 없으면 그대로 종료하세요.'));
 }
