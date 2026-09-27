@@ -9,9 +9,6 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="후쿠오카">
 <meta name="format-detection" content="telephone=no">
-<link rel="manifest" href="./manifest.webmanifest">
-<link rel="icon" href="./icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <title>후쿠오카 3박 4일</title>
@@ -191,7 +188,8 @@ details.dis[open] summary{border-bottom:1px solid var(--hair)}
 .ask-files span{display:inline-flex;align-items:center;gap:6px;max-width:100%;height:30px;padding:0 6px 0 10px;border-radius:8px;background:var(--fill);font-size:12.5px;font-weight:600;color:var(--ink2)}
 .ask-files span em{font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px}.ask-files button{width:22px;height:22px;display:grid;place-items:center;color:var(--ink3)}.ask-files button svg.i{width:14px;height:14px}
 .row .att{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;color:var(--ink3);margin-top:3px}.row .att svg.i{width:13px;height:13px}
-.ask-row{display:grid;grid-template-columns:1fr 1fr 84px;gap:6px;margin-top:6px}
+.ask-me{align-self:center;font-size:13px;color:var(--ink3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ask-row{display:grid;grid-template-columns:1fr 84px;gap:6px;margin-top:6px}
 .ask-row input{min-width:0;border:0;background:var(--fill);border-radius:10px;padding:11px 12px;font-size:16px;outline:none}
 .ask-send{height:44px;border-radius:10px;background:var(--ink);color:#fff;font-weight:700;font-size:15px}.ask-send:disabled{opacity:.4}
 .ask-warn{margin:10px 16px 0;padding:10px 12px;border-radius:10px;background:var(--warn-soft);color:#8a4a08;font-size:13.5px;line-height:1.5}
@@ -209,6 +207,7 @@ footer{text-align:center;font-size:12px;color:var(--ink3);padding:30px 0 10px;li
 .tabbar a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0;font-size:10.5px;font-weight:600;color:var(--ink3)}
 .tabbar a svg.i{width:24px;height:24px;stroke-width:1.7}
 .tabbar a.on{color:var(--accent)}
+.denied[hidden]{display:none}.denied{position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-items:center;padding:24px;text-align:center}.denied b{display:block;font-size:22px;font-weight:800;letter-spacing:-.03em}.denied p{color:var(--ink2);margin:8px 0 0;font-size:15px}
 .toast{position:fixed;left:50%;bottom:calc(80px + env(safe-area-inset-bottom));transform:translate(-50%,12px);background:rgba(17,20,18,.92);color:#fff;padding:10px 16px;border-radius:12px;font-size:13.5px;font-weight:600;opacity:0;pointer-events:none;transition:.22s;z-index:90;white-space:nowrap}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 @media(max-width:520px){.wrap{padding:0 16px}.grid2{grid-template-columns:1fr}h1{font-size:30px}}
@@ -262,7 +261,7 @@ footer{text-align:center;font-size:12px;color:var(--ink3);padding:30px 0 10px;li
       <textarea id="askText" maxlength="500" placeholder="예: 11/2 저녁 캐널시티 대신 텐진 야키니쿠로 바꿔줘"></textarea>
       <div class="ask-files" id="askFiles"></div>
       <label class="ask-attach"><span data-ic="clip"></span>사진·PDF 첨부 (최대 3개)<input id="askFile" type="file" accept="image/*,application/pdf" multiple hidden></label>
-      <div class="ask-row"><input id="askName" placeholder="이름" maxlength="30" autocomplete="name"><input id="askPin" type="password" inputmode="numeric" placeholder="비밀번호" autocomplete="off"><button class="ask-send" id="askSend" type="button">보내기</button></div>
+      <div class="ask-row"><span class="ask-me" id="askMe"></span><button class="ask-send" id="askSend" type="button">보내기</button></div>
     </div>
     <div class="ask-warn" id="askWarn" hidden></div>
     <ul class="rows" id="askList"></ul>
@@ -284,60 +283,19 @@ footer{text-align:center;font-size:12px;color:var(--ink3);padding:30px 0 10px;li
   <a href="#checksec" data-tab="checksec" data-open="checksec"><span data-ic="check"></span>준비</a>
 </nav></div>
 <div class="toast" id="toast"></div>
+<div class="denied" id="denied" hidden><div><b>접근 권한이 없어요</b><p>이 여행앱은 초대받은 가족만 볼 수 있어요. 관리자에게 공유를 요청해 주세요.</p></div></div>
 <script>
 /* ───────── 설정 ───────── */
 const SHEET_ID="1la5_IUEKxlXuIySWkCRexx_n-4QUPi80eRuLv0BW27Y";
 const SHEETS=["일정","예약정보","비용","쇼핑","체크리스트"];
 const OPTIONAL_SHEETS={"일자정보":"성공기준","앱설정":"항목","요청":"처리결과"};
-const APPS_SCRIPT_URL=""; // 요청 접수용 Apps Script 웹앱 주소 (apps-script/Code.gs 배포 후 입력)
+const APPS_SCRIPT_URL="gas"; // Apps Script 웹 앱: google.script.run 사용
 const REQ_STALE_MIN=15;   // 요청이 이 시간(분) 넘게 '대기'면 경고 // 탭 이름: 반드시 있어야 하는 헤더(없는 탭이면 gviz가 첫 탭을 돌려주므로 검증용)
 const YEAR=2026, TRIP_START="2026-10-31", TRIP_END="2026-11-03";
 const REFRESH_MS=5*60*1000;
 
 /* 시트가 안 열릴 때 쓰는 내장 데이터 (시트와 같은 형식: 첫 줄 = 헤더) */
-const SEED={
-"일정":[
-["일자", "시간", "지역", "일정", "세부내용", "이동/메모", "중요", "팁", "영업시간"],
-["10/31(토)", "07:45", "인천", "인천공항 출발", "후쿠오카 09:15 도착 예정", "", "", "", ""],
-["10/31(토)", "09:15", "후쿠오카공항", "후쿠오카공항 도착 → Budget 셔틀", "수하물 수령 후 공항 앞 셔틀 미팅장소로 이동", "카시트·ETC·내비 옵션 확인", "Y", "", "08:00–20:00 · Budget 공항점"],
-["10/31(토)", "10:00", "후쿠오카공항", "Budget 후쿠오카공항점 렌터카 픽업", "소형 에코카 · AT · 금연 · ETC 카드/베이비시트 포함", "", "Y", "", "08:00–20:00 · 연중무휴"],
-["10/31(토)", "10:30", "이동", "유후인으로 출발", "약 1시간 30분~2시간. 중간에 휴게소 1회 쉬는 전제로 움직이기", "", "", "가족여행: 아기 수유/기저귀와 임산부 휴식 때문에 도착 시간을 15~20분 여유 있게 잡는 게 좋습니다.", ""],
-["10/31(토)", "12:30", "유후인", "유후인 도착 · 점심", "주차 후 점심부터 해결. 웨이팅이 길면 바로 대체 매장으로 전환", "", "", "", ""],
-["10/31(토)", "14:00", "유후인", "긴린코 → 유후인 거리 → 플로랄빌리지", "긴린코를 기준점으로 잡고 상점가를 천천히 이동", "자갈길은 아기띠 병행", "Y", "", "긴린코 상시 개방 · 플로랄빌리지 09:30–17:30"],
-["10/31(토)", "16:30", "이동", "벳푸로 이동", "유후인 → 벳푸 약 40~60분. 해 지기 전에 이동 시작", "", "", "", ""],
-["10/31(토)", "17:30", "벳푸", "노가미혼칸 체크인", "저녁은 숙소 주변에서 편하게", "온천은 컨디션 좋을 때만 짧게", "Y", "", "체크인 16:00–23:00 · 체크아웃 11:00"],
-["11/1(일)", "08:30", "벳푸", "숙소 출발", "사파리까지 약 30~40분. 입장 시작 시간 전후 도착 목표", "", "", "", ""],
-["11/1(일)", "09:30~", "우사", "아프리칸 사파리", "자가용으로 도는 마이카 사파리 중심", "당일 운영시간 공식 페이지 확인 · 현금 대비", "Y", "", "09:15–16:00 (11월 기준) · 입장 15:30까지 · 매표 08:50부터"],
-["11/1(일)", "12:30", "이동", "점심", "사파리 인근 또는 벳푸 복귀 동선에서. 아이 식사 시간 우선", "", "", "", ""],
-["11/1(일)", "14:00", "벳푸", "우미지고쿠 중심 지고쿠메구리", "7곳 전부보다 대표 1~2곳만", "우미지고쿠 1순위 · 여유 있으면 치노이케", "Y", "", "08:00–17:00 · 연중무휴"],
-["11/1(일)", "16:00", "벳푸", "니시마츠야 벳푸 야마나미점", "아기옷·소모품 1차 쇼핑", "", "", "쇼핑 팁: 생활형 아기용품은 여기서 먼저 해결하고, Day4 하카타한큐는 산리오·베이비·기념품 위주로.", "10:00–20:00"],
-["11/1(일)", "17:30", "벳푸", "노가미혼칸 복귀 · 저녁", "벳푸역/키타하마 근처 가까운 곳 우선", "둘째 날 피로 누적 시점", "", "", ""],
-["11/2(월)", "09:00", "벳푸→후쿠오카", "체크아웃 → 후쿠오카 출발", "약 2시간. 휴게소 포함해 반납 시간에 쫓기지 않게 출발", "", "", "", "체크아웃 11:00까지"],
-["11/2(월)", "11:30", "하카타", "호텔 포르자Ⅱ 짐 보관", "JR 하카타역 치쿠시구치 도보 약 3분. 체크인 전이라 짐 먼저 맡기기", "", "Y", "", "체크인 14:00 · 짐 보관 가능"],
-["11/2(월)", "13:30", "하카타", "렌터카 반납 (Budget 하카타역 치쿠시구치점)", "예약 반납시간 14:00", "", "Y", "", "08:00–20:00 · 연중무휴"],
-["11/2(월)", "14:10", "하카타", "포르자Ⅱ 체크인", "FORZA Double Room · Non Smoking · 성인 2 + 아동 1", "체크인 14:00 / 체크아웃 11:00", "Y", "예약번호: 여기어때 26092621016D74ES1", "체크인 14:00부터 · 체크아웃 11:00"],
-["11/2(월)", "14:40", "후쿠오카", "오호리공원", "지하철 이동. 유모차로 걷기 좋고 도시 일정 시작점으로 편안함", "", "Y", "", "상시 개방"],
-["11/2(월)", "16:00", "텐진/다이묘", "몽벨 · nanamica 쇼핑", "필요한 브랜드만 찍고 이동해서 체력 소모 줄이기", "", "Y", "", "몽벨 10:30–21:00 · nanamica 11:00–19:00"],
-["11/2(월)", "18:00", "하카타", "캐널시티 하카타 · 저녁", "쇼핑과 식사를 한 장소에서 끝내기", "야타이 제외", "Y", "", "쇼핑 10:00–21:00 · 식당 11:00–23:00"],
-["11/2(월)", "20:00", "하카타", "포르자Ⅱ 복귀", "다음날 10시 하카타한큐 일정이 있어 무리한 야간 일정 없음", "", "", "", ""],
-["11/3(화)", "08:30", "하카타", "기상 · 체크아웃 준비", "체크아웃 마감 11:00. 수하물 최종 정리", "", "", "", ""],
-["11/3(화)", "09:30", "하카타", "체크아웃 · 짐 맡기기 → 하카타한큐", "포르자Ⅱ에 짐을 맡긴 뒤 하카타역 한큐로 도보 이동", "", "", "", ""],
-["11/3(화)", "10:00", "하카타역", "하카타한큐 오픈 → 마지막 쇼핑", "7F 베이비·키즈/산리오 먼저, 시간 남으면 B1 식품·기념품", "아뮤플라자 7F MARKEY'S와 연결", "Y", "추천 순서: 7F 산리오/베이비 → B1 기념품. 영업시간 10:00~20:00.", "10:00–20:00 · 11/3은 일본 공휴일(문화의 날), 혼잡 예상"],
-["11/3(화)", "10:50", "하카타→공항", "쇼핑 종료 → 공항 이동", "13:50 국제선이므로 쇼핑 연장 금지. 택시 또는 국제선 직행버스", "", "Y", "", ""],
-["11/3(화)", "11:30", "후쿠오카공항", "국제선 도착 목표", "체크인·수하물 위탁·출국심사", "", "", "", ""],
-["11/3(화)", "13:50", "후쿠오카공항", "후쿠오카 출발 → 인천 15:30", "여행 종료", "", "Y", "", ""]],
-"일자정보":[["일자","탭","배지","제목","설명","요약1","요약2","요약3","성공기준"],
-["10/31","유후인","🚗 렌터카","후쿠오카공항 → 유후인 → 벳푸","첫날 핵심은 욕심내지 않고 유후인 산책 후 벳푸에 안정적으로 들어가는 것.","메인:긴린코·유후인","이동:공항→유후인→벳푸","숙박:노가미혼칸","긴린코를 보고 벳푸 숙소에 무리 없이 도착하면 성공. 유후인 체류가 늦어지면 플로랄빌리지를 줄이세요."],
-["11/1","벳푸","🦁 사파리","아프리칸 사파리 → 벳푸 지옥 → 쇼핑","오전에 사파리, 오후에 벳푸 핵심 1~2곳. 아이 컨디션을 보면서 강도를 조절.","메인:아프리칸 사파리","관광:우미지고쿠 중심","쇼핑:니시마츠야","사파리 + 우미지고쿠만 해도 충분합니다. 지고쿠 추가 관광은 가족 컨디션이 좋을 때만."],
-["11/2","후쿠오카","🏨 포르자 하카타","벳푸 → 포르자Ⅱ · 렌터카 반납 → 오호리 · 텐진 · 캐널시티","후쿠오카 도심으로 전환하는 날. 호텔에 짐을 두고 가볍게 움직이는 구성.","숙소:포르자Ⅱ 14:00","반납:Budget 14:00","저녁:캐널시티/하카타","포르자Ⅱ 짐 보관 → 렌터카 14:00 반납 → 체크인까지 먼저 끝내면 이후가 편합니다. 호텔과 반납점이 모두 하카타역 동쪽이라 동선이 좋습니다."],
-["11/3","귀국","🛍️ 하카타한큐","하카타한큐 → 후쿠오카공항 → 귀국","하카타역 직결 백화점에서 마지막 쇼핑 후 바로 공항으로.","쇼핑:10:00 하카타한큐","공항 이동:11:00 전후 출발","비행:13:50 출발","하카타한큐는 하카타역 직결이라 쇼핑 후 공항 이동이 단순합니다. 10:50 전후에는 쇼핑을 마치세요."]],
-"요청":[["시각","이름","요청","상태","처리결과","처리시각","첨부"]],
-"앱설정":[["항목","값","설명"],["영업시간 확인","2026-09-27 09:53",""]],
-"예약정보":[["구분","업체/숙소","일시","주소/연락처","상세","금액"],["렌터카 픽업","Budget 후쿠오카공항점","10/31 10:00","福岡市博多区月隈1丁目7-5 / 092-612-0543","소형 에코카·AT·금연·내비·ETC·베이비시트","¥21,930"],["렌터카 반납","Budget 하카타역 치쿠시구치점","11/2 14:00","福岡市博多区博多駅東1丁目18-10 / 092-461-8255","하카타역 치쿠시구치 인근",""],["숙소","노가미혼칸","10/31~11/2","大分県別府市北浜1-12-1 / 0977-22-1334","2박","337,317원 + 온천세 별도"],["숙소","호텔 포르자 하카타에키 치쿠시구치 II","11/2 14:00 ~ 11/3 11:00","福岡市博多区博多駅東1-13-3 / 092-473-7114","FORZA Double Room, Non Smoking / 성인2+아동1 / 여기어때 예약번호 26092621016D74ES1","147,662원"],["항공","인천↔후쿠오카","10/31~11/3","","3인","543,000원"],["eSIM","2인","","","여행용","800원"],["여행자보험","2인","","","","0원"]],
-"비용":[["항목","통화","금액","비고"],["항공권","KRW","543000","3인"],["료칸","KRW","337317","노가미혼칸"],["포르자Ⅱ","KRW","147662","11/2 1박"],["eSIM","KRW","800","2인"],["여행자보험","KRW","0","2인"],["렌터카","JPY","21930","현지결제 여부 확인"],["환전","JPY","110000","환전단가 100엔=865.05원 기준"],["환전 원화환산","KRW","951555","11만엔 환전"],["아기쇼핑 예산","KRW","500000","50만원 미만 목표"],["현지 생활비 예상","JPY","50000","식사·교통·관광·잡비 대략"]],
-"쇼핑":[["지역/시설", "매장", "카테고리", "예정일", "메모", "영업시간"], ["벳푸", "니시마츠야 벳푸 야마나미점", "아기옷/용품", "11/1", "1차 쇼핑", "10:00–20:00"], ["하카타한큐 7F", "BREEZE terrace", "아기옷", "11/3", "BREEZE / après les cours 등", "10:00–20:00"], ["JR 하카타시티 아뮤플라자 7F", "MARKEY'S", "아기옷", "11/3", "한큐와 연결해서 이동", "10:00–21:00"], ["하카타한큐 7F", "산리오", "캐릭터/기념품", "11/3", "", "10:00–20:00"], ["텐진", "몽벨", "아웃도어", "11/2", "", "10:30–21:00"], ["다이묘", "nanamica", "아웃도어/퍼플라벨", "11/2", "", "11:00–19:00"], ["캐널시티", "산리오/쇼핑", "기념품", "11/2", "", "10:00–21:00"]],
-"체크리스트":[["체크","분류","항목"],["FALSE","서류","여권·항공권·숙소 예약확인"],["FALSE","임산부","산모수첩·필요 서류·편한 신발·수분"],["FALSE","아기","유모차·아기띠·기저귀·물티슈"],["FALSE","아기","분유/이유식·보온병·체온계·해열제"],["FALSE","날씨","가디건·경량패딩·담요·우산"],["FALSE","결제","해외결제카드·현금 ¥110,000"],["FALSE","렌터카","ETC·카시트·반납시간 확인"],["FALSE","귀국","11/3 하카타한큐 쇼핑 후 공항 이동시간 확인"]]
-};
+const SEED={"일자정보": [["일자", "탭", "배지", "제목", "설명", "요약1", "요약2", "요약3", "성공기준"]], "요청": [["시각", "이름", "요청", "상태", "처리결과", "처리시각", "첨부"]], "앱설정": [["항목", "값", "설명"]], "예약정보": [["구분", "업체/숙소", "일시", "주소/연락처", "상세", "금액"]], "비용": [["항목", "통화", "금액", "비고"]], "쇼핑": [["지역/시설", "매장", "카테고리", "예정일", "메모", "영업시간"]], "체크리스트": [["체크", "분류", "항목"]]};
 
 /* 장소 사전: 시트 문구에 키워드가 있으면 길찾기·전화·공식사이트·지도 좌표를 자동으로 붙임 */
 const PLACES=[
@@ -401,7 +359,7 @@ const num=v=>{const n=+String(v??"").replace(/[^\d.-]/g,"");return isFinite(n)?n
 const krw=n=>Math.round(n).toLocaleString("ko-KR")+"원";
 const jpy=n=>"¥"+Math.round(n).toLocaleString("ja-JP");
 const WEEK="일월화수목금토";
-const btn=(href,label,icon,pri,ext=true)=>`<a class="btn ${pri?"pri":""}" href="${esc(href)}"${ext?' target="_blank" rel="noopener"':""}>${icon?ic(icon):""}${esc(label)}</a>`;
+const btn=(href,label,icon,pri,ext=true)=>`<a class="btn ${pri?"pri":""}" href="${esc(href)}"${ext?' target="_blank" rel="noopener"':' target="_top"'}>${icon?ic(icon):""}${esc(label)}</a>`;
 
 function objs(table){
  if(!table||!table.length)return[];
@@ -427,40 +385,32 @@ function nowJST(){const p=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Tokyo"
 
 /* ───────── 시트 동기화 ───────── */
 let DATA=Object.assign(structuredClone(SEED),store.get("fuk5-data",{}));
-function parseGviz(txt){
- const obj=JSON.parse(txt.slice(txt.indexOf("{"),txt.lastIndexOf("}")+1));
- if(obj.status==="error")throw new Error("gviz");
- const cell=c=>{if(!c)return"";if(typeof c.v==="number"||typeof c.v==="boolean")return c.v;return c.f??c.v??""};
- let cols=obj.table.cols.map(c=>c.label||"");
- let rows=obj.table.rows.map(r=>(r.c||[]).map(cell));
- if(cols.every(c=>!c)&&rows.length){cols=rows[0].map(String);rows=rows.slice(1)}
- return[cols,...rows];
-}
-async function pullSheet(name){
- const r=await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&headers=1&sheet=${encodeURIComponent(name)}&_=${Date.now()}`,{cache:"no-store"});
- if(!r.ok)throw new Error(name);
- return parseGviz(await r.text());
-}
+let ME="";
+const gas=(fn,...args)=>new Promise((res,rej)=>google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](...args));
 let syncing=false;
 async function sync(manual){
  if(syncing)return;syncing=true;$("#syncBtn").classList.add("spin");
  try{
-  const vals=await Promise.all(SHEETS.map(pullSheet));
-  SHEETS.forEach((n,i)=>{if(vals[i].length>1)DATA[n]=vals[i]});
-  for(const[n,need]of Object.entries(OPTIONAL_SHEETS)){
-   try{const t=await pullSheet(n);if(t[0].map(String).some(h=>h.trim()===need))DATA[n]=t}catch(e){}
-  }
+  const r=await gas("getData");
+  for(const[n,t]of Object.entries(r.tabs||{}))if(t&&t.length)DATA[n]=t;
+  ME=r.user||"";store.set("fuk5-me",ME);
   store.set("fuk5-data",DATA);store.set("fuk5-syncAt",Date.now());
   setSync("ok");if(manual)toast("최신 내용을 불러왔어요");
  }catch(e){
-  setSync(store.get("fuk5-syncAt",0)?"cache":"seed");if(manual)toast("시트에 연결하지 못했어요");
+  const msg=String(e&&e.message||e);
+  if(/권한|permission|access|찾을 수 없|not found/i.test(msg)){showDenied();}
+  setSync(store.get("fuk5-syncAt",0)?"cache":"seed");if(manual)toast("불러오지 못했어요");
  }
  syncing=false;$("#syncBtn").classList.remove("spin");renderAll();
+}
+function showDenied(){
+ localStorage.removeItem("fuk5-data");DATA=structuredClone(SEED);
+ $("#denied").hidden=false;
 }
 function setSync(state){
  const at=store.get("fuk5-syncAt",0),t=at?new Date(at).toLocaleTimeString("ko-KR",{hour:"numeric",minute:"2-digit"}):"";
  $("#syncLed").className="led "+(state==="ok"?"ok":state==="seed"?"off":"");
- $("#syncText").textContent=state==="ok"?`구글 시트 연동됨 · ${t}`:state==="cache"?`오프라인 · ${t} 기준`:"기본 일정 표시 중";
+ $("#syncText").textContent=state==="ok"?`구글 시트 연동됨 · ${t}`:state==="cache"?`오프라인 · ${t} 기준`:"불러오는 중";
 }
 
 /* ───────── 일정 ───────── */
@@ -523,7 +473,7 @@ function renderDays(){
  const days=itinerary(),{ymd,min}=nowJST();
  if(selDay==null||selDay<0||selDay>=days.length)selDay=defaultDay(days);
  renderNav(days);
- const d=days[selDay];if(!d){$("#days").innerHTML="";return days}
+ const d=days[selDay];if(!d){$("#days").innerHTML='<p class="hint" style="padding:40px 0;text-align:center">일정을 불러오는 중이에요…</p>';return days}
  const i=selDay,meta=dayMeta(d.key),ev=d.events.map(eventView),isToday=d.iso===ymd;
  let cur=-1;if(isToday)ev.forEach((e,j)=>{const m=minutesOf(e.time);if(m!=null&&m<=min)cur=j});
  const [mo,da]=d.key.split("/");
@@ -614,7 +564,7 @@ function renderBooking(){
   const contact=pick(o,"주소/연락처","주소"),addr=contact.split("/")[0].trim(),ph=telOf(contact.split("/").slice(1).join(" ")||pick(o,"전화"));
   const p=placesIn(pick(o,"업체/숙소")+" "+pick(o,"구분"))[0],dest=/[一-龯ぁ-んァ-ン]/.test(addr)?addr:(p?p.q:"");
   return `<li class="row"><div class="main"><b><span class="chip">${esc(pick(o,"구분"))}</span>${esc(pick(o,"업체/숙소"))}</b><span>${[pick(o,"일시"),pick(o,"상세")].filter(Boolean).map(esc).join(" · ")}</span>${pick(o,"금액")?`<span style="color:var(--ink);font-weight:700;margin-top:3px">${esc(pick(o,"금액"))}</span>`:""}</div>
-  <div class="links">${dest?`<a class="icon-btn" target="_blank" rel="noopener" href="${esc(dirUrl(dest))}" aria-label="길찾기">${ic("nav")}</a>`:""}${ph?`<a class="icon-btn" href="tel:${ph.href}" aria-label="전화">${ic("phone")}</a>`:""}</div></li>`}).join("");
+  <div class="links">${dest?`<a class="icon-btn" target="_blank" rel="noopener" href="${esc(dirUrl(dest))}" aria-label="길찾기">${ic("nav")}</a>`:""}${ph?`<a class="icon-btn" target="_top" href="tel:${ph.href}" aria-label="전화">${ic("phone")}</a>`:""}</div></li>`}).join("");
 }
 function renderShopping(){
  const rows=objs(DATA["쇼핑"]).filter(o=>pick(o,"매장"));const done=store.get("fuk5-shop",store.get("fuk4-shop",{}));
@@ -702,30 +652,28 @@ function renderRequests(){
  const stale=waiting.filter(o=>{const t=kstMs(pick(o,"시각"));return isFinite(t)&&Date.now()-t>REQ_STALE_MIN*60e3});
  $("#askCount").textContent=waiting.length?`처리 대기 ${waiting.length}`:rows.length?`${rows.length}건`:"";
  $("#askList").innerHTML=list.map(o=>{const st=pick(o,"상태")||"대기",cls=REQ_ST[st]||"",when=pick(o,"처리시각")||pick(o,"시각");
-  return `<li class="row"><div class="main"><b><span class="st ${cls}">${esc(st)}</span>${esc(pick(o,"요청"))}</b><span>${esc(pick(o,"이름"))}${when?" · "+esc(when):""}</span>${(pick(o,"첨부")||o.files)?`<span class="att">${ic("clip")}첨부 ${o.files||pick(o,"첨부").split("\n").filter(Boolean).length}개</span>`:""}${pick(o,"처리결과")?`<span class="res">${esc(pick(o,"처리결과"))}</span>`:""}</div></li>`}).join("");
+  return `<li class="row"><div class="main"><b><span class="st ${cls}">${esc(st)}</span>${esc(pick(o,"요청"))}</b><span>${esc(pick(o,"이름").split("@")[0])}${when?" · "+esc(when):""}</span>${(pick(o,"첨부")||o.files)?`<span class="att">${ic("clip")}첨부 ${o.files||pick(o,"첨부").split("\n").filter(Boolean).length}개</span>`:""}${pick(o,"처리결과")?`<span class="res">${esc(pick(o,"처리결과"))}</span>`:""}</div></li>`}).join("");
  const w=$("#askWarn");
  if(!APPS_SCRIPT_URL){w.hidden=false;w.textContent="요청 접수 주소가 아직 설정되지 않았어요. 관리자가 Apps Script를 연결하면 사용할 수 있어요.";}
  else if(stale.length){const hb=setting("요청 처리 확인");w.hidden=false;w.textContent=`요청 ${stale.length}건이 ${REQ_STALE_MIN}분 넘게 처리되지 않았어요. Claude 루틴이 실행되지 않았을 수 있어요(사용량 한도 등).${hb?` 마지막 처리: ${hb}`:""} 급하면 시트를 직접 수정해 주세요.`}
  else w.hidden=true;
- $("#askSend").disabled=!APPS_SCRIPT_URL;
+ $("#askSend").disabled=false;$("#askMe").textContent=ME?`보내는 사람 ${ME}`:"";
  // 처리 대기 중인 요청이 있으면 20초마다 시트를 다시 확인 (최대 10분)
  clearTimeout(reqPoll);if((waiting.length||pendingLocal.length)&&document.visibilityState==="visible"&&Date.now()-(store.get("fuk5-reqSentAt",0))<10*60e3)reqPoll=setTimeout(()=>sync(),20000);
 }
 async function sendRequest(){
- const text=$("#askText").value.trim(),name=$("#askName").value.trim(),pin=$("#askPin").value.trim();
- if(!text)return toast("요청 내용을 적어 주세요");if(!name)return toast("이름을 적어 주세요");if(!pin)return toast("비밀번호를 적어 주세요");
+ const text=$("#askText").value.trim();
+ if(!text)return toast("요청 내용을 적어 주세요");
  $("#askSend").disabled=true;
  try{
   const files=[];for(const f of askFiles)files.push(await packFile(f));
-  const r=await fetch(APPS_SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({text,name,pin,files})});
-  const j=await r.json();
-  if(!j.ok){toast(j.error||"보내지 못했어요");return}
-  store.set("fuk5-askName",name);store.set("fuk5-askPin",pin);store.set("fuk5-reqSentAt",Date.now());
-  pendingLocal.unshift({text,name,at:Date.now(),files:files.length});store.set("fuk5-reqLocal",pendingLocal);
+  const j=await gas("submitRequest",{text,files});
+  store.set("fuk5-reqSentAt",Date.now());
+  pendingLocal.unshift({text,name:ME,at:Date.now(),files:files.length});store.set("fuk5-reqLocal",pendingLocal);
   $("#askText").value="";askFiles=[];renderAskFiles();toast(j.fired==="not-configured"?"접수됐어요. 루틴 연결 전이라 처리가 늦을 수 있어요":"접수됐어요. Claude가 처리 중이에요");
   renderRequests();setTimeout(()=>sync(),8000);
- }catch(e){toast("보내지 못했어요. 인터넷 연결을 확인해 주세요")}
- finally{$("#askSend").disabled=!APPS_SCRIPT_URL}
+ }catch(e){toast(String(e&&e.message||"보내지 못했어요").slice(0,60))}
+ finally{$("#askSend").disabled=false}
 }
 $("#askSend").onclick=sendRequest;
 /* 첨부: 사진은 긴 변 1600px JPEG로 줄여서, PDF는 그대로 (8MB까지) */
@@ -744,7 +692,7 @@ async function packFile(f){
   return{name:f.name.replace(/\.\w+$/,"")+".jpg",type:"image/jpeg",data:b64(await blob.arrayBuffer())}}catch(e){}}
  return{name:f.name,type:f.type||"application/octet-stream",data:b64(await f.arrayBuffer())};
 }
-$("#askName").value=store.get("fuk5-askName","");$("#askPin").value=store.get("fuk5-askPin","");
+ME=store.get("fuk5-me","");
 
 /* ───────── 탭바 & 스크롤 ───────── */
 const TABS=["top","plan","mapsec","budget","checksec"];
@@ -764,6 +712,8 @@ function spy(){
 }
 document.querySelectorAll(".tabbar a").forEach(a=>a.addEventListener("click",()=>{setTab(a.dataset.tab);tabLock=Date.now()+900}));
 addEventListener("scroll",()=>requestAnimationFrame(spy),{passive:true});
+document.addEventListener("click",e=>{const a=e.target.closest('a[href^="#"]');if(!a||e.defaultPrevented)return;const id=a.getAttribute("href").slice(1);const el=id==="top"?document.body:document.getElementById(id);if(!el)return;e.preventDefault();
+ const y=id==="top"?0:el.getBoundingClientRect().top+scrollY-($("#segWrap").offsetHeight||0)-8;scrollTo({top:Math.max(0,y),behavior:"smooth"})});
 
 /* ───────── 전체 렌더 & 이벤트 ───────── */
 function renderAll(){renderRequests();renderDays();renderBudget();renderBooking();renderShopping();renderChecklist();renderMap();loadWxCached()}
@@ -777,7 +727,7 @@ setInterval(()=>{if(document.visibilityState==="visible")sync()},REFRESH_MS);
 setInterval(()=>{if(document.visibilityState==="visible")renderDays()},60*1000);
 
 initFx();setSync(store.get("fuk5-syncAt",0)?"cache":"seed");renderAll();spy();sync();
-if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+
 </script>
 </body>
 </html>
