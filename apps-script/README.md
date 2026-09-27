@@ -33,4 +33,4 @@
 GitHub에서 받아오지 못하면 Apps Script에 붙여 둔 `index` 파일로 대신 열려요.
 
 `Code.gs`(서버 코드)가 바뀐 경우에만 다시 붙여넣고 **배포 → 배포 관리 → 편집(연필) → 버전: 새 버전 → 배포** 하면 같은 주소로 반영돼요.
-앱 원본은 저장소의 `index.html`이고, `python3 apps-script/build.py`로 이 폴더의 `index.html`을 만듭니다.
+앱 원본은 저장소의 `app/index.html`이고, `python3 apps-script/build.py`로 이 폴더의 `index.html`을 만듭니다.
