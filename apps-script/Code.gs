@@ -17,8 +17,9 @@ const SHEET_ID = '1la5_IUEKxlXuIySWkCRexx_n-4QUPi80eRuLv0BW27Y';
 const FOLDER_ID = '1mIYQG3k0QQxruvwEk0dHv-1LMhM0gtRx';        // ☆후쿠오카
 const ATTACH_FOLDER_ID = '1u2wL6asQIthUxrB_H34sQgSGiSMBHyRI'; // ☆후쿠오카/요청 첨부
 const PHOTO_FOLDER_ID = '1guodmZA1GXNW_SJL8Lv36xcnqYmog9PI';  // ☆후쿠오카/여행 사진
-const TABS = ['일정', '예약정보', '비용', '쇼핑', '체크리스트', '일자정보', '앱설정', '요청', '사진'];
+const TABS = ['일정', '예약정보', '비용', '쇼핑', '체크리스트', '일자정보', '앱설정', '요청', '사진', '가계부'];
 const MAX_PHOTO_BYTES = 12 * 1024 * 1024;
+const MAX_CLIP_BYTES = 20 * 1024 * 1024;
 const CLIENT_ID = '96798192149-km1bfg6dm5lhnq3og56c4mto875nms0f.apps.googleusercontent.com'; // 공개돼도 되는 값
 const SESSION_DAYS = 30;
 const MAX_LEN = 500;
@@ -43,6 +44,8 @@ function doPost(e) {
     if (body.action === 'photo') return json(uploadPhoto(email, body));
     if (body.action === 'photoData') return json(photoData(body.id));
     if (body.action === 'deletePhoto') return json(deletePhoto(email, body.id));
+    if (body.action === 'expense') return json(addExpense(email, body));
+    if (body.action === 'deleteExpense') return json(deleteExpense(email, body.id));
     return json({ ok: false, error: '알 수 없는 요청' });
   } catch (err) {
     return json({ ok: false, error: String(err && err.message || err) });
@@ -159,14 +162,16 @@ function submitRequest(email, req) {
 /* ───────── 여행 사진 ───────── */
 function uploadPhoto(email, req) {
   const f = req.file || {};
-  const type = String(f.type || '');
-  if (!/^image\/(jpeg|png|webp|heic|heif)$/.test(type)) return { ok: false, error: '사진 파일만 올릴 수 있어요' };
+  const type = String(f.type || '').split(';')[0];
+  const isClip = /^video\/(webm|mp4|quicktime)$/.test(type);
+  if (!isClip && !/^image\/(jpeg|png|webp|heic|heif)$/.test(type)) return { ok: false, error: '사진이나 영상만 올릴 수 있어요' };
   const bytes = Utilities.base64Decode(String(f.data || ''));
-  if (!bytes.length || bytes.length > MAX_PHOTO_BYTES) return { ok: false, error: '사진이 너무 커요' };
+  if (!bytes.length || bytes.length > (isClip ? MAX_CLIP_BYTES : MAX_PHOTO_BYTES)) return { ok: false, error: '파일이 너무 커요' };
   const day = String(req.day || '').slice(0, 20), time = String(req.time || '').slice(0, 20);
   const eventTitle = String(req.event || '').slice(0, 120), caption = String(req.caption || '').slice(0, 200);
   const stamp = Utilities.formatDate(new Date(), 'Asia/Seoul', 'MMdd-HHmmss');
-  const name = (stamp + ' ' + email.split('@')[0] + ' ' + (eventTitle || '사진')).replace(/[\\/:*?"<>|]/g, '_').slice(0, 120) + '.jpg';
+  const ext = isClip ? (type.indexOf('mp4') > -1 ? '.mp4' : type.indexOf('quicktime') > -1 ? '.mov' : '.webm') : '.jpg';
+  const name = (stamp + ' ' + email.split('@')[0] + ' ' + (eventTitle || '사진')).replace(/[\\/:*?"<>|]/g, '_').slice(0, 120) + ext;
   const file = DriveApp.getFolderById(PHOTO_FOLDER_ID).createFile(Utilities.newBlob(bytes, type, name));
   // 앱 화면에서 바로 보이도록 '링크가 있는 사람 보기'로 둔다(주소는 로그인한 가족에게만 보임)
   try { file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW); } catch (err) {}
@@ -176,7 +181,7 @@ function uploadPhoto(email, req) {
   lock.waitLock(10000);
   try {
     SpreadsheetApp.openById(SHEET_ID).getSheetByName('사진')
-      .appendRow(["'" + now, email, "'" + day, "'" + time, eventTitle, caption, file.getId(), taken ? "'" + taken : '']);
+      .appendRow(["'" + now, email, "'" + day, "'" + time, eventTitle, caption, file.getId(), taken ? "'" + taken : '', isClip ? '영상' : '사진']);
   } finally {
     lock.releaseLock();
   }
@@ -207,6 +212,40 @@ function deletePhoto(email, id) {
   hit.sh.deleteRow(hit.row);
   try { DriveApp.getFileById(id).setTrashed(true); } catch (err) {}
   return { ok: true };
+}
+
+/* ───────── 가계부 ───────── */
+function addExpense(email, req) {
+  const amount = Number(String(req.amount || '').replace(/[^\d.]/g, ''));
+  if (!amount) return { ok: false, error: '금액을 입력해 주세요' };
+  const currency = req.currency === 'KRW' ? 'KRW' : 'JPY';
+  const pay = ['현금', '카드', '기타'].indexOf(req.pay) > -1 ? req.pay : '현금';
+  const id = Utilities.getUuid().slice(0, 8);
+  const now = Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyyy-MM-dd HH:mm');
+  const clip = function (v, n) { return String(v || '').slice(0, n); };
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    SpreadsheetApp.openById(SHEET_ID).getSheetByName('가계부').appendRow(
+      ["'" + now, email, "'" + clip(req.day, 20), "'" + clip(req.time, 20), clip(req.event, 120), clip(req.item, 60) || clip(req.event, 60),
+       "'" + amount, currency, pay, clip(req.memo, 200), id]);
+  } finally {
+    lock.releaseLock();
+  }
+  return { ok: true, id: id };
+}
+
+function deleteExpense(email, id) {
+  const sh = SpreadsheetApp.openById(SHEET_ID).getSheetByName('가계부');
+  const rows = sh.getDataRange().getValues();
+  const owner = DriveApp.getFileById(SHEET_ID).getOwner().getEmail().toLowerCase();
+  for (let i = 1; i < rows.length; i++) {
+    if (String(rows[i][10]) !== String(id)) continue;
+    if (email !== String(rows[i][1]).toLowerCase() && email !== owner) return { ok: false, error: '기록한 사람만 지울 수 있어요' };
+    sh.deleteRow(i + 1);
+    return { ok: true };
+  }
+  return { ok: false, error: '기록을 찾을 수 없어요' };
 }
 
 function fireRoutine(text) {

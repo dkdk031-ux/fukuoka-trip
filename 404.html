@@ -330,9 +330,50 @@ footer{font-family:var(--serif)}
 .show-prog{position:absolute;left:14px;right:64px;top:calc(28px + env(safe-area-inset-top));height:3px;background:rgba(255,255,255,.2);border-radius:3px;overflow:hidden}.show-prog i{display:block;height:100%;width:0;background:#fff}
 .rec{position:fixed;inset:0;z-index:140;background:rgba(13,12,16,.94);color:#f4ece0;display:grid;place-items:center;text-align:center;padding:24px}
 .rec canvas{width:min(46vw,220px);border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.5)}.rec p{margin:14px 0 0;font-family:var(--serif)}
+
+/* 페이지 · 가계부 · 추억 */
+.page[hidden]{display:none}
+.btn.sm{height:32px;font-size:13px}
+.sec-h .btn{margin-left:auto}
+.ev-spend{display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:13px;color:var(--accent);font-weight:600;cursor:pointer}.ev-spend svg.i{width:14px;height:14px}
+.sheet[hidden]{display:none}
+.sheet{position:fixed;inset:0;z-index:110;background:rgba(20,16,12,.45);display:flex;align-items:flex-end;justify-content:center}
+.sheet-box{width:min(100%,560px);max-height:88vh;overflow:auto;background:var(--surface);border-radius:20px 20px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -10px 30px rgba(0,0,0,.2)}
+.sheet-h{display:flex;align-items:center}.sheet-h b{font-family:var(--serif);font-size:19px;flex:1}
+.v-x{width:34px;height:34px;border-radius:50%;background:var(--fill);font-size:22px;line-height:1;color:var(--ink2)}
+.sheet-sub{font-size:13px;color:var(--ink3);margin:2px 0 10px}
+.fld{display:block;margin-top:10px}.fld span{display:block;font-size:12px;color:var(--ink3);font-weight:600;margin-bottom:4px}
+.fld input,.fld select{width:100%;border:0;background:var(--fill);border-radius:11px;padding:12px;font-size:16px;outline:none}
+#expAmount{font-family:var(--display);font-size:24px;font-weight:700}
+.tog{display:flex;gap:6px;margin-top:10px}.tog button{flex:1;height:40px;border-radius:10px;background:var(--fill);font-weight:600;color:var(--ink2)}.tog button.on{background:var(--navy);color:#fffaf2}
+.sheet .add{margin:14px 0 6px;width:100%}
+.led-sum{padding:18px 16px 14px}.led-sum small{font-size:13px;color:var(--ink3);font-weight:600}
+.led-sum strong{display:block;font-family:var(--display);font-weight:700;font-size:34px;margin-top:2px}
+.led-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--hair)}.led-grid div{padding:12px 14px}.led-grid div+div{border-left:1px solid var(--hair)}
+.led-grid small{display:block;font-size:11.5px;color:var(--ink3);font-weight:600}.led-grid b{font-family:var(--display);font-size:16px}
+.led-day{margin-top:18px}.led-day h4{display:flex;align-items:baseline;gap:8px;margin:0 4px 8px;font-family:var(--serif);font-size:16px}.led-day h4 small{font-family:var(--display);font-style:italic;color:var(--accent)}.led-day h4 em{margin-left:auto;font-style:normal;font-family:var(--display);font-weight:700;font-size:15px}
+.dbar{height:5px;border-radius:5px;background:var(--fill);margin:0 4px 8px;overflow:hidden}.dbar i{display:block;height:100%;background:var(--accent)}
+.row .who{font-size:12px;color:var(--ink3)}
+.mission-card{margin-bottom:6px}.mission-h{display:flex;align-items:center;padding:16px 16px 4px}.mission-h b{font-family:var(--serif);font-size:18px;flex:1}.mission-h span{font-family:var(--display);font-weight:700;color:var(--accent)}
+.missions{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:6px 12px 14px}
+.mis{position:relative;border-radius:14px;overflow:hidden;aspect-ratio:4/5;background:linear-gradient(160deg,#c98b5e,#3b2d2a);color:#fff;text-align:left;padding:0}
+.mis img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.9}
+.mis:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05) 35%,rgba(0,0,0,.72))}
+.mis .mt{position:absolute;z-index:1;left:10px;right:10px;bottom:10px}
+.mis .mt small{display:block;font-family:var(--display);font-style:italic;font-size:12px;opacity:.85}
+.mis .mt b{display:block;font-family:var(--serif);font-size:15.5px;line-height:1.3;margin:2px 0 8px}
+.mis .go{display:inline-flex;align-items:center;gap:5px;height:30px;padding:0 11px;border-radius:999px;background:rgba(255,255,255,.92);color:var(--ink);font-size:12.5px;font-weight:700}.mis .go svg.i{width:14px;height:14px}
+.mis.done .go{background:var(--accent);color:#fff}
+.mis .ck{position:absolute;z-index:1;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:var(--accent);display:grid;place-items:center;color:#fff;font-weight:800;font-size:14px}
+.album-grid .vtile{position:relative}.album-grid .vtile:after{content:"▶";position:absolute;right:6px;bottom:4px;color:#fff;font-size:13px;text-shadow:0 1px 4px rgba(0,0,0,.7)}
+.album-grid .noimg{width:100%;height:100%;display:grid;place-items:center;background:linear-gradient(160deg,#c98b5e,#3b2d2a);color:#fff;font-size:22px}
+.v-stage video{max-width:100%;max-height:100%}
+.slide video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.home-today{margin-top:14px}.home-today .row b{font-family:var(--serif)}.home-today .row .tm{font-family:var(--display);font-weight:700;width:52px;flex:none}
 </style>
 </head>
 <body>
+<section class="page" id="pg-home">
 <div class="wrap" id="top">
 <header class="top">
   <div class="cover">
@@ -362,31 +403,48 @@ footer{font-family:var(--serif)}
 </header>
 </div>
 
-<div class="seg-wrap" id="segWrap"><div class="wrap"><div class="seg" id="daynav"></div></div></div>
-
 <main class="wrap">
   <div class="card status"><div class="ic" data-ic="pin"></div><div style="flex:1;min-width:0"><b id="statusTitle">출발 준비</b><p id="statusText"></p><div class="next" id="statusNext"></div></div></div>
-
-  <div id="plan" style="scroll-margin-top:90px"></div>
-  <div id="days"></div>
-
-  <div class="sec-h" id="budget"><h2 data-en="Budget">경비</h2><small>시트 ‘비용’ 탭 기준</small></div>
-  <div id="budgetRoot"></div>
-  <div class="label">현지 지출</div>
-  <div class="card" id="spend"></div>
-
+  <div id="homeToday"></div>
   <div class="sec-h" id="tools"><h2 data-en="Toolkit">도구</h2></div>
   <div class="grid2">
     <div class="card tool"><h3>현재 날씨</h3><p id="wxNote">여행 16일 전부터 날짜별 예보가 일정에 표시돼요.</p><div class="wxl" id="weather"></div></div>
     <div class="card tool"><h3>엔화 환산</h3><div class="fx"><div><label for="jpy">엔 (JPY)</label><input id="jpy" type="number" value="10000" inputmode="decimal"></div><div><label for="rate100">100엔당 원</label><input id="rate100" type="number" step="0.01" inputmode="decimal"></div></div><div class="fx-out" id="krw">-</div><p>환율은 시트 ‘환전’ 비고에서 가져오고, 직접 고치면 이 기기에 저장돼요.</p></div>
   </div>
+  <footer>영업시간·교통은 바뀔 수 있어요. 당일 공식 정보를 확인하세요.</footer>
+</main>
+</section>
 
-  <div class="sec-h"><h2 data-en="Journal">더보기</h2></div>
-  <details class="dis" id="albumsec" open><summary><span class="ico" data-ic="album"></span>여행 앨범<em id="albumCount"></em><span class="chev" data-ic="chev"></span></summary><div>
+<section class="page" id="pg-plan" hidden>
+<div class="seg-wrap" id="segWrap"><div class="wrap"><div class="seg" id="daynav"></div></div></div>
+<main class="wrap"><div id="plan"></div><div id="days"></div></main>
+</section>
+
+<section class="page" id="pg-money" hidden>
+<main class="wrap">
+  <div class="sec-h" id="money"><h2 data-en="Ledger">가계부</h2><button class="btn pri sm" type="button" id="expAddFree"><span data-ic="plus"></span>지출 기록</button></div>
+  <div id="ledgerRoot"></div>
+  <div class="sec-h" id="budget"><h2 data-en="Budget">확정 경비</h2><small>시트 ‘비용’ 탭 기준</small></div>
+  <div id="budgetRoot"></div>
+</main>
+</section>
+
+<section class="page" id="pg-memory" hidden>
+<main class="wrap">
+  <div class="sec-h" id="memory"><h2 data-en="Memories">추억</h2><small id="albumCount"></small></div>
+  <div class="card mission-card"><div class="mission-h"><b>여행지 3초 영상 미션</b><span id="missionProg"></span></div><p class="hint" style="padding:0 16px 8px">방문하는 곳마다 3초만 찍어 두면, 여행이 끝난 뒤 한 편의 영상으로 이어 붙여 드려요.</p><div class="missions" id="missions"></div></div>
+  <div class="label">사진 · 영상</div>
+  <div class="card">
     <div class="album-acts"><button class="btn pri" type="button" id="slideBtn"><span data-ic="play"></span>슬라이드쇼</button><button class="btn" type="button" id="videoBtn"><span data-ic="film"></span>영상 만들기</button></div>
     <div id="albumRoot"></div>
     <div class="hint">일정마다 <b>사진</b> 버튼으로 올려요. 올린 사진은 드라이브 ☆후쿠오카/여행 사진 폴더에 모이고, 초대된 가족만 앱에서 볼 수 있어요.</div>
-  </div></details>
+  </div>
+</main>
+</section>
+
+<section class="page" id="pg-more" hidden>
+<main class="wrap">
+  <div class="sec-h"><h2 data-en="More">더보기</h2></div>
   <details class="dis" id="mapsec"><summary><span class="ico" data-ic="map"></span>지도<em>구글맵</em><span class="chev" data-ic="chev"></span></summary><div>
     <div class="map-chips" id="mapTools"></div>
     <iframe class="gmap" id="gmap" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="구글 지도"></iframe>
@@ -410,18 +468,32 @@ footer{font-family:var(--serif)}
   <details class="dis"><summary><span class="ico" data-ic="users"></span>계정<em id="meEmail"></em><span class="chev" data-ic="chev"></span></summary><div class="dis-body"><ul class="rows"><li class="row"><div class="main"><b id="meEmail2"></b><span>초대 관리는 구글 드라이브 ☆후쿠오카 폴더 공유에서 해요.</span></div><button class="btn" type="button" id="logoutBtn">로그아웃</button></li></ul></div></details>
   <details class="dis"><summary><span class="ico" data-ic="phone"></span>홈 화면에 추가<span class="chev" data-ic="chev" style="margin-left:auto"></span></summary><div class="dis-body"><ul class="rows"><li class="row"><div class="main"><b>iPhone</b><span>Safari 공유 버튼 → 홈 화면에 추가</span></div></li><li class="row"><div class="main"><b>Android</b><span>Chrome 메뉴 → 앱 설치</span></div></li></ul><div class="hint">한 번 열어두면 오프라인에서도 마지막으로 불러온 일정이 보여요.</div></div></details>
 
-  <footer>영업시간·교통은 바뀔 수 있어요. 당일 공식 정보를 확인하세요.<div class="credits" id="credits"></div></footer>
+  <footer class="credits-wrap"><div class="credits" id="credits"></div></footer>
 </main>
+</section>
 
 <div class="tabbar"><nav>
-  <a href="#top" data-tab="top"><span data-ic="home"></span>홈</a>
+  <a href="#home" data-tab="home"><span data-ic="home"></span>홈</a>
   <a href="#plan" data-tab="plan"><span data-ic="cal"></span>일정</a>
-  <a href="#mapsec" data-tab="mapsec" data-open="mapsec"><span data-ic="map"></span>지도</a>
-  <a href="#budget" data-tab="budget"><span data-ic="wallet"></span>경비</a>
-  <a href="#checksec" data-tab="checksec" data-open="checksec"><span data-ic="check"></span>준비</a>
+  <a href="#money" data-tab="money"><span data-ic="wallet"></span>가계부</a>
+  <a href="#memory" data-tab="memory"><span data-ic="album"></span>추억</a>
+  <a href="#more" data-tab="more"><span data-ic="dots"></span>더보기</a>
 </nav></div>
 <div class="toast" id="toast"></div>
 <input type="file" id="shotInput" accept="image/*" multiple hidden>
+<input type="file" id="clipInput" accept="video/*" capture="environment" hidden>
+<div class="sheet" id="expSheet" hidden><div class="sheet-box">
+  <div class="sheet-h"><b id="expTitle">지출 기록</b><button type="button" class="v-x" id="expClose" aria-label="닫기">×</button></div>
+  <div class="sheet-sub" id="expSub"></div>
+  <label class="fld"><span>항목</span><input id="expItem" maxlength="60" placeholder="예: 점심 라멘, 입장료"></label>
+  <label class="fld"><span>금액</span><input id="expAmount" inputmode="decimal" placeholder="0"></label>
+  <div class="tog" id="expCur"><button type="button" data-v="JPY" class="on">¥ 엔</button><button type="button" data-v="KRW">₩ 원</button></div>
+  <div class="tog" id="expPay"><button type="button" data-v="현금" class="on">현금</button><button type="button" data-v="카드">카드</button><button type="button" data-v="기타">기타</button></div>
+  <label class="fld"><span>메모</span><input id="expMemo" maxlength="200" placeholder="선택"></label>
+  <div class="fld" id="expDayWrap" hidden><span>날짜</span><select id="expDay"></select></div>
+  <button class="add" type="button" id="expSave">저장</button>
+  <ul class="rows" id="expList"></ul>
+</div></div>
 <div class="viewer" id="viewer" hidden><button class="v-close" type="button" id="vClose" aria-label="닫기">×</button><div class="v-stage" id="vStage"></div><div class="v-cap" id="vCap"></div><div class="v-bar" id="vBar"></div></div>
 <div class="show" id="show" hidden><div class="show-stage" id="showStage"></div><div class="show-ui"><button type="button" id="showClose" aria-label="닫기">×</button><div class="show-prog"><i id="showProg"></i></div></div></div>
 <div class="login" id="login" hidden><div class="login-box">
@@ -502,6 +574,10 @@ const ICONS={
  play:'<path d="M8 5.5v13l10.5-6.5L8 5.5Z"/>',
  film:'<rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M7.5 4.5v15M16.5 4.5v15M3.5 9h4M3.5 15h4M16.5 9h4M16.5 15h4"/>',
  album:'<rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="m4 17 5-4.5 4 3.5 3-2.5 4 3.5"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ dots:'<circle cx="5.5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18.5" cy="12" r="1.3"/>',
+ coin:'<circle cx="12" cy="12" r="8.5"/><path d="M8.5 8.5 12 13l3.5-4.5M9 13.5h6M12 13v4"/>',
+ video:'<rect x="3" y="6.5" width="13" height="11" rx="2"/><path d="m16 10.5 5-3v9l-5-3"/>',
  chat:'<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9.5h8M8 12.5h5"/>'
 };
 const ic=(n,cls="")=>`<svg class="i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n]||""}</svg>`;
@@ -659,8 +735,7 @@ function renderNav(days){
  $("#daynav").style.gridTemplateColumns=`repeat(${Math.min(days.length,6)||1},1fr)`;
  $("#daynav").innerHTML=days.map((d,i)=>{const meta=dayMeta(d.key);const lbl=meta.tab||(i===days.length-1&&days.length>1?"귀국":plain(pick(d.events[0],"지역")));
   return `<a href="#plan" data-i="${i}" class="${i===selDay?"on":""} ${d.iso===ymd?"today":""}"><b>${d.key}</b>${wdOf(d.key)} · ${esc(lbl)}</a>`}).join("");
- $("#daynav").querySelectorAll("a").forEach(a=>a.onclick=e=>{e.preventDefault();selDay=+a.dataset.i;store.set("fuk5-day",selDay);renderDays();setTab("plan");
-  const y=$("#plan").getBoundingClientRect().top+scrollY-($("#segWrap").offsetHeight)+1;if(scrollY>y)scrollTo({top:y,behavior:"smooth"})});
+ $("#daynav").querySelectorAll("a").forEach(a=>a.onclick=e=>{e.preventDefault();selDay=+a.dataset.i;store.set("fuk5-day",selDay);renderDays();go("plan",true);scrollTo({top:0,behavior:"smooth"})});
 }
 function renderDays(){
  const days=itinerary(),{ymd,min}=nowJST();
@@ -682,7 +757,7 @@ function renderDays(){
      <div class="tt">${esc(e.title)}${now?'<span class="tag-now">지금</span>':""}</div>
      ${e.desc?`<div class="d">${esc(e.desc)}</div>`:""}${e.memo?`<div class="m">${esc(e.memo)}</div>`:""}
      ${hoursView(e.hours,pm,now,now?min:null)}
-     ${e.acts.length||true?`<div class="acts">${e.acts.join("")}<button class="btn cam" type="button" data-shot="${esc(d.key)}|${esc(e.time)}|${esc(e.title)}">${ic("camera")}사진</button></div>`:""}${e.tipHtml}
+     ${e.acts.length||true?`<div class="acts">${e.acts.join("")}<button class="btn cam" type="button" data-shot="${esc(d.key)}|${esc(e.time)}|${esc(e.title)}">${ic("camera")}사진</button><button class="btn cam" type="button" data-exp="${esc(d.key)}|${esc(e.time)}|${esc(e.title)}">${ic("coin")}지출</button></div>`:""}${e.tipHtml}${eventSpendHtml(d.key,e.title,e.time)}
      ${eventPhotosHtml(d.key,e.title)}
      ${(()=>{const pp=e.places.find(p=>p.img);return pp?`<figure class="ev-photo"><img src="${photoSrc(pp.img,900)}" alt="${esc(pp.short)}" loading="lazy" onerror="this.parentNode.remove()"><figcaption>${esc(pp.short)}</figcaption></figure>`:""})()}</div></div>`}).join("")}</div>
    ${ev.some(e=>e.hours)&&hoursStamp()?`<div class="hrs-src ${hoursStale()?"stale":""}">${ic("clock")}영업시간 ${esc(hoursStamp())}${hoursStale()?" · 자동 업데이트가 하루 넘게 안 됐어요":""}${setting("영업시간 변경")&&setting("영업시간 변경")!=="변경 없음"?` · ${esc(setting("영업시간 변경"))}`:""}</div>`:""}
@@ -710,7 +785,7 @@ function renderStatus(days){
    if(c)tx=`지금 ${c.title}`+(n?` · 다음 ${n.time} ${n.title}`:" · 오늘 마지막 일정");else if(n)tx=`첫 일정 ${n.time} ${n.title}`;
    const na=n?.acts.find(a=>a.includes("maps"));if(na)next=na.replace("btn pri","btn").replace(/>([^<]*)<\/a>$/,">다음 장소 길찾기</a>");
   }
- }else{$("#dDay").textContent="완료";$("#dDaySub").textContent="여행 끝";st="여행 완료";tx="가족이 올린 사진으로 슬라이드쇼와 영상을 만들어 보세요.";next=btn("#albumsec","여행 앨범 보기","album",true,false).replace("<a ",'<a data-open="albumsec" ')}
+ }else{$("#dDay").textContent="완료";$("#dDaySub").textContent="여행 끝";st="여행 완료";tx="가족이 올린 사진으로 슬라이드쇼와 영상을 만들어 보세요.";next=btn("#memory","추억 보러 가기","album",true,false)}
  $("#statusTitle").textContent=st;$("#statusText").textContent=tx;$("#statusNext").innerHTML=next;
 }
 
@@ -728,31 +803,8 @@ function renderBudget(){
  const row=o=>`<li class="row"><div class="main"><b>${esc(plain(pick(o,"항목")))}</b>${pick(o,"비고")?`<span>${esc(pick(o,"비고"))}</span>`:""}</div><div class="val">${fmt(o)}</div></li>`;
  $("#budgetRoot").innerHTML=`<div class="card"><div class="total"><small>확정 경비</small><strong>${krw(K)}</strong><span>${J?`+ ${jpy(J)} · 엔화 포함 약 ${krw(K+J*rate()/100)}`:"환전금·예산 제외"}</span></div><ul class="rows">${fixed.map(row).join("")}</ul></div>
  ${aside.length?`<div class="label">보유 현금 · 목표</div><div class="card"><ul class="rows">${aside.map(row).join("")}</ul></div>`:""}`;
- renderSpend(rows);
+ renderLedger();
 }
-function renderSpend(rows){
- rows=rows||objs(DATA["비용"]);
- const cash=num(pick(rows.find(o=>pick(o,"항목")==="환전")||{},"금액"));
- const list=store.get("fuk5-expenses",store.get("fuk4-expenses",[]));
- const r=rate()/100,spentJ=list.filter(x=>x.currency==="JPY").reduce((s,x)=>s+x.amount,0);
- const totalK=list.reduce((s,x)=>s+(x.currency==="JPY"?x.amount*r:x.amount),0);
- $("#spend").innerHTML=`<div class="spend-h"><strong>${jpy(spentJ)} 사용${cash?` · ${jpy(Math.max(0,cash-spentJ))} 남음`:""}</strong><span>전체 원화 환산 약 ${krw(totalK)}${cash?` · 환전 ${jpy(cash)} 기준`:""}</span></div>
- ${cash?`<div class="bar"><i style="width:${Math.min(100,spentJ/cash*100)}%"></i></div>`:""}
- <div class="form"><input id="expName" placeholder="항목 (예: 라멘)" enterkeyhint="next"><input id="expAmt" inputmode="decimal" placeholder="금액" enterkeyhint="done"><select id="expCur"><option>JPY</option><option>KRW</option></select></div>
- <button class="add" id="expAdd" type="button">추가</button>
- ${list.length?`<ul class="rows" style="border-top:1px solid var(--hair)">${list.map((x,i)=>`<li class="row"><div class="main"><b>${esc(x.name)}</b><span>${x.day?esc(x.day)+" · ":""}${new Date(x.date).toLocaleString("ko-KR",{month:"numeric",day:"numeric",hour:"numeric",minute:"2-digit"})}</span></div><div class="val">${x.currency==="JPY"?jpy(x.amount):krw(x.amount)}</div><button class="del" data-i="${i}" aria-label="삭제">${ic("x")}</button></li>`).join("")}</ul>`:""}
- <div class="hint">지출 기록은 이 기기에만 저장돼요.</div>`;
- $("#expAdd").onclick=addExpense;$("#expAmt").onkeydown=e=>{if(e.key==="Enter")addExpense()};
- $("#spend").querySelectorAll(".del").forEach(b=>b.onclick=()=>{if(!confirm("이 지출을 삭제할까요?"))return;const a=store.get("fuk5-expenses",store.get("fuk4-expenses",[]));a.splice(+b.dataset.i,1);store.set("fuk5-expenses",a);renderSpend()});
-}
-function addExpense(){
- const name=$("#expName").value.trim(),amount=num($("#expAmt").value),currency=$("#expCur").value;
- if(!name||!amount)return toast("항목과 금액을 입력해 주세요");
- const {ymd}=nowJST(),d=itinerary().findIndex(x=>x.iso===ymd);
- const a=store.get("fuk5-expenses",store.get("fuk4-expenses",[]));a.unshift({name,amount,currency,date:new Date().toISOString(),day:d>=0?`Day ${d+1}`:""});
- store.set("fuk5-expenses",a);renderSpend();toast("저장했어요");
-}
-
 /* ───────── 예약 · 쇼핑 · 준비물 ───────── */
 function renderBooking(){
  const rows=objs(DATA["예약정보"]).filter(o=>pick(o,"구분")||pick(o,"업체/숙소"));
@@ -897,9 +949,15 @@ $("#logoutBtn").onclick=()=>{if(confirm("로그아웃할까요?"))logout()};
 /* ───────── 여행 사진 · 앨범 ───────── */
 const shotUrl=(id,w)=>`https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w${w}`;
 function albumRows(){return objs(DATA["사진"]).filter(o=>pick(o,"파일ID"))}
+const isClip=o=>pick(o,"종류")==="영상";
+const tileImg=(o,w)=>`<img src="${shotUrl(pick(o,"파일ID"),w)}" loading="lazy" alt="" onerror="this.outerHTML='<div class=&quot;noimg&quot;>▶</div>'">`;
+/* 영상·원본은 API로 받아 blob URL로 (드라이브 링크는 영상 재생이 불안정) */
+const mediaCache={};
+async function mediaUrl(id){if(mediaCache[id])return mediaCache[id];const r=await api("photoData",{id});if(!r.ok)throw new Error(r.error||"불러오지 못했어요");
+ const blob=await (await fetch(`data:${r.mime};base64,${r.data}`)).blob();return mediaCache[id]=URL.createObjectURL(blob)}
 function photosFor(k,title){return albumRows().filter(o=>dayKey(pick(o,"일자"))===k&&plain(pick(o,"일정"))===plain(title))}
 function eventPhotosHtml(k,title){const ps=photosFor(k,title);if(!ps.length)return"";
- return `<div class="shots">${ps.map(o=>`<button type="button" data-view="${esc(pick(o,"파일ID"))}"><img src="${shotUrl(pick(o,"파일ID"),300)}" loading="lazy" alt=""></button>`).join("")}</div>`}
+ return `<div class="shots album-grid" style="display:flex">${ps.map(o=>`<button type="button" class="${isClip(o)?"vtile":""}" data-view="${esc(pick(o,"파일ID"))}">${tileImg(o,300)}</button>`).join("")}</div>`}
 /* 앨범 순서: 일정 날짜 → 일정 시간 → 올린 순 */
 function albumOrdered(){
  const days=itinerary(),rows=albumRows(),out=[];
@@ -912,9 +970,9 @@ function albumOrdered(){
 }
 function renderAlbum(){
  const g=albumOrdered(),n=g.reduce((a,x)=>a+x.photos.length,0);
- $("#albumCount").textContent=n?`${n}장`:"";
+ const nc=g.reduce((a,x)=>a+x.photos.filter(isClip).length,0);$("#albumCount").textContent=n?`사진 ${n-nc} · 영상 ${nc}`:"";renderMissions();
  $("#slideBtn").disabled=$("#videoBtn").disabled=!n;
- $("#albumRoot").innerHTML=n?g.map(x=>`<div class="album-day"><h4>${x.day?`<small>Day ${String(x.i+1).padStart(2,"0")}</small>`:""}${esc(x.meta.title||x.day?.key||"")}</h4><div class="album-grid">${x.photos.map(o=>`<button type="button" data-view="${esc(pick(o,"파일ID"))}"><img src="${shotUrl(pick(o,"파일ID"),400)}" loading="lazy" alt=""></button>`).join("")}</div></div>`).join(""):'<div class="album-empty">아직 올린 사진이 없어요. 여행 중에 일정마다 사진을 올려 보세요.</div>';
+ $("#albumRoot").innerHTML=n?g.map(x=>`<div class="album-day"><h4>${x.day?`<small>Day ${String(x.i+1).padStart(2,"0")}</small>`:""}${esc(x.meta.title||x.day?.key||"")}</h4><div class="album-grid">${x.photos.map(o=>`<button type="button" class="${isClip(o)?"vtile":""}" data-view="${esc(pick(o,"파일ID"))}">${tileImg(o,400)}</button>`).join("")}</div></div>`).join(""):'<div class="album-empty">아직 올린 사진이 없어요. 여행 중에 일정마다 사진을 올려 보세요.</div>';
 }
 /* 사진 올리기 */
 let shotTarget=null;
@@ -937,7 +995,8 @@ function openViewer(id){
 }
 function showViewer(){
  const o=vList[vIdx];if(!o)return closeViewer();const id=pick(o,"파일ID");
- $("#vStage").innerHTML=`<img src="${shotUrl(id,1600)}" alt="">`;
+ if(isClip(o)){$("#vStage").innerHTML='<p style="color:#b9ada0">영상 불러오는 중…</p>';mediaUrl(id).then(u=>{if(pick(vList[vIdx]||{},"파일ID")===id)$("#vStage").innerHTML=`<video src="${u}" autoplay loop playsinline controls></video>`}).catch(e=>{$("#vStage").innerHTML=`<p style="color:#b9ada0">${esc(e.message)}</p>`})}
+ else $("#vStage").innerHTML=`<img src="${shotUrl(id,1600)}" alt="">`;
  $("#vCap").innerHTML=`${esc(pick(o,"일정"))}<small>${esc(pick(o,"일자"))} ${esc(pick(o,"시간"))} · ${esc(pick(o,"이름").split("@")[0])}</small>`;
  const mine=ME&&(pick(o,"이름").toLowerCase()===ME.toLowerCase());
  $("#vBar").innerHTML=`<button type="button" data-v="-1">이전</button><span style="color:#b9ada0;align-self:center;font-size:13px">${vIdx+1} / ${vList.length}</span><button type="button" data-v="1">다음</button>${mine?'<button type="button" data-v="del">삭제</button>':""}`;
@@ -953,48 +1012,62 @@ document.addEventListener("click",e=>{const b=e.target.closest("[data-view]");if
 function storyboard(){
  const sb=[{t:"title",k:"Vol. 01 · Autumn 2026",h:"Fukuoka",sub:"유후인 · 벳푸 · 하카타"}];
  albumOrdered().forEach(g=>{sb.push({t:"title",k:g.day?`Day ${String(g.i+1).padStart(2,"0")}`:"",h:g.meta.title||""});
-  g.photos.forEach(o=>sb.push({t:"photo",id:pick(o,"파일ID"),cap:pick(o,"일정"),sub:`${pick(o,"일자")} ${pick(o,"시간")}`.trim()}))});
+  g.photos.forEach(o=>sb.push({t:isClip(o)?"clip":"photo",id:pick(o,"파일ID"),cap:(isClip(o)&&PLACES.find(p=>p.id===pick(o,"설명"))?.short.replace(/\(.*\)/,""))||pick(o,"일정"),sub:`${pick(o,"일자")} ${pick(o,"시간")}`.trim()}))});
  sb.push({t:"title",k:"The End",h:"함께여서 좋았던 가을",sub:"2026. 10. 31 – 11. 3"});
  return sb;
 }
 let showT=0,showI=0,showSB=[],showPaused=false;
-function slideHtml(x){return x.t==="title"?`<div class="slide title"><div class="k">${esc(x.k||"")}</div>${x.h==="Fukuoka"?`<div class="mast2">Fukuoka</div>`:`<h2>${esc(x.h||"")}</h2>`}${x.sub?`<div style="font-family:var(--serif);opacity:.85">${esc(x.sub)}</div>`:""}</div>`:`<div class="slide"><img src="${shotUrl(x.id,1600)}" alt=""><div class="sc"><b>${esc(x.cap||"")}</b><small>${esc(x.sub||"")}</small></div></div>`}
+function slideHtml(x){if(x.t==="clip")return `<div class="slide" data-clip="${esc(x.id)}"><img src="${shotUrl(x.id,1200)}" alt="" onerror="this.remove()"><div class="sc"><b>${esc(x.cap||"")}</b><small>${esc(x.sub||"")}</small></div></div>`;return x.t==="title"?`<div class="slide title"><div class="k">${esc(x.k||"")}</div>${x.h==="Fukuoka"?`<div class="mast2">Fukuoka</div>`:`<h2>${esc(x.h||"")}</h2>`}${x.sub?`<div style="font-family:var(--serif);opacity:.85">${esc(x.sub)}</div>`:""}</div>`:`<div class="slide"><img src="${shotUrl(x.id,1600)}" alt=""><div class="sc"><b>${esc(x.cap||"")}</b><small>${esc(x.sub||"")}</small></div></div>`}
 function startShow(){showSB=storyboard();showI=0;showPaused=false;$("#showStage").innerHTML=showSB.map(slideHtml).join("");$("#show").hidden=false;stepShow(0)}
 function stepShow(i){clearTimeout(showT);const els=$("#showStage").children;if(i>=els.length){closeShow();return}
- [...els].forEach((el,j)=>el.classList.toggle("on",j===i));showI=i;$("#showProg").style.width=((i+1)/els.length*100)+"%";
- if(!showPaused)showT=setTimeout(()=>stepShow(i+1),showSB[i].t==="title"?2600:4000)}
+ [...els].forEach((el,j)=>{el.classList.toggle("on",j===i);const v=el.querySelector("video");if(v&&j!==i)v.pause()});showI=i;
+ const cur=els[i];if(cur?.dataset.clip){mediaUrl(cur.dataset.clip).then(u=>{if(showI!==i)return;let v=cur.querySelector("video");if(!v){v=document.createElement("video");v.muted=false;v.playsInline=true;v.src=u;cur.insertBefore(v,cur.querySelector(".sc"))}v.currentTime=0;v.play().catch(()=>{v.muted=true;v.play().catch(()=>{})})}).catch(()=>{})}$("#showProg").style.width=((i+1)/els.length*100)+"%";
+ if(!showPaused)showT=setTimeout(()=>stepShow(i+1),showSB[i].t==="title"?2600:showSB[i].t==="clip"?3400:4000)}
 function closeShow(){clearTimeout(showT);$("#show").hidden=true;$("#showStage").innerHTML=""}
 $("#slideBtn").onclick=startShow;$("#showClose").onclick=e=>{e.stopPropagation();closeShow()};
 $("#showStage").onclick=e=>{const x=e.clientX/innerWidth;if(x<.3)stepShow(Math.max(0,showI-1));else if(x>.7)stepShow(showI+1);else{showPaused=!showPaused;toast(showPaused?"일시정지":"재생");if(!showPaused)stepShow(showI)}};
 /* 영상 만들기: 캔버스에 슬라이드를 그려 MediaRecorder로 저장 (세로 1080×1920) */
 async function makeVideo(){
- const sb=storyboard();if(sb.length<3)return toast("사진을 먼저 올려 주세요");
+ const sb=storyboard();if(sb.length<3)return toast("사진이나 영상을 먼저 올려 주세요");
  if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream)return toast("이 브라우저는 영상 만들기를 지원하지 않아요");
  const W=1080,H=1920,FPS=30,c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
  const box=document.createElement("div");box.className="rec";box.innerHTML='<div></div>';box.firstChild.append(c);const msg=document.createElement("p");box.firstChild.append(msg);document.body.append(box);
- msg.textContent="사진을 불러오는 중…";
  try{await document.fonts.ready}catch(e){}
- const imgs={};let n=0;const ids=sb.filter(x=>x.t==="photo").map(x=>x.id);
- for(const id of ids){msg.textContent=`사진 불러오는 중 ${++n}/${ids.length}`;
-  try{const r=await api("photoData",{id});if(r.ok){const b=await (await fetch(`data:${r.mime};base64,${r.data}`)).blob();imgs[id]=await createImageBitmap(b)}}catch(e){}}
- const types=["video/mp4;codecs=avc1","video/mp4","video/webm;codecs=vp9","video/webm"];const mime=types.find(t=>MediaRecorder.isTypeSupported(t))||"";
- const rec=new MediaRecorder(c.captureStream(FPS),mime?{mimeType:mime,videoBitsPerSecond:8e6}:{});const chunks=[];rec.ondataavailable=e=>e.data.size&&chunks.push(e.data);
- const serif=getComputedStyle(document.body).getPropertyValue("--serif")||"serif",disp=getComputedStyle(document.body).getPropertyValue("--display")||"serif";
- const cover=(im,t)=>{const s=Math.max(W/im.width,H/im.height)*(1+.08*t),w=im.width*s,h=im.height*s;g.drawImage(im,(W-w)/2,(H-h)/2,w,h)};
- const draw=(x,t)=>{g.globalAlpha=1;
-  if(x.t==="photo"&&imgs[x.id]){g.fillStyle="#000";g.fillRect(0,0,W,H);cover(imgs[x.id],t);const gr=g.createLinearGradient(0,H*.6,0,H);gr.addColorStop(0,"rgba(0,0,0,0)");gr.addColorStop(1,"rgba(0,0,0,.7)");g.fillStyle=gr;g.fillRect(0,H*.6,W,H*.4);
-   g.fillStyle="#fff";g.textAlign="left";g.font=`700 64px ${serif}`;g.fillText(x.cap||"",80,H-230,W-160);g.font=`italic 44px ${disp}`;g.globalAlpha=.85;g.fillText(x.sub||"",80,H-160);g.globalAlpha=1}
-  else{const gr=g.createRadialGradient(W/2,H*.4,50,W/2,H*.4,H*.8);gr.addColorStop(0,"#3a2a24");gr.addColorStop(1,"#0d0c10");g.fillStyle=gr;g.fillRect(0,0,W,H);g.textAlign="center";
-   g.fillStyle="#e9a077";g.font=`italic 60px ${disp}`;g.fillText(x.k||"",W/2,H*.42);g.fillStyle="#f7eee2";
-   if(x.h==="Fukuoka"){g.font=`italic 700 190px ${disp}`;g.fillText("Fukuoka",W/2,H*.52)}else{g.font=`700 84px ${serif}`;g.fillText(x.h||"",W/2,H*.52,W-120)}
-   if(x.sub){g.font=`48px ${serif}`;g.globalAlpha=.85;g.fillText(x.sub,W/2,H*.59,W-120);g.globalAlpha=1}}};
- const dur=x=>x.t==="title"?2.4:3.4,FADE=.6,total=sb.reduce((a,x)=>a+dur(x),0);
- rec.start(500);const t0=performance.now();
- await new Promise(done=>{const tick=()=>{const el=(performance.now()-t0)/1000;if(el>=total){done();return}
-  let acc=0,i=0;while(i<sb.length-1&&acc+dur(sb[i])<=el){acc+=dur(sb[i]);i++}const local=(el-acc)/dur(sb[i]);draw(sb[i],local);
-  const rem=acc+dur(sb[i])-el;if(rem<FADE&&sb[i+1]){g.globalAlpha=1-rem/FADE;draw(sb[i+1],0);g.globalAlpha=1}
-  msg.textContent=`영상 만드는 중 ${Math.min(99,Math.round(el/total*100))}% · 화면을 켜 두세요`;requestAnimationFrame(tick)};tick()});
- rec.stop();await new Promise(r=>rec.onstop=r);
+ // 재료 준비: 사진은 ImageBitmap, 영상은 video 요소
+ const media={};let n=0;const need=sb.filter(x=>x.t!=="title");
+ for(const x of need){msg.textContent=`사진·영상 불러오는 중 ${++n}/${need.length}`;
+  try{const u=await mediaUrl(x.id);
+   if(x.t==="photo"){media[x.id]=await createImageBitmap(await (await fetch(u)).blob())}
+   else{const v=document.createElement("video");v.src=u;v.playsInline=true;v.preload="auto";await new Promise((ok,no)=>{v.onloadeddata=ok;v.onerror=no;setTimeout(ok,4000)});media[x.id]=v}}catch(e){}}
+ // 영상 소리도 함께 녹음
+ const stream=c.captureStream(FPS);let ac=null,dest=null;
+ try{ac=new (window.AudioContext||window.webkitAudioContext)();dest=ac.createMediaStreamDestination();dest.stream.getAudioTracks().forEach(t=>stream.addTrack(t));
+  Object.values(media).forEach(v=>{if(v instanceof HTMLVideoElement){try{ac.createMediaElementSource(v).connect(dest)}catch(e){}}})}catch(e){}
+ const types=["video/mp4;codecs=avc1,mp4a.40.2","video/mp4;codecs=avc1","video/mp4","video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"];const mime=types.find(t=>MediaRecorder.isTypeSupported(t))||"";
+ const rec=new MediaRecorder(stream,mime?{mimeType:mime,videoBitsPerSecond:8e6}:{});const chunks=[];rec.ondataavailable=e=>e.data.size&&chunks.push(e.data);
+ const cssv=k=>getComputedStyle(document.body).getPropertyValue(k)||"serif",serif=cssv("--serif"),disp=cssv("--display");
+ const cover=(src,sw,sh,t)=>{const s=Math.max(W/sw,H/sh)*(1+.08*t),w=sw*s,h=sh*s;g.drawImage(src,(W-w)/2,(H-h)/2,w,h)};
+ const caption=x=>{const gr=g.createLinearGradient(0,H*.6,0,H);gr.addColorStop(0,"rgba(0,0,0,0)");gr.addColorStop(1,"rgba(0,0,0,.7)");g.fillStyle=gr;g.fillRect(0,H*.6,W,H*.4);
+  g.fillStyle="#fff";g.textAlign="left";g.font=`700 64px ${serif}`;g.fillText(x.cap||"",80,H-230,W-160);g.font=`italic 44px ${disp}`;g.globalAlpha=.85;g.fillText(x.sub||"",80,H-160);g.globalAlpha=1};
+ const titleCard=x=>{const gr=g.createRadialGradient(W/2,H*.4,50,W/2,H*.4,H*.8);gr.addColorStop(0,"#3a2a24");gr.addColorStop(1,"#0d0c10");g.fillStyle=gr;g.fillRect(0,0,W,H);g.textAlign="center";
+  g.fillStyle="#e9a077";g.font=`italic 60px ${disp}`;g.fillText(x.k||"",W/2,H*.42);g.fillStyle="#f7eee2";
+  if(x.h==="Fukuoka"){g.font=`italic 700 190px ${disp}`;g.fillText("Fukuoka",W/2,H*.52)}else{g.font=`700 84px ${serif}`;g.fillText(x.h||"",W/2,H*.52,W-120)}
+  if(x.sub){g.font=`48px ${serif}`;g.globalAlpha=.85;g.fillText(x.sub,W/2,H*.59,W-120);g.globalAlpha=1}};
+ const draw=(x,t)=>{g.globalAlpha=1;g.fillStyle="#000";g.fillRect(0,0,W,H);const m=media[x.id];
+  if(x.t==="photo"&&m){cover(m,m.width,m.height,t);caption(x)}
+  else if(x.t==="clip"&&m&&m.videoWidth){cover(m,m.videoWidth,m.videoHeight,0);caption(x)}
+  else titleCard(x)};
+ const segDur=x=>x.t==="title"?2.4:x.t==="clip"?Math.min(3.2,(media[x.id]?.duration||3)):3.4;
+ const total=sb.reduce((a,x)=>a+segDur(x),0);let done=0;
+ if(ac?.state==="suspended")try{await ac.resume()}catch(e){}
+ rec.start(500);
+ for(const x of sb){const d=segDur(x),m=media[x.id];
+  if(x.t==="clip"&&m){m.currentTime=0;try{await m.play()}catch(e){m.muted=true;try{await m.play()}catch(e2){}}}
+  await new Promise(fin=>{const s0=performance.now();const tick=()=>{const el=(performance.now()-s0)/1000;if(el>=d){fin();return}
+   draw(x,el/d);if(el<.35){g.fillStyle=`rgba(0,0,0,${1-el/.35})`;g.fillRect(0,0,W,H)}
+   msg.textContent=`영상 만드는 중 ${Math.min(99,Math.round((done+el)/total*100))}% · 화면을 켜 두세요`;requestAnimationFrame(tick)};tick()});
+  if(x.t==="clip"&&m)m.pause();done+=d}
+ rec.stop();await new Promise(r=>rec.onstop=r);try{ac?.close()}catch(e){}
  const type=(mime||"video/webm").split(";")[0],ext=type.includes("mp4")?"mp4":"webm",blob=new Blob(chunks,{type}),file=new File([blob],`fukuoka-2026.${ext}`,{type});
  msg.innerHTML=`완성! (${(blob.size/1048576).toFixed(1)}MB)<br><br>`;
  const save=document.createElement("button");save.className="btn pri";save.textContent=navigator.canShare?.({files:[file]})?"공유·저장하기":"저장하기";
@@ -1002,43 +1075,161 @@ async function makeVideo(){
  const close=document.createElement("button");close.className="btn";close.style.marginLeft="8px";close.textContent="닫기";close.onclick=()=>box.remove();
  msg.append(save,close);
 }
+/* ───────── 추억: 여행지 3초 영상 미션 ───────── */
+const NON_SPOT=new Set(["shuttle","budgetAir","budgetHkt","gasHakata","beppuSA"]);
+function missions(){const out=[],seen=new Set();
+ itinerary().forEach((d,i)=>d.events.forEach(o=>{const t=pick(o,"일정","제목");placesIn(t).forEach(p=>{if(NON_SPOT.has(p.id)||seen.has(p.id))return;seen.add(p.id);out.push({p,day:d,i,time:pick(o,"시간"),event:plain(t)})})}));
+ return out}
+const clipOf=m=>albumRows().filter(o=>isClip(o)&&dayKey(pick(o,"일자"))===m.day.key&&plain(pick(o,"일정"))===m.event&&(pick(o,"설명")===m.p.id||!pick(o,"설명"))).slice(-1)[0];
+function renderMissions(){
+ const ms=missions(),doneN=ms.filter(clipOf).length;$("#missionProg").textContent=`${doneN} / ${ms.length}`;
+ $("#missions").innerHTML=ms.map(m=>{const c=clipOf(m),bg=c?shotUrl(pick(c,"파일ID"),600):m.p.img?photoSrc(m.p.img,600):"";
+  return `<div class="mis ${c?"done":""}">${bg?`<img src="${bg}" alt="" loading="lazy" onerror="this.remove()">`:""}${c?'<span class="ck">✓</span>':""}
+   <div class="mt"><small>Day ${String(m.i+1).padStart(2,"0")} · ${esc(m.time)}</small><b>${esc(m.p.short.replace(/\(.*\)/,""))}</b>
+   ${c?`<button type="button" class="go" data-view="${esc(pick(c,"파일ID"))}">${ic("play")}보기</button> `:""}<button type="button" class="go" data-clip-shot="${esc(m.day.key)}|${esc(m.time)}|${esc(m.event)}|${esc(m.p.id)}">${ic("video")}${c?"다시":"3초 찍기"}</button></div></div>`}).join("");
+}
+let clipTarget=null;
+document.addEventListener("click",e=>{const b=e.target.closest("[data-clip-shot]");if(!b)return;clipTarget=b.dataset.clipShot.split("|");$("#clipInput").click()});
+/* 찍은 영상을 앞 3초만, 세로 720×1280으로 다시 인코딩 (용량 약 1MB) */
+async function trimClip(file){
+ if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream)return file;
+ const u=URL.createObjectURL(file),v=document.createElement("video");v.src=u;v.playsInline=true;
+ await new Promise((ok,no)=>{v.onloadedmetadata=ok;v.onerror=()=>no(new Error("영상을 읽지 못했어요"))});
+ const W=720,H=1280,c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
+ const stream=c.captureStream(30);let ac=null;
+ try{ac=new (window.AudioContext||window.webkitAudioContext)();const d=ac.createMediaStreamDestination();ac.createMediaElementSource(v).connect(d);d.stream.getAudioTracks().forEach(t=>stream.addTrack(t));if(ac.state==="suspended")await ac.resume()}catch(e){v.muted=true}
+ const types=["video/mp4;codecs=avc1,mp4a.40.2","video/mp4","video/webm;codecs=vp8,opus","video/webm"],mime=types.find(t=>MediaRecorder.isTypeSupported(t))||"";
+ const rec=new MediaRecorder(stream,mime?{mimeType:mime,videoBitsPerSecond:3e6}:{}),chunks=[];rec.ondataavailable=e=>e.data.size&&chunks.push(e.data);
+ const dur=Math.min(3,isFinite(v.duration)&&v.duration>0?v.duration:3);
+ try{await v.play()}catch(e){v.muted=true;await v.play()}
+ rec.start(250);
+ await new Promise(fin=>{const tick=()=>{if(v.currentTime>=dur||v.ended){fin();return}
+  const s=Math.max(W/v.videoWidth,H/v.videoHeight),w=v.videoWidth*s,h=v.videoHeight*s;g.drawImage(v,(W-w)/2,(H-h)/2,w,h);requestAnimationFrame(tick)};tick()});
+ v.pause();rec.stop();await new Promise(r=>rec.onstop=r);try{ac?.close()}catch(e){}URL.revokeObjectURL(u);
+ return new Blob(chunks,{type:(mime||"video/webm").split(";")[0]});
+}
+$("#clipInput").onchange=async e=>{
+ const f=e.target.files[0];e.target.value="";if(!f||!clipTarget)return;const [day,time,title,spot]=clipTarget;
+ try{toast("3초로 다듬는 중…");const blob=await trimClip(f);
+  if(blob.size>20*1024*1024)return toast("영상이 너무 커요. 짧게 다시 찍어 주세요");
+  toast("영상 올리는 중…");const data=b64(await blob.arrayBuffer());
+  const r=await api("photo",{day,time,event:title,caption:spot||"",taken:f.lastModified,file:{type:blob.type||f.type,data}});
+  if(r.auth===false){logout(r.error);return}
+  if(r.ok){toast("미션 완료! 영상을 저장했어요");sync()}else toast(r.error||"올리지 못했어요");
+ }catch(err){toast(String(err.message||"영상을 올리지 못했어요").slice(0,60))}
+};
+
 $("#videoBtn").onclick=()=>makeVideo().catch(e=>{document.querySelector(".rec")?.remove();toast("영상을 만들지 못했어요")});
 
-/* ───────── 탭바 & 스크롤 ───────── */
-const TABS=["top","plan","mapsec","budget","checksec"];
-let tabLock=0;
-function setTab(id){document.querySelectorAll(".tabbar a").forEach(a=>a.classList.toggle("on",a.dataset.tab===id))}
-function spy(){
- $("#segWrap").classList.toggle("stuck",$("#segWrap").getBoundingClientRect().top<=0);
- if(Date.now()<tabLock)return;
- const off=($("#segWrap").offsetHeight||60)+40;let cur="top";
- const pos=id=>{const el=id==="plan"?$("#days"):document.getElementById(id);return el?el.getBoundingClientRect().top:1e9};
- if(pos("plan")-off<=0)cur="plan";
- if(pos("budget")-off<=0)cur="budget";
- if(pos("mapsec")-off<=0)cur="mapsec";
- if(pos("checksec")-off<=0||innerHeight+scrollY>=document.body.scrollHeight-4)cur=$("#checksec").open||pos("checksec")-off<=0?"checksec":cur;
- if(scrollY<40)cur="top";
- setTab(cur);
+/* ───────── 가계부 (시트 '가계부' 탭, 가족 공용) ───────── */
+const ledgerRows=()=>objs(DATA["가계부"]).filter(o=>pick(o,"ID")&&num(pick(o,"금액")));
+const wonOf=o=>pick(o,"통화")==="KRW"?num(pick(o,"금액")):num(pick(o,"금액"))*rate()/100;
+const amtText=o=>pick(o,"통화")==="KRW"?krw(num(pick(o,"금액"))):jpy(num(pick(o,"금액")));
+function sumText(rs){const J=rs.filter(o=>pick(o,"통화")!=="KRW").reduce((a,o)=>a+num(pick(o,"금액")),0),K=rs.filter(o=>pick(o,"통화")==="KRW").reduce((a,o)=>a+num(pick(o,"금액")),0);return [J?jpy(J):"",K?krw(K):""].filter(Boolean).join(" + ")}
+const spendOf=(k,title)=>ledgerRows().filter(o=>dayKey(pick(o,"일자"))===k&&plain(pick(o,"일정"))===plain(title));
+function eventSpendHtml(k,title,time){const rs=spendOf(k,title);if(!rs.length)return"";return `<div class="ev-spend" data-exp="${esc(k)}|${esc(time||"")}|${esc(title)}">${ic("coin")}${sumText(rs)} · ${rs.length}건</div>`}
+const mine=o=>ME&&pick(o,"이름").toLowerCase()===ME.toLowerCase();
+function renderLedger(){
+ const rs=ledgerRows(),days=itinerary();
+ const cash=num(pick(objs(DATA["비용"]).find(o=>pick(o,"항목")==="환전")||{},"금액"));
+ const J=rs.filter(o=>pick(o,"통화")!=="KRW"),K=rs.filter(o=>pick(o,"통화")==="KRW");
+ const cashJ=J.filter(o=>pick(o,"결제")==="현금").reduce((a,o)=>a+num(pick(o,"금액")),0);
+ const total=rs.reduce((a,o)=>a+wonOf(o),0);
+ const groups=days.map((d,i)=>({d,i,rs:rs.filter(o=>dayKey(pick(o,"일자"))===d.key)}));
+ const etc=rs.filter(o=>!days.some(d=>d.key===dayKey(pick(o,"일자"))));if(etc.length)groups.push({d:null,i:-1,rs:etc});
+ const max=Math.max(1,...groups.map(g=>g.rs.reduce((a,o)=>a+wonOf(o),0)));
+ const row=o=>`<li class="row"><div class="main"><b>${esc(pick(o,"항목"))}</b><span>${esc(pick(o,"일정"))} · ${esc(pick(o,"결제"))}${pick(o,"메모")?` · ${esc(pick(o,"메모"))}`:""}</span><span class="who">${esc(pick(o,"이름").split("@")[0])} · ${esc(pick(o,"시각").slice(5))}</span></div><div class="val">${amtText(o)}</div>${mine(o)?`<button class="del" type="button" data-del-exp="${esc(pick(o,"ID"))}" aria-label="삭제">${ic("x")}</button>`:""}</li>`;
+ $("#ledgerRoot").innerHTML=`<div class="card"><div class="led-sum"><small>여행 중 쓴 돈 (원화 환산)</small><strong>${krw(total)}</strong></div>
+  <div class="led-grid"><div><small>엔화 지출</small><b>${jpy(J.reduce((a,o)=>a+num(pick(o,"금액")),0))}</b></div><div><small>원화 지출</small><b>${krw(K.reduce((a,o)=>a+num(pick(o,"금액")),0))}</b></div><div><small>남은 현금</small><b>${cash?jpy(Math.max(0,cash-cashJ)):"–"}</b></div></div></div>
+  ${rs.length?groups.filter(g=>g.rs.length).map(g=>{const t=g.rs.reduce((a,o)=>a+wonOf(o),0);return `<div class="led-day"><h4>${g.d?`<small>Day ${String(g.i+1).padStart(2,"0")}</small>${esc(dayMeta(g.d.key).tab||g.d.key)}`:"기타"}<em>${krw(t)}</em></h4><div class="dbar"><i style="width:${t/max*100}%"></i></div><div class="card"><ul class="rows">${g.rs.slice().reverse().map(row).join("")}</ul></div></div>`}).join(""):'<p class="album-empty">아직 기록이 없어요. 일정의 <b>지출</b> 버튼이나 위의 <b>지출 기록</b>으로 남겨 보세요. 가족 모두 같은 가계부를 봐요.</p>'}
+  <p class="hint" style="padding:10px 4px">엔화는 ${rate().toFixed(2)}원/100엔으로 환산 · 남은 현금 = 환전 ${cash?jpy(cash):"–"} − 엔화 현금 지출</p>`;
 }
-document.querySelectorAll(".tabbar a").forEach(a=>a.addEventListener("click",()=>{setTab(a.dataset.tab);tabLock=Date.now()+900}));
-addEventListener("scroll",()=>requestAnimationFrame(spy),{passive:true});
+/* 지출 입력 시트 */
+let expCtx=null;
+const togVal=id=>$(`#${id} .on`).dataset.v;
+document.querySelectorAll(".tog").forEach(t=>t.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;t.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b))}));
+function openExp(day,time,title,free){
+ expCtx={day,time,title,free};$("#expSheet").hidden=false;
+ $("#expTitle").textContent=free?"지출 기록":title;
+ $("#expSub").textContent=free?"일정과 상관없는 지출도 여기에 적어요":`${day} ${time} · 이 일정에서 쓴 돈`;
+ $("#expItem").value="";$("#expAmount").value="";$("#expMemo").value="";
+ $("#expDayWrap").hidden=!free;
+ if(free){const days=itinerary(),{ymd}=nowJST();$("#expDay").innerHTML=days.map((d,i)=>`<option value="${esc(d.key)}" ${d.iso===ymd?"selected":""}>Day ${i+1} · ${esc(d.key)}</option>`).join("")+'<option value="">기타 (여행 전·후)</option>'}
+ const rs=free?[]:spendOf(day,title);
+ $("#expList").innerHTML=rs.length?`<li class="row"><div class="main"><span>이 일정 지출 합계</span></div><div class="val">${sumText(rs)}</div></li>`+rs.map(o=>`<li class="row"><div class="main"><b>${esc(pick(o,"항목"))}</b><span>${esc(pick(o,"결제"))} · ${esc(pick(o,"이름").split("@")[0])}</span></div><div class="val">${amtText(o)}</div>${mine(o)?`<button class="del" type="button" data-del-exp="${esc(pick(o,"ID"))}">${ic("x")}</button>`:""}</li>`).join(""):"";
+ setTimeout(()=>$("#expAmount").focus(),50);
+}
+function closeExp(){$("#expSheet").hidden=true;expCtx=null}
+$("#expClose").onclick=closeExp;$("#expSheet").addEventListener("click",e=>{if(e.target.id==="expSheet")closeExp()});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-exp]");if(!b)return;const [d,t,ti]=b.dataset.exp.split("|");openExp(d,t,ti,false)});
+$("#expAddFree").onclick=()=>openExp("","","",true);
+$("#expSave").onclick=async()=>{
+ const amount=num($("#expAmount").value);if(!amount)return toast("금액을 입력해 주세요");
+ const c=expCtx;const day=c.free?$("#expDay").value:c.day,event=c.free?"기타 지출":c.title;
+ const req={day,time:c.free?"":c.time,event,item:$("#expItem").value.trim()||event,amount,currency:togVal("expCur"),pay:togVal("expPay"),memo:$("#expMemo").value.trim()};
+ $("#expSave").disabled=true;
+ try{const r=await api("expense",req);if(r.auth===false){logout(r.error);return}
+  if(!r.ok)return toast(r.error||"저장하지 못했어요");
+  (DATA["가계부"]=DATA["가계부"]||[["시각","이름","일자","시간","일정","항목","금액","통화","결제","메모","ID"]]).push([new Date().toISOString().slice(0,16).replace("T"," "),ME,req.day,req.time,req.event,req.item,String(req.amount),req.currency,req.pay,req.memo,r.id]);
+  toast(`${req.currency==="KRW"?krw(amount):jpy(amount)} 기록했어요`);closeExp();renderAll();sync();
+ }catch(e){toast("저장하지 못했어요")}finally{$("#expSave").disabled=false}
+};
+document.addEventListener("click",async e=>{const b=e.target.closest("[data-del-exp]");if(!b)return;if(!confirm("이 지출 기록을 지울까요?"))return;
+ const r=await api("deleteExpense",{id:b.dataset.delExp});if(r.ok){const t=DATA["가계부"];DATA["가계부"]=[t[0],...t.slice(1).filter(x=>x[10]!==b.dataset.delExp)];toast("지웠어요");if(expCtx)openExp(expCtx.day,expCtx.time,expCtx.title,expCtx.free);renderAll();sync()}else toast(r.error||"지우지 못했어요")});
+/* 홈: 오늘(또는 첫날) 일정 미리보기 */
+function renderHomeToday(){
+ const days=itinerary();if(!days.length){$("#homeToday").innerHTML="";return}
+ const {ymd,min}=nowJST();let i=days.findIndex(d=>d.iso===ymd),label="오늘 일정";
+ if(i<0){i=ymd<TRIP_START?0:days.length-1;label=ymd<TRIP_START?"첫날 미리보기":"마지막 날"}
+ const d=days[i];let evs=d.events;if(label==="오늘 일정")evs=evs.filter(o=>{const m=minutesOf(pick(o,"시간"));return m==null||m>=min-60});
+ $("#homeToday").innerHTML=`<div class="label">${label} · Day ${i+1}</div><a class="card home-today" href="#plan" style="display:block"><ul class="rows">${evs.slice(0,4).map(o=>`<li class="row"><span class="tm">${esc(pick(o,"시간"))}</span><div class="main"><b>${esc(plain(pick(o,"일정","제목")))}</b></div></li>`).join("")}</ul></a>`;
+}
+
+/* ───────── 페이지 이동 ───────── */
+const PAGES=["home","plan","money","memory","more"];
+let curPage="home";
+function setTab(id){document.querySelectorAll(".tabbar a").forEach(a=>a.classList.toggle("on",a.dataset.tab===id))}
+function go(pg,keepScroll){
+ if(!PAGES.includes(pg))pg="home";
+ PAGES.forEach(p=>{const el=document.getElementById("pg-"+p);if(el)el.hidden=p!==pg});
+ const changed=curPage!==pg;curPage=pg;setTab(pg);store.set("fuk5-page",pg);
+ try{history.replaceState(null,"","#"+pg)}catch(e){}
+ if(changed&&!keepScroll)scrollTo(0,0);
+ if(pg==="more"&&$("#mapsec").open)renderMap();
+}
+/* 어떤 요소로 이동: 그 요소가 있는 페이지로 바꾸고, 접힌 칸이면 펼친 뒤 스크롤 */
+function reveal(id){
+ const el=document.getElementById(id);if(!el)return false;
+ const pg=el.closest(".page");if(pg)go(pg.id.replace("pg-",""),true);
+ if(el.tagName==="DETAILS"&&!el.open)el.open=true;
+ setTimeout(()=>{const y=el.getBoundingClientRect().top+scrollY-(curPage==="plan"?($("#segWrap").offsetHeight||0)+8:12);scrollTo({top:Math.max(0,y),behavior:"smooth"})},30);
+ return true;
+}
+document.addEventListener("click",e=>{
+ const a=e.target.closest('a[href^="#"]');if(!a)return;
+ const id=(a.dataset.open||a.getAttribute("href").slice(1));
+ e.preventDefault();
+ if(PAGES.includes(id)){go(id);return}
+ reveal(id);
+});
+addEventListener("scroll",()=>{const w=$("#segWrap");if(w&&curPage==="plan")w.classList.toggle("stuck",w.getBoundingClientRect().top<=0)},{passive:true});
 
 /* ───────── 전체 렌더 & 이벤트 ───────── */
 function initPhotos(){
  const c=PHOTOS.cover;$("#coverPhoto").src=photoSrc(c.f,1400);$("#coverPhoto").alt=c.cap;
  $("#credits").innerHTML="사진: Wikimedia Commons · "+Object.values(PHOTOS).map(p=>`<a href="${photoPage(p.f)}" target="_blank" rel="noopener">${esc(p.cap)}</a>`).join(" · ");
 }
-function renderAll(){renderRequests();renderDays();renderAlbum();renderBudget();renderBooking();renderShopping();renderChecklist();renderMap();loadWxCached()}
+function renderAll(){renderRequests();renderDays();renderAlbum();renderHomeToday();renderBudget();renderBooking();renderShopping();renderChecklist();renderMap();loadWxCached()}
 $("#sheetLink").href=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`;
 $("#syncBtn").onclick=()=>{wxAt=0;sync(true)};
 $("#mapsec").addEventListener("toggle",()=>{if($("#mapsec").open)renderMap()});
-document.addEventListener("click",e=>{const a=e.target.closest("[data-open]");if(a){const d=document.getElementById(a.dataset.open);if(d&&!d.open)d.open=true}});
 const memo=$("#memo");memo.value=store.get("fuk5-memo",null)??store.get("fuk4-memo","")??"";memo.oninput=()=>store.set("fuk5-memo",memo.value);
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&Date.now()-store.get("fuk5-syncAt",0)>60*1000)sync()});
 setInterval(()=>{if(document.visibilityState==="visible")sync()},REFRESH_MS);
 setInterval(()=>{if(document.visibilityState==="visible")renderDays()},60*1000);
 
-initPhotos();initFx();setSync(store.get("fuk5-syncAt",0)?"cache":"seed");renderAll();spy();sync();
+{const h=location.hash.slice(1);go(PAGES.includes(h)?h:"home",true)}
+initPhotos();initFx();setSync(store.get("fuk5-syncAt",0)?"cache":"seed");renderAll();sync();
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
 </body>
