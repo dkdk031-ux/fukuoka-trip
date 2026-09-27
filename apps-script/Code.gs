@@ -16,10 +16,30 @@ const MAX_FILES = 3;
 const MAX_FILE_BYTES = 8 * 1024 * 1024;
 const ALLOWED_TYPES = /^(image\/(jpeg|png|webp|heic|heif|gif)|application\/pdf)$/;
 
+// 화면 코드(데이터 없음)는 GitHub에서 받아온다 → 저장소에 푸시하면 재배포 없이 몇 분 안에 반영.
+// 받아오지 못하면 이 프로젝트의 'index' 파일로 대신 연다.
+const UI_URL = 'https://raw.githubusercontent.com/dkdk031-ux/fukuoka-trip/main/apps-script/index.html';
+const UI_CACHE_SEC = 300;
+
 function doGet() {
-  return HtmlService.createHtmlOutputFromFile('index')
+  return HtmlService.createHtmlOutput(loadUi())
     .setTitle('후쿠오카 3박 4일')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover');
+}
+
+function loadUi() {
+  const cache = CacheService.getScriptCache();
+  const hit = cache.get('ui');
+  if (hit) return hit;
+  try {
+    const res = UrlFetchApp.fetch(UI_URL, { muteHttpExceptions: true });
+    const html = res.getContentText('UTF-8');
+    if (res.getResponseCode() === 200 && html.indexOf('google.script.run') > -1) {
+      if (html.length < 95000) cache.put('ui', html, UI_CACHE_SEC);
+      return html;
+    }
+  } catch (err) {}
+  return HtmlService.createHtmlOutputFromFile('index').getContent();
 }
 
 /** 앱이 읽는 모든 탭을 표시값 그대로 돌려준다. 공유받지 않은 사용자는 여기서 권한 오류가 난다. */
