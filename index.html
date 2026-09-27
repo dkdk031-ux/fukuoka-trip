@@ -326,6 +326,8 @@ const PLACES=[
  {id:"canal",m:/캐널/,short:"캐널시티",q:"キャナルシティ博多",links:[["공식정보","https://canalcity.co.jp/"]],lat:33.5911,lng:130.4106,k:"shop"},
  {id:"hankyu",m:/한큐|BREEZE/i,short:"하카타한큐",q:"福岡市博多区博多駅中央街1番1号 博多阪急",links:[["공식사이트","https://www.hankyu-dept.co.jp/hakata/"],["7F 키즈","https://www.hankyu-dept.co.jp/hakata/floor/7f.html"]],lat:33.5898,lng:130.4207,k:"shop"},
  {id:"amu",m:/아뮤|MARKEY/i,short:"아뮤플라자",q:"アミュプラザ博多",lat:33.5897,lng:130.4198,k:"shop"},
+ {id:"gasHakata",m:/ENEOS|쿠루마클리닉/,short:"ENEOS 하카타(주유)",q:"福岡市博多区堅粕5-8-10 ENEOS くるまクリニック博多店",tel:"+81924415451",lat:33.5988,lng:130.4250,k:"gas"},
+ {id:"beppuSA",m:/벳푸만 ?SA/,short:"벳푸만 SA(주유·휴게)",q:"別府湾サービスエリア 上り",lat:33.2967,lng:131.4520,k:"gas"},
  {id:"fukIntl",m:/공항 이동|국제선/,short:"공항 국제선",q:"福岡空港国際線旅客ターミナル",links:[["공항 공식","https://www.fukuoka-airport.jp/"]],lat:33.5859,lng:130.4507,k:"spot"}
 ];
 
@@ -485,7 +487,7 @@ function hoursView(h,plannedMin,isToday,nowMin){
 }
 function eventView(o){
  const title=pick(o,"일정","제목"),desc=pick(o,"세부내용","내용"),memo=pick(o,"이동/메모","메모"),area=pick(o,"지역");
- const found=placesIn(title); // 제목 기준 (설명에 언급만 된 장소는 제외)
+ const found=[...placesIn(title),...placesIn(memo).filter(p=>p.k==="gas"&&!placesIn(title).includes(p))]; // 제목 기준 + 메모에 적힌 주유소
  const addr=pick(o,"주소","목적지"),link=safeUrl(pick(o,"링크","URL")),telS=telOf(pick(o,"전화"));
  const acts=[],seen=new Set(),add=(h,k)=>{if(!seen.has(k)){seen.add(k);acts.push(h)}};
  if(addr)add(btn(dirUrl(addr),"길찾기","nav",true),"d:"+addr);
@@ -659,6 +661,7 @@ function mapGroups(){
  const days=itinerary(),g=[];
  days.forEach((d,i)=>{const seq=[];d.events.forEach(o=>placesIn(pick(o,"일정","제목")).forEach(p=>{if(!seq.includes(p))seq.push(p)}));g.push({id:"d"+(i+1),label:`Day ${i+1}`,seq})});
  g.push({id:"shop",label:"쇼핑",seq:PLACES.filter(p=>p.k==="shop")});
+ g.push({id:"gas",label:"주유소",seq:PLACES.filter(p=>p.k==="gas")});
  g.unshift({id:"all",label:"전체",seq:PLACES.filter(p=>p.lat)});
  return g;
 }
@@ -674,7 +677,7 @@ function renderMap(){
  const gs=mapGroups(),grp=gs.find(x=>x.id===mapSel)||gs[0];
  $("#mapTools").innerHTML=gs.map(x=>`<button type="button" data-id="${x.id}" class="${x.id===grp.id?"on":""}">${esc(x.label)}</button>`).join("");
  $("#mapTools").querySelectorAll("button").forEach(b=>b.onclick=()=>{mapSel=b.dataset.id;mapFocus=-1;renderMap()});
- $("#stops").innerHTML=grp.seq.map((p,i)=>`<li class="stop ${i===mapFocus?"on":""}" data-i="${i}"><span class="n">${i+1}</span><b>${esc(p.short)}</b><span>${p.k==="shop"?"쇼핑":"장소"}</span></li>`).join("");
+ $("#stops").innerHTML=grp.seq.map((p,i)=>`<li class="stop ${i===mapFocus?"on":""}" data-i="${i}"><span class="n">${i+1}</span><b>${esc(p.short)}</b><span>${p.k==="shop"?"쇼핑":p.k==="gas"?"주유소":"장소"}</span></li>`).join("");
  $("#stops").querySelectorAll(".stop").forEach(li=>li.onclick=()=>{mapFocus=mapFocus===+li.dataset.i?-1:+li.dataset.i;renderMap()});
  const f=grp.seq[mapFocus];
  $("#mapFoot").innerHTML=f?btn(dirUrl(f.q),`${f.short} 길찾기`,"nav",true):grp.id.startsWith("d")&&grp.seq.length?btn(dirUrl(grp.seq.at(-1).q,grp.seq.slice(0,-1).map(p=>p.q)),"구글맵에서 이 날 경로 열기","nav",true):"";
