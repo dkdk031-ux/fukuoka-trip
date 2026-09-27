@@ -293,6 +293,43 @@ footer{font-family:var(--serif)}
 .day-photo:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 60%,rgba(0,0,0,.35));pointer-events:none}
 .credits{margin-top:8px;font-size:11px;line-height:1.7}.credits a{color:var(--ink3);text-decoration:underline}
 @media(max-width:520px){.cover,.cover-text{min-height:330px}}
+
+/* 여행 사진 · 앨범 · 슬라이드쇼 */
+.ev-photo{position:relative;margin:12px 0 2px;border-radius:12px;overflow:hidden;aspect-ratio:16/9;background:var(--fill)}
+.ev-photo img{display:block;width:100%;height:100%;object-fit:cover}
+.ev-photo figcaption{position:absolute;left:10px;bottom:8px;font-size:12px;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.6);font-family:var(--serif)}
+.btn.cam{background:transparent;border:1px dashed var(--fill2);color:var(--ink2)}
+.shots{display:flex;gap:6px;overflow-x:auto;margin-top:10px;scrollbar-width:none}.shots::-webkit-scrollbar{display:none}
+.shots button{flex:none;width:72px;height:72px;border-radius:10px;overflow:hidden;padding:0;background:var(--fill)}
+.shots img{width:100%;height:100%;object-fit:cover;display:block}
+.album-acts{display:flex;gap:8px;padding:14px 16px 6px}.album-acts .btn{flex:1;justify-content:center;height:42px}
+.album-day{padding:10px 16px 4px}.album-day h4{margin:0 0 8px;font-family:var(--serif);font-size:16px}.album-day h4 small{font-family:var(--display);font-style:italic;color:var(--accent);margin-right:8px}
+.album-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.album-grid button{padding:0;aspect-ratio:1;border-radius:8px;overflow:hidden;background:var(--fill)}.album-grid img{width:100%;height:100%;object-fit:cover;display:block}
+.album-empty{padding:18px 16px 4px;color:var(--ink3);font-size:14px;font-family:var(--serif)}
+.viewer[hidden],.show[hidden]{display:none}
+.viewer{position:fixed;inset:0;z-index:120;background:rgba(12,12,14,.96);display:flex;flex-direction:column}
+.v-stage{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:pan-y}
+.v-stage img{max-width:100%;max-height:100%;object-fit:contain}
+.v-close,.show-ui button{position:absolute;top:calc(10px + env(safe-area-inset-top));right:12px;z-index:2;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;font-size:26px;line-height:1}
+.v-cap{color:#f4ece0;font-family:var(--serif);text-align:center;padding:10px 20px 4px;font-size:15px}
+.v-cap small{display:block;color:#b9ada0;font-family:var(--font);font-size:12px;margin-top:2px}
+.v-bar{display:flex;justify-content:center;gap:10px;padding:10px 0 calc(16px + env(safe-area-inset-bottom))}
+.v-bar button{height:38px;padding:0 16px;border-radius:999px;background:rgba(255,255,255,.14);color:#fff;font-weight:600;font-size:14px}
+.show{position:fixed;inset:0;z-index:130;background:#0d0c10;overflow:hidden}
+.show-stage{position:absolute;inset:0}
+.slide{position:absolute;inset:0;opacity:0;transition:opacity 1s ease}.slide.on{opacity:1}
+.slide img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1);transition:transform 5s ease-out}
+.slide.on img{transform:scale(1.09)}
+.slide .sc{position:absolute;left:0;right:0;bottom:0;padding:60px 24px calc(34px + env(safe-area-inset-bottom));background:linear-gradient(180deg,transparent,rgba(0,0,0,.65));color:#fff}
+.slide .sc b{display:block;font-family:var(--serif);font-size:20px}.slide .sc small{font-family:var(--display);font-style:italic;opacity:.85;font-size:14px}
+.slide.title{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#f7eee2;background:radial-gradient(circle at 50% 40%,#3a2a24,#0d0c10)}
+.slide.title .k{font-family:var(--display);font-style:italic;color:#e9a077;font-size:22px}
+.slide.title h2{font-family:var(--serif);font-size:30px;margin:10px 24px;line-height:1.35}
+.slide.title .mast2{font-family:var(--display);font-style:italic;font-size:64px}
+.show-prog{position:absolute;left:14px;right:64px;top:calc(28px + env(safe-area-inset-top));height:3px;background:rgba(255,255,255,.2);border-radius:3px;overflow:hidden}.show-prog i{display:block;height:100%;width:0;background:#fff}
+.rec{position:fixed;inset:0;z-index:140;background:rgba(13,12,16,.94);color:#f4ece0;display:grid;place-items:center;text-align:center;padding:24px}
+.rec canvas{width:min(46vw,220px);border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.5)}.rec p{margin:14px 0 0;font-family:var(--serif)}
 </style>
 </head>
 <body>
@@ -345,6 +382,11 @@ footer{font-family:var(--serif)}
   </div>
 
   <div class="sec-h"><h2 data-en="Journal">더보기</h2></div>
+  <details class="dis" id="albumsec" open><summary><span class="ico" data-ic="album"></span>여행 앨범<em id="albumCount"></em><span class="chev" data-ic="chev"></span></summary><div>
+    <div class="album-acts"><button class="btn pri" type="button" id="slideBtn"><span data-ic="play"></span>슬라이드쇼</button><button class="btn" type="button" id="videoBtn"><span data-ic="film"></span>영상 만들기</button></div>
+    <div id="albumRoot"></div>
+    <div class="hint">일정마다 <b>사진</b> 버튼으로 올려요. 올린 사진은 드라이브 ☆후쿠오카/여행 사진 폴더에 모이고, 초대된 가족만 앱에서 볼 수 있어요.</div>
+  </div></details>
   <details class="dis" id="mapsec"><summary><span class="ico" data-ic="map"></span>지도<em>구글맵</em><span class="chev" data-ic="chev"></span></summary><div>
     <div class="map-chips" id="mapTools"></div>
     <iframe class="gmap" id="gmap" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="구글 지도"></iframe>
@@ -379,6 +421,9 @@ footer{font-family:var(--serif)}
   <a href="#checksec" data-tab="checksec" data-open="checksec"><span data-ic="check"></span>준비</a>
 </nav></div>
 <div class="toast" id="toast"></div>
+<input type="file" id="shotInput" accept="image/*" multiple hidden>
+<div class="viewer" id="viewer" hidden><button class="v-close" type="button" id="vClose" aria-label="닫기">×</button><div class="v-stage" id="vStage"></div><div class="v-cap" id="vCap"></div><div class="v-bar" id="vBar"></div></div>
+<div class="show" id="show" hidden><div class="show-stage" id="showStage"></div><div class="show-ui"><button type="button" id="showClose" aria-label="닫기">×</button><div class="show-prog"><i id="showProg"></i></div></div></div>
 <div class="login" id="login" hidden><div class="login-box">
   <div class="over">VOL. 01 · AUTUMN 2026</div><h1>Fukuoka</h1><p>초대받은 가족만 볼 수 있어요.<br>구글 계정으로 로그인해 주세요.</p>
   <div id="gbtn" class="gbtn"></div><p class="login-msg" id="loginMsg"></p>
@@ -413,23 +458,23 @@ const SEED={"일정": [["일자", "시간", "지역", "일정", "세부내용", 
 const PLACES=[
  {id:"shuttle",m:/셔틀/,short:"셔틀장소",q:"福岡県福岡市博多区空港前3丁目2-25",tel:"+81926120543"},
  {id:"budgetAir",m:/Budget.*공항|공항점|렌터카 픽업/,short:"Budget 공항점",q:"福岡県福岡市博多区月隈1丁目7-5",tel:"+81926120543",lat:33.5769,lng:130.4674,k:"spot"},
- {id:"kinrin",m:/긴린코/,short:"긴린코",q:"金鱗湖 由布院",lat:33.2673,lng:131.3631,k:"spot"},
- {id:"floral",m:/플로랄/,short:"플로랄빌리지",q:"湯布院フローラルヴィレッジ",links:[["플로랄빌리지","http://floral-village.com/"]],lat:33.2646,lng:131.3582,k:"spot"},
- {id:"nogami",m:/노가미/,short:"노가미혼칸",q:"大分県別府市北浜1-12-1 野上本館",tel:"+81977221334",lat:33.2781,lng:131.5050,k:"spot"},
+ {id:"kinrin",img:"Lake_Kinrin_20221022-2.jpg",m:/긴린코/,short:"긴린코",q:"金鱗湖 由布院",lat:33.2673,lng:131.3631,k:"spot"},
+ {id:"floral",img:"Yufuin_Floral_Village.jpg",m:/플로랄/,short:"플로랄빌리지",q:"湯布院フローラルヴィレッジ",links:[["플로랄빌리지","http://floral-village.com/"]],lat:33.2646,lng:131.3582,k:"spot"},
+ {id:"nogami",img:"Beppu_Takegawara_Onsen_1.jpg",m:/노가미/,short:"노가미혼칸",q:"大分県別府市北浜1-12-1 野上本館",tel:"+81977221334",lat:33.2781,lng:131.5050,k:"spot"},
  {id:"safari",m:/사파리/,short:"사파리",q:"大分県宇佐市安心院町南畑2-1755-1",links:[["오늘 운영 확인","https://africansafari.co.jp/"]],lat:33.3687,lng:131.3476,k:"spot"},
- {id:"umi",m:/우미지고쿠|지고쿠|지옥/,short:"우미지고쿠",q:"海地獄 別府",links:[["공식사이트","http://www.beppu-jigoku.com/"]],lat:33.3164,lng:131.4686,k:"spot"},
+ {id:"umi",img:"Beppu_Umi-jigoku04n4272.jpg",m:/우미지고쿠|지고쿠|지옥/,short:"우미지고쿠",q:"海地獄 別府",links:[["공식사이트","http://www.beppu-jigoku.com/"]],lat:33.3164,lng:131.4686,k:"spot"},
  {id:"nishi",m:/니시마츠야/,short:"니시마츠야",q:"大分県別府市大字鶴見108-1 西松屋",lat:33.306,lng:131.477,k:"shop"},
  {id:"forza",m:/포르자/,short:"포르자Ⅱ",q:"福岡市博多区博多駅東1-13-3 ホテルフォルツァ博多駅筑紫口II",tel:"+81924737114",links:[["공식사이트","https://www.hotelforza.jp/hakata2/"]],lat:33.5902,lng:130.4233,k:"spot"},
  {id:"budgetHkt",m:/렌터카 반납|반납점|Budget 하카타/,short:"반납점",q:"福岡県福岡市博多区博多駅東1丁目18-10",tel:"+81924618255",lat:33.5892,lng:130.4240,k:"spot"},
- {id:"ohori",m:/오호리/,short:"오호리공원",q:"大濠公園 福岡",lat:33.5861,lng:130.3764,k:"spot"},
- {id:"montbell",m:/몽벨/,short:"몽벨",q:"福岡市中央区天神2-4-38 モンベル福岡天神店",lat:33.5906,lng:130.4003,k:"shop"},
+ {id:"ohori",img:"Ohori_Park,_Fukuoka.JPG",m:/오호리/,short:"오호리공원",q:"大濠公園 福岡",lat:33.5861,lng:130.3764,k:"spot"},
+ {id:"montbell",img:"Fukuoka-tenjin.jpg",m:/몽벨/,short:"몽벨",q:"福岡市中央区天神2-4-38 モンベル福岡天神店",lat:33.5906,lng:130.4003,k:"shop"},
  {id:"nanamica",m:/nanamica/i,short:"nanamica",q:"福岡市中央区大名2-1-14 nanamica",lat:33.5884,lng:130.3934,k:"shop"},
- {id:"canal",m:/캐널/,short:"캐널시티",q:"キャナルシティ博多",links:[["공식정보","https://canalcity.co.jp/"]],lat:33.5911,lng:130.4106,k:"shop"},
- {id:"hankyu",m:/한큐|BREEZE/i,short:"하카타한큐",q:"福岡市博多区博多駅中央街1番1号 博多阪急",links:[["공식사이트","https://www.hankyu-dept.co.jp/hakata/"],["7F 키즈","https://www.hankyu-dept.co.jp/hakata/floor/7f.html"]],lat:33.5898,lng:130.4207,k:"shop"},
- {id:"amu",m:/아뮤|MARKEY/i,short:"아뮤플라자",q:"アミュプラザ博多",lat:33.5897,lng:130.4198,k:"shop"},
+ {id:"canal",img:"Canal_city_hakata_fukuoka.jpg",m:/캐널/,short:"캐널시티",q:"キャナルシティ博多",links:[["공식정보","https://canalcity.co.jp/"]],lat:33.5911,lng:130.4106,k:"shop"},
+ {id:"hankyu",img:"Hakata_Hankyu_Depart_2011.jpg",m:/한큐|BREEZE/i,short:"하카타한큐",q:"福岡市博多区博多駅中央街1番1号 博多阪急",links:[["공식사이트","https://www.hankyu-dept.co.jp/hakata/"],["7F 키즈","https://www.hankyu-dept.co.jp/hakata/floor/7f.html"]],lat:33.5898,lng:130.4207,k:"shop"},
+ {id:"amu",img:"JR_Hakata_City_2011_Jan.jpg",m:/아뮤|MARKEY/i,short:"아뮤플라자",q:"アミュプラザ博多",lat:33.5897,lng:130.4198,k:"shop"},
  {id:"gasHakata",m:/ENEOS|쿠루마클리닉/,short:"ENEOS 하카타(주유)",q:"福岡市博多区堅粕5-8-10 ENEOS くるまクリニック博多店",tel:"+81924415451",lat:33.5988,lng:130.4250,k:"gas"},
  {id:"beppuSA",m:/벳푸만 ?SA/,short:"벳푸만 SA(주유·휴게)",q:"別府湾サービスエリア 上り",lat:33.2967,lng:131.4520,k:"gas"},
- {id:"fukIntl",m:/공항 이동|국제선/,short:"공항 국제선",q:"福岡空港国際線旅客ターミナル",links:[["공항 공식","https://www.fukuoka-airport.jp/"]],lat:33.5859,lng:130.4507,k:"spot"}
+ {id:"fukIntl",img:"Fukuoka_Airport_International_Terminal_by_night;_April_2016.jpg",m:/공항 이동|국제선/,short:"공항 국제선",q:"福岡空港国際線旅客ターミナル",links:[["공항 공식","https://www.fukuoka-airport.jp/"]],lat:33.5859,lng:130.4507,k:"spot"}
 ];
 
 
@@ -453,6 +498,10 @@ const ICONS={
  bag:'<path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>',
  x:'<path d="M6 6l12 12M18 6 6 18"/>',
  clip:'<path d="M20 11.5 12 19.5a5 5 0 0 1-7-7l8-8a3.3 3.3 0 0 1 4.7 4.7L9.8 17a1.7 1.7 0 0 1-2.4-2.4L14.5 7.5"/>',
+ camera:'<path d="M4 8h3l2-2.5h6L17 8h3v11H4V8Z"/><circle cx="12" cy="13" r="3.5"/>',
+ play:'<path d="M8 5.5v13l10.5-6.5L8 5.5Z"/>',
+ film:'<rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M7.5 4.5v15M16.5 4.5v15M3.5 9h4M3.5 15h4M16.5 9h4M16.5 15h4"/>',
+ album:'<rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="m4 17 5-4.5 4 3.5 3-2.5 4 3.5"/>',
  chat:'<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9.5h8M8 12.5h5"/>'
 };
 const ic=(n,cls="")=>`<svg class="i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n]||""}</svg>`;
@@ -633,7 +682,9 @@ function renderDays(){
      <div class="tt">${esc(e.title)}${now?'<span class="tag-now">지금</span>':""}</div>
      ${e.desc?`<div class="d">${esc(e.desc)}</div>`:""}${e.memo?`<div class="m">${esc(e.memo)}</div>`:""}
      ${hoursView(e.hours,pm,now,now?min:null)}
-     ${e.acts.length?`<div class="acts">${e.acts.join("")}</div>`:""}${e.tipHtml}</div></div>`}).join("")}</div>
+     ${e.acts.length||true?`<div class="acts">${e.acts.join("")}<button class="btn cam" type="button" data-shot="${esc(d.key)}|${esc(e.time)}|${esc(e.title)}">${ic("camera")}사진</button></div>`:""}${e.tipHtml}
+     ${eventPhotosHtml(d.key,e.title)}
+     ${(()=>{const pp=e.places.find(p=>p.img);return pp?`<figure class="ev-photo"><img src="${photoSrc(pp.img,900)}" alt="${esc(pp.short)}" loading="lazy" onerror="this.parentNode.remove()"><figcaption>${esc(pp.short)}</figcaption></figure>`:""})()}</div></div>`}).join("")}</div>
    ${ev.some(e=>e.hours)&&hoursStamp()?`<div class="hrs-src ${hoursStale()?"stale":""}">${ic("clock")}영업시간 ${esc(hoursStamp())}${hoursStale()?" · 자동 업데이트가 하루 넘게 안 됐어요":""}${setting("영업시간 변경")&&setting("영업시간 변경")!=="변경 없음"?` · ${esc(setting("영업시간 변경"))}`:""}</div>`:""}
    ${meta.note?`<p class="note"><b>${i===days.length-1&&days.length>1?"귀국일 체크":"오늘의 기준"}</b> · ${esc(meta.note)}</p>`:""}
   </div></section>`;
@@ -659,7 +710,7 @@ function renderStatus(days){
    if(c)tx=`지금 ${c.title}`+(n?` · 다음 ${n.time} ${n.title}`:" · 오늘 마지막 일정");else if(n)tx=`첫 일정 ${n.time} ${n.title}`;
    const na=n?.acts.find(a=>a.includes("maps"));if(na)next=na.replace("btn pri","btn").replace(/>([^<]*)<\/a>$/,">다음 장소 길찾기</a>");
   }
- }else{$("#dDay").textContent="완료";$("#dDaySub").textContent="여행 끝";st="여행 완료";tx="사진 백업과 카드 결제 내역을 확인하세요."}
+ }else{$("#dDay").textContent="완료";$("#dDaySub").textContent="여행 끝";st="여행 완료";tx="가족이 올린 사진으로 슬라이드쇼와 영상을 만들어 보세요.";next=btn("#albumsec","여행 앨범 보기","album",true,false).replace("<a ",'<a data-open="albumsec" ')}
  $("#statusTitle").textContent=st;$("#statusText").textContent=tx;$("#statusNext").innerHTML=next;
 }
 
@@ -843,6 +894,116 @@ async function packFile(f){
 }
 $("#logoutBtn").onclick=()=>{if(confirm("로그아웃할까요?"))logout()};
 
+/* ───────── 여행 사진 · 앨범 ───────── */
+const shotUrl=(id,w)=>`https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w${w}`;
+function albumRows(){return objs(DATA["사진"]).filter(o=>pick(o,"파일ID"))}
+function photosFor(k,title){return albumRows().filter(o=>dayKey(pick(o,"일자"))===k&&plain(pick(o,"일정"))===plain(title))}
+function eventPhotosHtml(k,title){const ps=photosFor(k,title);if(!ps.length)return"";
+ return `<div class="shots">${ps.map(o=>`<button type="button" data-view="${esc(pick(o,"파일ID"))}"><img src="${shotUrl(pick(o,"파일ID"),300)}" loading="lazy" alt=""></button>`).join("")}</div>`}
+/* 앨범 순서: 일정 날짜 → 일정 시간 → 올린 순 */
+function albumOrdered(){
+ const days=itinerary(),rows=albumRows(),out=[];
+ days.forEach((d,i)=>{const evs=d.events.map(o=>plain(pick(o,"일정","제목")));
+  const mine=rows.filter(o=>dayKey(pick(o,"일자"))===d.key).sort((a,b)=>{const ia=evs.indexOf(plain(pick(a,"일정"))),ib=evs.indexOf(plain(pick(b,"일정")));return(ia-ib)||String(pick(a,"촬영시각")||pick(a,"시각")).localeCompare(pick(b,"촬영시각")||pick(b,"시각"))});
+  if(mine.length)out.push({day:d,i,meta:dayMeta(d.key),photos:mine})});
+ const known=new Set(out.flatMap(g=>g.photos));const etc=rows.filter(o=>!known.has(o));
+ if(etc.length)out.push({day:null,i:-1,meta:{title:"그 밖의 순간"},photos:etc});
+ return out;
+}
+function renderAlbum(){
+ const g=albumOrdered(),n=g.reduce((a,x)=>a+x.photos.length,0);
+ $("#albumCount").textContent=n?`${n}장`:"";
+ $("#slideBtn").disabled=$("#videoBtn").disabled=!n;
+ $("#albumRoot").innerHTML=n?g.map(x=>`<div class="album-day"><h4>${x.day?`<small>Day ${String(x.i+1).padStart(2,"0")}</small>`:""}${esc(x.meta.title||x.day?.key||"")}</h4><div class="album-grid">${x.photos.map(o=>`<button type="button" data-view="${esc(pick(o,"파일ID"))}"><img src="${shotUrl(pick(o,"파일ID"),400)}" loading="lazy" alt=""></button>`).join("")}</div></div>`).join(""):'<div class="album-empty">아직 올린 사진이 없어요. 여행 중에 일정마다 사진을 올려 보세요.</div>';
+}
+/* 사진 올리기 */
+let shotTarget=null;
+document.addEventListener("click",e=>{const b=e.target.closest("[data-shot]");if(!b)return;shotTarget=b.dataset.shot.split("|");$("#shotInput").click()});
+$("#shotInput").onchange=async e=>{
+ const files=[...e.target.files].filter(f=>f.type.startsWith("image/"));e.target.value="";
+ if(!files.length||!shotTarget)return;const [day,time,title]=shotTarget;let ok=0;
+ for(let i=0;i<files.length;i++){
+  toast(`사진 올리는 중 ${i+1}/${files.length}`);
+  try{const f=await packFile(files[i]);const r=await api("photo",{day,time,event:title,taken:files[i].lastModified,file:{type:f.type,data:f.data}});
+   if(r.auth===false){logout(r.error);return}if(r.ok)ok++;else toast(r.error||"올리지 못했어요")}catch(err){toast("올리지 못했어요")}
+ }
+ if(ok){toast(`사진 ${ok}장을 올렸어요`);sync()}
+};
+/* 사진 보기 */
+let vList=[],vIdx=0;
+function openViewer(id){
+ vList=albumOrdered().flatMap(g=>g.photos);vIdx=Math.max(0,vList.findIndex(o=>pick(o,"파일ID")===id));
+ $("#viewer").hidden=false;showViewer();
+}
+function showViewer(){
+ const o=vList[vIdx];if(!o)return closeViewer();const id=pick(o,"파일ID");
+ $("#vStage").innerHTML=`<img src="${shotUrl(id,1600)}" alt="">`;
+ $("#vCap").innerHTML=`${esc(pick(o,"일정"))}<small>${esc(pick(o,"일자"))} ${esc(pick(o,"시간"))} · ${esc(pick(o,"이름").split("@")[0])}</small>`;
+ const mine=ME&&(pick(o,"이름").toLowerCase()===ME.toLowerCase());
+ $("#vBar").innerHTML=`<button type="button" data-v="-1">이전</button><span style="color:#b9ada0;align-self:center;font-size:13px">${vIdx+1} / ${vList.length}</span><button type="button" data-v="1">다음</button>${mine?'<button type="button" data-v="del">삭제</button>':""}`;
+}
+function closeViewer(){$("#viewer").hidden=true;$("#vStage").innerHTML=""}
+$("#vClose").onclick=closeViewer;
+$("#vBar").onclick=async e=>{const b=e.target.closest("[data-v]");if(!b)return;
+ if(b.dataset.v==="del"){if(!confirm("이 사진을 지울까요?"))return;const r=await api("deletePhoto",{id:pick(vList[vIdx],"파일ID")});if(r.ok){toast("지웠어요");closeViewer();sync()}else toast(r.error||"지우지 못했어요");return}
+ vIdx=(vIdx+Number(b.dataset.v)+vList.length)%vList.length;showViewer()};
+(()=>{let x0=null;$("#vStage").addEventListener("touchstart",e=>{x0=e.touches[0].clientX},{passive:true});$("#vStage").addEventListener("touchend",e=>{if(x0==null)return;const dx=e.changedTouches[0].clientX-x0;x0=null;if(Math.abs(dx)>50){vIdx=(vIdx+(dx<0?1:-1)+vList.length)%vList.length;showViewer()}})})();
+document.addEventListener("click",e=>{const b=e.target.closest("[data-view]");if(b)openViewer(b.dataset.view)});
+/* 슬라이드쇼 */
+function storyboard(){
+ const sb=[{t:"title",k:"Vol. 01 · Autumn 2026",h:"Fukuoka",sub:"유후인 · 벳푸 · 하카타"}];
+ albumOrdered().forEach(g=>{sb.push({t:"title",k:g.day?`Day ${String(g.i+1).padStart(2,"0")}`:"",h:g.meta.title||""});
+  g.photos.forEach(o=>sb.push({t:"photo",id:pick(o,"파일ID"),cap:pick(o,"일정"),sub:`${pick(o,"일자")} ${pick(o,"시간")}`.trim()}))});
+ sb.push({t:"title",k:"The End",h:"함께여서 좋았던 가을",sub:"2026. 10. 31 – 11. 3"});
+ return sb;
+}
+let showT=0,showI=0,showSB=[],showPaused=false;
+function slideHtml(x){return x.t==="title"?`<div class="slide title"><div class="k">${esc(x.k||"")}</div>${x.h==="Fukuoka"?`<div class="mast2">Fukuoka</div>`:`<h2>${esc(x.h||"")}</h2>`}${x.sub?`<div style="font-family:var(--serif);opacity:.85">${esc(x.sub)}</div>`:""}</div>`:`<div class="slide"><img src="${shotUrl(x.id,1600)}" alt=""><div class="sc"><b>${esc(x.cap||"")}</b><small>${esc(x.sub||"")}</small></div></div>`}
+function startShow(){showSB=storyboard();showI=0;showPaused=false;$("#showStage").innerHTML=showSB.map(slideHtml).join("");$("#show").hidden=false;stepShow(0)}
+function stepShow(i){clearTimeout(showT);const els=$("#showStage").children;if(i>=els.length){closeShow();return}
+ [...els].forEach((el,j)=>el.classList.toggle("on",j===i));showI=i;$("#showProg").style.width=((i+1)/els.length*100)+"%";
+ if(!showPaused)showT=setTimeout(()=>stepShow(i+1),showSB[i].t==="title"?2600:4000)}
+function closeShow(){clearTimeout(showT);$("#show").hidden=true;$("#showStage").innerHTML=""}
+$("#slideBtn").onclick=startShow;$("#showClose").onclick=e=>{e.stopPropagation();closeShow()};
+$("#showStage").onclick=e=>{const x=e.clientX/innerWidth;if(x<.3)stepShow(Math.max(0,showI-1));else if(x>.7)stepShow(showI+1);else{showPaused=!showPaused;toast(showPaused?"일시정지":"재생");if(!showPaused)stepShow(showI)}};
+/* 영상 만들기: 캔버스에 슬라이드를 그려 MediaRecorder로 저장 (세로 1080×1920) */
+async function makeVideo(){
+ const sb=storyboard();if(sb.length<3)return toast("사진을 먼저 올려 주세요");
+ if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream)return toast("이 브라우저는 영상 만들기를 지원하지 않아요");
+ const W=1080,H=1920,FPS=30,c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
+ const box=document.createElement("div");box.className="rec";box.innerHTML='<div></div>';box.firstChild.append(c);const msg=document.createElement("p");box.firstChild.append(msg);document.body.append(box);
+ msg.textContent="사진을 불러오는 중…";
+ try{await document.fonts.ready}catch(e){}
+ const imgs={};let n=0;const ids=sb.filter(x=>x.t==="photo").map(x=>x.id);
+ for(const id of ids){msg.textContent=`사진 불러오는 중 ${++n}/${ids.length}`;
+  try{const r=await api("photoData",{id});if(r.ok){const b=await (await fetch(`data:${r.mime};base64,${r.data}`)).blob();imgs[id]=await createImageBitmap(b)}}catch(e){}}
+ const types=["video/mp4;codecs=avc1","video/mp4","video/webm;codecs=vp9","video/webm"];const mime=types.find(t=>MediaRecorder.isTypeSupported(t))||"";
+ const rec=new MediaRecorder(c.captureStream(FPS),mime?{mimeType:mime,videoBitsPerSecond:8e6}:{});const chunks=[];rec.ondataavailable=e=>e.data.size&&chunks.push(e.data);
+ const serif=getComputedStyle(document.body).getPropertyValue("--serif")||"serif",disp=getComputedStyle(document.body).getPropertyValue("--display")||"serif";
+ const cover=(im,t)=>{const s=Math.max(W/im.width,H/im.height)*(1+.08*t),w=im.width*s,h=im.height*s;g.drawImage(im,(W-w)/2,(H-h)/2,w,h)};
+ const draw=(x,t)=>{g.globalAlpha=1;
+  if(x.t==="photo"&&imgs[x.id]){g.fillStyle="#000";g.fillRect(0,0,W,H);cover(imgs[x.id],t);const gr=g.createLinearGradient(0,H*.6,0,H);gr.addColorStop(0,"rgba(0,0,0,0)");gr.addColorStop(1,"rgba(0,0,0,.7)");g.fillStyle=gr;g.fillRect(0,H*.6,W,H*.4);
+   g.fillStyle="#fff";g.textAlign="left";g.font=`700 64px ${serif}`;g.fillText(x.cap||"",80,H-230,W-160);g.font=`italic 44px ${disp}`;g.globalAlpha=.85;g.fillText(x.sub||"",80,H-160);g.globalAlpha=1}
+  else{const gr=g.createRadialGradient(W/2,H*.4,50,W/2,H*.4,H*.8);gr.addColorStop(0,"#3a2a24");gr.addColorStop(1,"#0d0c10");g.fillStyle=gr;g.fillRect(0,0,W,H);g.textAlign="center";
+   g.fillStyle="#e9a077";g.font=`italic 60px ${disp}`;g.fillText(x.k||"",W/2,H*.42);g.fillStyle="#f7eee2";
+   if(x.h==="Fukuoka"){g.font=`italic 700 190px ${disp}`;g.fillText("Fukuoka",W/2,H*.52)}else{g.font=`700 84px ${serif}`;g.fillText(x.h||"",W/2,H*.52,W-120)}
+   if(x.sub){g.font=`48px ${serif}`;g.globalAlpha=.85;g.fillText(x.sub,W/2,H*.59,W-120);g.globalAlpha=1}}};
+ const dur=x=>x.t==="title"?2.4:3.4,FADE=.6,total=sb.reduce((a,x)=>a+dur(x),0);
+ rec.start(500);const t0=performance.now();
+ await new Promise(done=>{const tick=()=>{const el=(performance.now()-t0)/1000;if(el>=total){done();return}
+  let acc=0,i=0;while(i<sb.length-1&&acc+dur(sb[i])<=el){acc+=dur(sb[i]);i++}const local=(el-acc)/dur(sb[i]);draw(sb[i],local);
+  const rem=acc+dur(sb[i])-el;if(rem<FADE&&sb[i+1]){g.globalAlpha=1-rem/FADE;draw(sb[i+1],0);g.globalAlpha=1}
+  msg.textContent=`영상 만드는 중 ${Math.min(99,Math.round(el/total*100))}% · 화면을 켜 두세요`;requestAnimationFrame(tick)};tick()});
+ rec.stop();await new Promise(r=>rec.onstop=r);
+ const type=(mime||"video/webm").split(";")[0],ext=type.includes("mp4")?"mp4":"webm",blob=new Blob(chunks,{type}),file=new File([blob],`fukuoka-2026.${ext}`,{type});
+ msg.innerHTML=`완성! (${(blob.size/1048576).toFixed(1)}MB)<br><br>`;
+ const save=document.createElement("button");save.className="btn pri";save.textContent=navigator.canShare?.({files:[file]})?"공유·저장하기":"저장하기";
+ save.onclick=async()=>{if(navigator.canShare?.({files:[file]})){try{await navigator.share({files:[file],title:"후쿠오카 2026"});return}catch(e){}}const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=file.name;a.click()};
+ const close=document.createElement("button");close.className="btn";close.style.marginLeft="8px";close.textContent="닫기";close.onclick=()=>box.remove();
+ msg.append(save,close);
+}
+$("#videoBtn").onclick=()=>makeVideo().catch(e=>{document.querySelector(".rec")?.remove();toast("영상을 만들지 못했어요")});
+
 /* ───────── 탭바 & 스크롤 ───────── */
 const TABS=["top","plan","mapsec","budget","checksec"];
 let tabLock=0;
@@ -867,7 +1028,7 @@ function initPhotos(){
  const c=PHOTOS.cover;$("#coverPhoto").src=photoSrc(c.f,1400);$("#coverPhoto").alt=c.cap;
  $("#credits").innerHTML="사진: Wikimedia Commons · "+Object.values(PHOTOS).map(p=>`<a href="${photoPage(p.f)}" target="_blank" rel="noopener">${esc(p.cap)}</a>`).join(" · ");
 }
-function renderAll(){renderRequests();renderDays();renderBudget();renderBooking();renderShopping();renderChecklist();renderMap();loadWxCached()}
+function renderAll(){renderRequests();renderDays();renderAlbum();renderBudget();renderBooking();renderShopping();renderChecklist();renderMap();loadWxCached()}
 $("#sheetLink").href=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`;
 $("#syncBtn").onclick=()=>{wxAt=0;sync(true)};
 $("#mapsec").addEventListener("toggle",()=>{if($("#mapsec").open)renderMap()});
