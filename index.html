@@ -1283,8 +1283,24 @@ document.addEventListener("visibilitychange",()=>{if(document.visibilityState===
 setInterval(()=>{if(document.visibilityState==="visible")sync()},REFRESH_MS);
 setInterval(()=>{if(document.visibilityState==="visible")renderDays()},60*1000);
 
+/* ───────── Koo's 가족 통합앱 안에서 열렸을 때: 통합앱이 로그인 세션을 넘겨준다 (다시 로그인할 필요 없음) ───────── */
+const FAMILY_ORIGINS=["https://koo-family.dkdk031.workers.dev","http://127.0.0.1:8787","http://localhost:8787"];
+const EMBEDDED=window.parent!==window;
+if(EMBEDDED){
+ addEventListener("message",e=>{
+  if(!FAMILY_ORIGINS.includes(e.origin))return;
+  const d=e.data||{};
+  if(d.type!=="kf-session"||!d.session||d.session===SESSION)return;
+  SESSION=d.session;ME=d.email||ME;store.set("fuk5-session",SESSION);store.set("fuk5-me",ME);
+  $("#login").hidden=true;sync();
+ });
+ FAMILY_ORIGINS.forEach(o=>{try{parent.postMessage({type:"kf-ready"},o)}catch(e){}});
+}
+
 {const h=location.hash.slice(1);go(PAGES.includes(h)?h:"home",true)}
-initPhotos();initFx();setSync(store.get("fuk5-syncAt",0)?"cache":"seed");renderAll();sync();
+initPhotos();initFx();setSync(store.get("fuk5-syncAt",0)?"cache":"seed");renderAll();
+// 통합앱 안이면 세션을 받을 때까지 잠깐 기다렸다가(로그인 화면 깜빡임 방지) 그래도 없으면 평소처럼 로그인 화면
+if(EMBEDDED&&!SESSION)setTimeout(()=>{if(!SESSION)sync()},2500);else sync();
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
 </body>
